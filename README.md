@@ -361,7 +361,7 @@ For support, email godwinsallah16@example.com or create an issue in this reposit
 ## 🌐 Live Demo & Links
 
 - **GitHub Repository**: https://github.com/godwinsallah16/Book.git
-- **Frontend Demo**: https://godwinsallah16.github.io/Book/ (GitHub Pages)
+- **Frontend Demo**: https://godwinsallah16.github.io/Book/ (GitHub Pages - Deploying...)
 - **API Documentation**: Available when backend is deployed
 - **Project Portfolio**: Showcase of modern full-stack development
 
