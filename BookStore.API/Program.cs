@@ -39,16 +39,38 @@ else
 {
     // Check if we're using PostgreSQL (for cloud deployments like Render)
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
     
-    if (connectionString?.Contains("postgres") == true || connectionString?.Contains("postgresql") == true)
+    // Log the connection string for debugging (without sensitive data)
+    Log.Information("Connection string source: {Source}", 
+        connectionString != null ? connectionString.Substring(0, Math.Min(20, connectionString.Length)) + "..." : "null");
+    
+    // Determine if we should use PostgreSQL
+    bool usePostgreSQL = false;
+    
+    // Check multiple indicators for PostgreSQL
+    if (connectionString?.Contains("postgres", StringComparison.OrdinalIgnoreCase) == true ||
+        connectionString?.Contains("postgresql", StringComparison.OrdinalIgnoreCase) == true ||
+        connectionString?.Contains("npgsql", StringComparison.OrdinalIgnoreCase) == true ||
+        connectionString?.Contains("Port=5432") == true ||
+        databaseUrl != null ||
+        builder.Environment.IsProduction()) // Assume PostgreSQL in production
+    {
+        usePostgreSQL = true;
+    }
+    
+    if (usePostgreSQL)
     {
         // Use PostgreSQL for cloud deployments
+        var pgConnectionString = connectionString ?? databaseUrl;
+        Log.Information("Using PostgreSQL database");
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseNpgsql(connectionString));
+            options.UseNpgsql(pgConnectionString));
     }
     else
     {
         // Use SQL Server for local development
+        Log.Information("Using SQL Server database");
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(connectionString));
     }
