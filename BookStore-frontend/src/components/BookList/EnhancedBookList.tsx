@@ -109,14 +109,12 @@ export function EnhancedBookList({ filters, onBookSelect, onBookEdit, onBookDele
         if (onBookDelete) {
           onBookDelete(book);
         }
-        console.log('Book deleted successfully:', book.title);
       } catch (error) {
         console.error('Error deleting book:', error);
         // Check if it's a 404 error (book was deleted but API returned 404)
         if (error && typeof error === 'object' && 'response' in error) {
           const axiosError = error as AxiosError;
           if (axiosError.response?.status === 404) {
-            console.log('Book deleted (API returned 404):', book.title);
             // Book was likely deleted successfully despite 404
             if (onBookDelete) {
               onBookDelete(book);

@@ -73,11 +73,9 @@ export const authService = {
   // Register user
   async register(registerData: RegisterRequest): Promise<AuthResponse> {
     try {
-      console.log('Sending registration data:', registerData);
       const response = await publicApiClient.post<AuthResponse>(API_CONFIG.ENDPOINTS.AUTH.REGISTER, registerData);
       
       // DO NOT store token after registration - user must verify email first
-      console.log('Registration successful - email verification required');
       
       return response.data;
     } catch (error: unknown) {
@@ -86,8 +84,6 @@ export const authService = {
       // Handle validation errors with user-friendly messages
       if (error && typeof error === 'object' && 'response' in error) {
         const axiosError = error as { response?: { data?: unknown; status?: number } };
-        console.error('Error response:', axiosError.response?.data);
-        console.error('Error status:', axiosError.response?.status);
         
         if (axiosError.response?.status === 400) {
           // Handle validation errors

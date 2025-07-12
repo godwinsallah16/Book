@@ -15,5 +15,6 @@ namespace BookStore.API.Models
         public virtual ICollection<Book> Books { get; set; } = new List<Book>();
         public virtual ICollection<UserFavorite> Favorites { get; set; } = new List<UserFavorite>();
         public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
+        public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
     }
 }

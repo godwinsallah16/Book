@@ -1,5 +1,5 @@
 # Render.com Blueprint Configuration
-# This file defines how to deploy your BookStore application on Render.com
+# This file defines how to deploy your BookStore application on Render.com using Docker
 
 # Database (PostgreSQL) - Must be created first
 databases:
@@ -9,11 +9,12 @@ databases:
     region: ohio # or your preferred region
 
 services:
-  # Backend API Service
+  # Backend API Service (Docker)
   - type: web
     name: bookstore-api
     env: docker
-    dockerfilePath: ./Dockerfile
+    dockerfilePath: ./BookStore.API/Dockerfile
+    dockerContext: ./BookStore.API
     region: ohio # should match database region
     plan: free
     envVars:
@@ -25,7 +26,7 @@ services:
         fromDatabase:
           name: bookstore-db
           property: connectionString
-      - key: JwtSettings__SecretKey
+      - key: JwtSettings__Secret
         generateValue: true
       - key: JwtSettings__Issuer
         value: BookStore.API
@@ -33,33 +34,16 @@ services:
         value: BookStore.Client
       - key: JwtSettings__ExpirationHours
         value: "24"
-      # Email Configuration
-      - key: EmailSettings__SmtpServer
-        value: smtp.gmail.com
-      - key: EmailSettings__SmtpPort
-        value: "587"
-      - key: EmailSettings__SmtpUsername
-        sync: false  # Set this as a secret in Render dashboard
-      - key: EmailSettings__SmtpPassword
-        sync: false  # Set this as a secret in Render dashboard
-      - key: EmailSettings__FromEmail
-        value: noreply@bookstore.com
-      - key: EmailSettings__FromName
-        value: BookStore
-      - key: EmailSettings__EnableSsl
-        value: "true"
     healthCheckPath: /health
     
-  # Frontend Static Site
-  - type: static
+  # Frontend Static Site (Docker)
+  - type: web
     name: bookstore-frontend
-    buildCommand: |
-      cd BookStore-frontend
-      npm install
-      npm run build
-    publishPath: BookStore-frontend/dist
+    env: docker
+    dockerfilePath: ./BookStore-frontend/Dockerfile
+    dockerContext: ./BookStore-frontend
+    region: ohio
+    plan: free
     envVars:
       - key: VITE_API_BASE_URL
         value: https://bookstore-api.onrender.com/api
-      - key: VITE_APP_NAME
-        value: BookStore

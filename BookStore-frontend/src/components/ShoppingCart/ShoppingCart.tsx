@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../hooks/useCart';
 import type { CartItem } from '../../types/cart.types';
 import './ShoppingCart.css';
@@ -11,6 +12,7 @@ interface ShoppingCartProps {
 export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
   const { state, updateCartItem, removeFromCart, clearCart } = useCart();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const navigate = useNavigate();
 
   const handleQuantityChange = async (bookId: number, newQuantity: number) => {
     if (newQuantity <= 0) {
@@ -21,16 +23,19 @@ export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
   };
 
   const handleCheckout = async () => {
+    if (state.items.length === 0) {
+      alert('Your cart is empty');
+      return;
+    }
+
     setIsCheckingOut(true);
     try {
-      // Simulate checkout process
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      alert('Order placed successfully!');
-      await clearCart();
-      onClose();
+      // Navigate to checkout page
+      onClose(); // Close the cart first
+      navigate('/checkout');
     } catch (err) {
-      console.error('Checkout failed:', err);
-      alert('Checkout failed. Please try again.');
+      console.error('Navigation failed:', err);
+      alert('Failed to navigate to checkout. Please try again.');
     } finally {
       setIsCheckingOut(false);
     }

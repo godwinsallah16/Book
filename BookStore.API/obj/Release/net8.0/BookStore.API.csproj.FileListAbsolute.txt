@@ -20,13 +20,10 @@ C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Rele
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\Microsoft.AspNetCore.Cryptography.KeyDerivation.dll
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\Microsoft.Bcl.AsyncInterfaces.dll
-C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\Microsoft.Build.Locator.dll
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\Microsoft.CodeAnalysis.dll
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\Microsoft.CodeAnalysis.CSharp.dll
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\Microsoft.CodeAnalysis.CSharp.Workspaces.dll
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\Microsoft.CodeAnalysis.Workspaces.dll
-C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.dll
-C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\Microsoft.CodeAnalysis.Workspaces.MSBuild.dll
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\Microsoft.Data.SqlClient.dll
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\Microsoft.EntityFrameworkCore.dll
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\Microsoft.EntityFrameworkCore.Abstractions.dll
@@ -34,7 +31,6 @@ C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Rele
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\Microsoft.EntityFrameworkCore.InMemory.dll
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\Microsoft.EntityFrameworkCore.Relational.dll
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\Microsoft.EntityFrameworkCore.SqlServer.dll
-C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\Microsoft.Extensions.Caching.Abstractions.dll
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\Microsoft.Extensions.Caching.Memory.dll
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\Microsoft.Extensions.Configuration.Abstractions.dll
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\Microsoft.Extensions.Configuration.Binder.dll
@@ -63,6 +59,8 @@ C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Rele
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\Microsoft.Win32.SystemEvents.dll
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\MimeKit.dll
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\Mono.TextTemplating.dll
+C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\Npgsql.dll
+C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\Npgsql.EntityFrameworkCore.PostgreSQL.dll
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\Serilog.dll
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\Serilog.Extensions.Hosting.dll
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\Serilog.Extensions.Logging.dll
@@ -82,7 +80,6 @@ C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Rele
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\System.Configuration.ConfigurationManager.dll
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\System.Diagnostics.DiagnosticSource.dll
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\System.Drawing.Common.dll
-C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\System.Formats.Asn1.dll
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\System.IdentityModel.Tokens.Jwt.dll
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\System.IO.Pipelines.dll
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\System.Memory.Data.dll
@@ -144,19 +141,6 @@ C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Rele
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\tr\Microsoft.CodeAnalysis.Workspaces.resources.dll
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\zh-Hans\Microsoft.CodeAnalysis.Workspaces.resources.dll
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\zh-Hant\Microsoft.CodeAnalysis.Workspaces.resources.dll
-C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\cs\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
-C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\de\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
-C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\es\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
-C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\fr\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
-C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\it\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
-C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\ja\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
-C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\ko\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
-C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\pl\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
-C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\pt-BR\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
-C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\ru\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
-C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\tr\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
-C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\zh-Hans\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
-C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\zh-Hant\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\runtimes\unix\lib\net6.0\Microsoft.Data.SqlClient.dll
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\runtimes\win\lib\net6.0\Microsoft.Data.SqlClient.dll
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\runtimes\win-arm\native\Microsoft.Data.SqlClient.SNI.dll
@@ -178,6 +162,7 @@ C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\obj\Rele
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\obj\Release\net8.0\BookStore.API.csproj.CoreCompileInputs.cache
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\obj\Release\net8.0\BookStore.API.MvcApplicationPartsAssemblyInfo.cs
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\obj\Release\net8.0\BookStore.API.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\obj\Release\net8.0\BookStore.API.sourcelink.json
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\obj\Release\net8.0\rjimswa.dswa.cache.json
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\obj\Release\net8.0\rjsmrazor.dswa.cache.json
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\obj\Release\net8.0\rjsmcshtml.dswa.cache.json
@@ -192,6 +177,3 @@ C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\obj\Rele
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\obj\Release\net8.0\BookStore.API.pdb
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\obj\Release\net8.0\BookStore.API.genruntimeconfig.cache
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\obj\Release\net8.0\ref\BookStore.API.dll
-C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\Npgsql.dll
-C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Release\net8.0\Npgsql.EntityFrameworkCore.PostgreSQL.dll
-C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\obj\Release\net8.0\BookStore.API.sourcelink.json

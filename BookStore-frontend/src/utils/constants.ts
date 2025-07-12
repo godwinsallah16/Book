@@ -44,6 +44,14 @@ export const API_CONFIG = {
       BASE: '/favorites',
       BY_ID: (id: string | number) => `/favorites/${id}`,
     },
+    ORDERS: {
+      BASE: '/order',
+      BY_ID: (id: string | number) => `/order/${id}`,
+      PAYMENT: '/order/payment',
+      SUMMARY: '/order/summary',
+      ALL: '/order/all',
+      STATUS: (id: string | number) => `/order/${id}/status`,
+    },
     HEALTH: '/health',
   },
   

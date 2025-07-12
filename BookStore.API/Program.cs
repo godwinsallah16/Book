@@ -43,61 +43,6 @@ else
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
     var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
     
-    // Enhanced debugging for Docker/Render environment
-    Log.Information("=== Database Configuration Debug ===");
-    Log.Information("Environment: {Environment}", builder.Environment.EnvironmentName);
-    Log.Information("Is Production: {IsProduction}", builder.Environment.IsProduction());
-    Log.Information("DATABASE_URL exists: {HasDatabaseUrl}", databaseUrl != null);
-    Log.Information("DefaultConnection exists: {HasDefaultConnection}", connectionString != null);
-    
-    // Log all environment variables starting with DATABASE for debugging
-    var dbEnvVars = Environment.GetEnvironmentVariables()
-        .Cast<System.Collections.DictionaryEntry>()
-        .Where(e => e.Key?.ToString()?.StartsWith("DATABASE", StringComparison.OrdinalIgnoreCase) == true)
-        .ToDictionary(e => e.Key?.ToString() ?? "unknown", e => e.Value?.ToString() ?? "null");
-    
-    Log.Information("Database-related environment variables count: {Count}", dbEnvVars.Count);
-    foreach (var kvp in dbEnvVars)
-    {
-        var safeValue = kvp.Value?.Length > 20 ? kvp.Value.Substring(0, 20) + "..." : kvp.Value ?? "null";
-        Log.Information("  {Key}: {Value}", kvp.Key, safeValue);
-    }
-    
-    // Log the connection string source for debugging (without sensitive data)
-    if (databaseUrl != null)
-    {
-        Log.Information("Connection string source: DATABASE_URL environment variable");
-        Log.Information("DATABASE_URL format: {Format}", 
-            databaseUrl.StartsWith("postgres://") ? "postgres://" : 
-            databaseUrl.StartsWith("postgresql://") ? "postgresql://" : "unknown");
-        Log.Information("DATABASE_URL length: {Length}", databaseUrl.Length);
-        Log.Information("DATABASE_URL first 50 chars: {FirstChars}", 
-            databaseUrl.Length > 50 ? databaseUrl.Substring(0, 50) + "..." : databaseUrl);
-        
-        // Check for common issues
-        if (string.IsNullOrWhiteSpace(databaseUrl))
-        {
-            Log.Error("DATABASE_URL is empty or whitespace!");
-        }
-        else if (databaseUrl.StartsWith(" ") || databaseUrl.EndsWith(" "))
-        {
-            Log.Error("DATABASE_URL has leading or trailing spaces!");
-        }
-        else if (!databaseUrl.StartsWith("postgresql://") && !databaseUrl.StartsWith("postgres://"))
-        {
-            Log.Error("DATABASE_URL does not start with postgresql:// or postgres://");
-        }
-    }
-    else if (connectionString != null)
-    {
-        Log.Information("Connection string source: {Source}", 
-            connectionString.Substring(0, Math.Min(20, connectionString.Length)) + "...");
-    }
-    else
-    {
-        Log.Information("Connection string source: null");
-    }
-    
     // Determine if we should use PostgreSQL
     bool usePostgreSQL = false;
     string finalConnectionString = connectionString ?? "";
@@ -132,13 +77,10 @@ else
                     };
                     
                     finalConnectionString = connectionStringBuilder.ConnectionString;
-                    Log.Information("Successfully converted DATABASE_URL to connection string format");
-                    Log.Information("Host: {Host}, Database: {Database}, Username: {Username}", 
-                        connectionStringBuilder.Host, connectionStringBuilder.Database, connectionStringBuilder.Username);
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex, "Failed to parse DATABASE_URL: {DatabaseUrl}", databaseUrl);
+                    Log.Error(ex, "Failed to parse DATABASE_URL");
                     throw new InvalidOperationException($"Invalid DATABASE_URL format: {ex.Message}");
                 }
             }
@@ -146,7 +88,6 @@ else
             {
                 // Already in .NET connection string format
                 finalConnectionString = databaseUrl;
-                Log.Information("Using DATABASE_URL as-is (already in .NET format)");
             }
         }
         else if (connectionString != null)
@@ -157,24 +98,19 @@ else
                 connectionString.Contains("Integrated Security", StringComparison.OrdinalIgnoreCase))
             {
                 // This is a SQL Server connection string, but we need PostgreSQL
-                Log.Warning("SQL Server connection string detected but PostgreSQL is required. Using fallback connection string.");
-                
-                // In production, we should fail if DATABASE_URL is not set
                 if (builder.Environment.IsProduction())
                 {
-                    throw new InvalidOperationException("DATABASE_URL environment variable is required for PostgreSQL in production environment. Please ensure your database service is properly configured.");
+                    throw new InvalidOperationException("DATABASE_URL environment variable is required for PostgreSQL in production environment.");
                 }
                 else
                 {
                     // Use fallback for development/testing
                     finalConnectionString = "Host=localhost;Database=BookStore;Username=postgres;Password=postgres;";
-                    Log.Warning("Using fallback PostgreSQL connection string for development.");
                 }
             }
             else
             {
                 finalConnectionString = connectionString;
-                Log.Information("Using connection string for PostgreSQL connection");
             }
         }
         else
@@ -182,12 +118,11 @@ else
             // No connection string available
             if (builder.Environment.IsProduction())
             {
-                throw new InvalidOperationException("No database connection string available. DATABASE_URL environment variable is required for production.");
+                throw new InvalidOperationException("DATABASE_URL environment variable is required for production.");
             }
             else
             {
                 finalConnectionString = "Host=localhost;Database=BookStore;Username=postgres;Password=postgres;";
-                Log.Warning("No connection string found. Using default PostgreSQL connection for development.");
             }
         }
     }
@@ -195,11 +130,6 @@ else
     if (usePostgreSQL)
     {
         // Use PostgreSQL for cloud deployments
-        Log.Information("Using PostgreSQL database");
-        Log.Information("Final PostgreSQL connection string first 50 chars: {ConnectionString}", 
-            finalConnectionString.Length > 50 ? finalConnectionString.Substring(0, 50) + "..." : finalConnectionString);
-        
-        // Validate connection string format before using it
         if (string.IsNullOrWhiteSpace(finalConnectionString))
         {
             throw new InvalidOperationException("PostgreSQL connection string is null or empty");
@@ -209,12 +139,10 @@ else
         {
             // Test the connection string format by creating a NpgsqlConnectionStringBuilder
             var testBuilder = new Npgsql.NpgsqlConnectionStringBuilder(finalConnectionString);
-            Log.Information("Connection string validation successful - Host: {Host}, Database: {Database}", 
-                testBuilder.Host, testBuilder.Database);
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "Connection string validation failed: {ConnectionString}", finalConnectionString);
+            Log.Error(ex, "Connection string validation failed");
             throw new InvalidOperationException($"Invalid PostgreSQL connection string format: {ex.Message}");
         }
         
@@ -224,7 +152,6 @@ else
     else
     {
         // Use SQL Server for local development
-        Log.Information("Using SQL Server database");
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(finalConnectionString));
     }
@@ -298,6 +225,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IFavoriteService, FavoriteService>();
 builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 
 // Configure HTTPS with development certificates
 builder.Services.AddHttpsRedirection(options =>
@@ -312,7 +240,7 @@ builder.Services.AddHsts(options =>
     options.Preload = true;
     options.IncludeSubDomains = true;
     options.MaxAge = TimeSpan.FromDays(365);
-    options.ExcludedHosts.Clear(); // Remove localhost from excluded hosts in development
+    options.ExcludedHosts.Clear();
 });
 
 // Add CORS
@@ -322,11 +250,9 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(
                 "https://localhost:5173",
-                "https://localhost:5174", 
                 "https://localhost:3000",
-                "https://localhost:5001", // Allow API to call itself if needed
-                "https://godwinsallah16.github.io", // Allow GitHub Pages frontend
-                "https://bookstore-frontend-074u.onrender.com" // Allow Render.com frontend
+                "https://godwinsallah16.github.io", // GitHub Pages frontend
+                "https://bookstore-frontend-074u.onrender.com" // Render.com frontend
             )
               .AllowAnyHeader()
               .AllowAnyMethod()
@@ -382,39 +308,6 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// Configure Kestrel to use custom SSL certificate
-// Temporarily disabled custom certificate to use default development certificate
-/*
-if (builder.Environment.IsDevelopment())
-{
-    builder.Services.Configure<KestrelServerOptions>(options =>
-    {
-        options.ConfigureHttpsDefaults(httpsOptions =>
-        {
-            var certificatePath = Path.Combine(builder.Environment.ContentRootPath, "..", "certs", "bookstore-dev.pfx");
-            if (File.Exists(certificatePath))
-            {
-                try
-                {
-                    httpsOptions.ServerCertificate = new System.Security.Cryptography.X509Certificates.X509Certificate2(
-                        certificatePath, 
-                        "bookstore123");
-                    Log.Information("Using custom SSL certificate from {CertificatePath}", certificatePath);
-                }
-                catch (Exception ex)
-                {
-                    Log.Warning(ex, "Failed to load custom SSL certificate from {CertificatePath}. Using default development certificate.", certificatePath);
-                }
-            }
-            else
-            {
-                Log.Warning("Custom SSL certificate not found at {CertificatePath}. Using default development certificate.", certificatePath);
-            }
-        });
-    });
-}
-*/
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -467,15 +360,13 @@ if (!builder.Environment.IsEnvironment("Testing"))
 
 async Task RetryDatabaseOperations(IServiceProvider services, Microsoft.Extensions.Logging.ILogger<Program> logger)
 {
-    const int maxRetries = 5;
-    const int delaySeconds = 10;
+    const int maxRetries = 3;
+    const int delaySeconds = 5;
     
     for (int attempt = 1; attempt <= maxRetries; attempt++)
     {
         try
         {
-            logger.LogInformation("Database operation attempt {Attempt} of {MaxRetries}", attempt, maxRetries);
-            
             using var scope = services.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
@@ -483,39 +374,34 @@ async Task RetryDatabaseOperations(IServiceProvider services, Microsoft.Extensio
 
             // Test database connection first
             await context.Database.CanConnectAsync();
-            logger.LogInformation("Database connection successful");
             
             // Apply pending migrations (only for relational databases)
             if (context.Database.IsRelational())
             {
                 await context.Database.MigrateAsync();
-                logger.LogInformation("Database migrations applied successfully");
             }
             else
             {
                 // For InMemory databases, ensure the database is created
                 await context.Database.EnsureCreatedAsync();
-                logger.LogInformation("InMemory database created successfully");
             }
 
             // Seed initial data
             var seeder = new DataSeeder(context, userManager, roleManager);
             await seeder.SeedAsync();
-            logger.LogInformation("Database seeding completed successfully");
             
             return; // Success - exit retry loop
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Database operation failed on attempt {Attempt}: {Message}", attempt, ex.Message);
+            logger.LogError(ex, "Database operation failed on attempt {Attempt}", attempt);
             
             if (attempt == maxRetries)
             {
-                logger.LogError("All database operation attempts failed. Application will exit.");
+                logger.LogError("All database operation attempts failed");
                 throw;
             }
             
-            logger.LogInformation("Retrying database operation in {DelaySeconds} seconds...", delaySeconds);
             await Task.Delay(TimeSpan.FromSeconds(delaySeconds));
         }
     }

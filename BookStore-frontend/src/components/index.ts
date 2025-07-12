@@ -12,3 +12,4 @@ export * from './ShoppingCart';
 export * from './Favorites';
 export * from './Navigation';
 export * from './NotFound';
+export * from './Checkout';

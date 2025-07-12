@@ -14,6 +14,8 @@ namespace BookStore.API.Data
         public DbSet<Book> Books { get; set; }
         public DbSet<UserFavorite> UserFavorites { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -96,6 +98,48 @@ namespace BookStore.API.Data
 
                 // Ensure unique cart item per user per book
                 entity.HasIndex(ci => new { ci.UserId, ci.BookId }).IsUnique();
+            });
+
+            // Configure Order entity
+            builder.Entity<Order>(entity =>
+            {
+                entity.HasKey(o => o.Id);
+                entity.Property(o => o.UserId).IsRequired();
+                entity.Property(o => o.TotalAmount).IsRequired().HasColumnType("decimal(18,2)");
+                entity.Property(o => o.Status).IsRequired();
+                entity.Property(o => o.PaymentMethod).IsRequired();
+                entity.Property(o => o.CreatedAt).IsRequired();
+                entity.Property(o => o.PaymentTransactionId).HasMaxLength(100);
+                entity.Property(o => o.ShippingAddress).HasMaxLength(500);
+                entity.Property(o => o.Notes).HasMaxLength(1000);
+
+                // Configure relationships
+                entity.HasOne(o => o.User)
+                    .WithMany(u => u.Orders)
+                    .HasForeignKey(o => o.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // Configure OrderItem entity
+            builder.Entity<OrderItem>(entity =>
+            {
+                entity.HasKey(oi => oi.Id);
+                entity.Property(oi => oi.OrderId).IsRequired();
+                entity.Property(oi => oi.BookId).IsRequired();
+                entity.Property(oi => oi.Quantity).IsRequired();
+                entity.Property(oi => oi.UnitPrice).IsRequired().HasColumnType("decimal(18,2)");
+                entity.Property(oi => oi.TotalPrice).IsRequired().HasColumnType("decimal(18,2)");
+
+                // Configure relationships
+                entity.HasOne(oi => oi.Order)
+                    .WithMany(o => o.OrderItems)
+                    .HasForeignKey(oi => oi.OrderId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(oi => oi.Book)
+                    .WithMany(b => b.OrderItems)
+                    .HasForeignKey(oi => oi.BookId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             // Configure ApplicationUser entity

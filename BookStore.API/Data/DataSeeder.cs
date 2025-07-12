@@ -82,133 +82,68 @@ namespace BookStore.API.Data
                 {
                     new Book
                     {
-                        Title = "Clean Code",
-                        Author = "Robert C. Martin",
-                        ISBN = "978-0132350884",
-                        PublicationYear = 2008,
-                        Publisher = "Prentice Hall",
-                        Category = "Programming",
-                        Price = 45.99m,
-                        StockQuantity = 25,
-                        Description = "A Handbook of Agile Software Craftsmanship by Robert C. Martin",
-                        ImageUrl = "https://example.com/clean-code.jpg"
+                        Title = "Red Pyramid",
+                        Author = "Rick Riordan",
+                        ISBN = "978-1423113386",
+                        PublicationYear = 2010,
+                        Publisher = "Disney Hyperion",
+                        Category = "Fantasy",
+                        Price = 12.99m,
+                        StockQuantity = 50,
+                        Description = "The first book in the Kane Chronicles series by Rick Riordan. Follow Carter and Sadie Kane as they discover their family's connection to the House of Life and Egyptian magic.",
+                        ImageUrl = "https://example.com/red-pyramid.jpg"
                     },
                     new Book
                     {
-                        Title = "Design Patterns",
-                        Author = "Erich Gamma, Richard Helm, Ralph Johnson, John Vlissides",
-                        ISBN = "978-0201633610",
-                        PublicationYear = 1994,
-                        Publisher = "Addison-Wesley Professional",
-                        Category = "Programming",
-                        Price = 54.99m,
-                        StockQuantity = 15,
-                        Description = "Elements of Reusable Object-Oriented Software",
-                        ImageUrl = "https://example.com/design-patterns.jpg"
-                    },
-                    new Book
-                    {
-                        Title = "The Pragmatic Programmer",
-                        Author = "David Thomas, Andrew Hunt",
-                        ISBN = "978-0135957059",
-                        PublicationYear = 2019,
-                        Publisher = "Addison-Wesley Professional",
-                        Category = "Programming",
-                        Price = 49.99m,
-                        StockQuantity = 30,
-                        Description = "Your Journey to Mastery by David Thomas and Andrew Hunt",
-                        ImageUrl = "https://example.com/pragmatic-programmer.jpg"
-                    },
-                    new Book
-                    {
-                        Title = "Effective C#",
-                        Author = "Bill Wagner",
-                        ISBN = "978-0672337871",
-                        PublicationYear = 2016,
-                        Publisher = "Addison-Wesley Professional",
-                        Category = "Programming",
-                        Price = 42.99m,
-                        StockQuantity = 20,
-                        Description = "50 Specific Ways to Improve Your C# by Bill Wagner",
-                        ImageUrl = "https://example.com/effective-csharp.jpg"
-                    },
-                    new Book
-                    {
-                        Title = "You Don't Know JS",
-                        Author = "Kyle Simpson",
-                        ISBN = "978-1491924464",
-                        PublicationYear = 2015,
-                        Publisher = "O'Reilly Media",
-                        Category = "Web Development",
-                        Price = 39.99m,
+                        Title = "The Throne of Fire",
+                        Author = "Rick Riordan",
+                        ISBN = "978-1423140566",
+                        PublicationYear = 2011,
+                        Publisher = "Disney Hyperion",
+                        Category = "Fantasy",
+                        Price = 13.99m,
                         StockQuantity = 35,
-                        Description = "A book series on JavaScript by Kyle Simpson",
-                        ImageUrl = "https://example.com/you-dont-know-js.jpg"
+                        Description = "The second book in the Kane Chronicles series. The Kane siblings continue their battle against the forces of chaos.",
+                        ImageUrl = "https://example.com/throne-of-fire.jpg"
                     },
                     new Book
                     {
-                        Title = "React Up & Running",
-                        Author = "Stoyan Stefanov",
-                        ISBN = "978-1491931820",
-                        PublicationYear = 2016,
-                        Publisher = "O'Reilly Media",
-                        Category = "Web Development",
-                        Price = 41.99m,
-                        StockQuantity = 22,
-                        Description = "Building Web Applications by Stoyan Stefanov",
-                        ImageUrl = "https://example.com/react-up-running.jpg"
-                    },
-                    new Book
-                    {
-                        Title = "Node.js Design Patterns",
-                        Author = "Mario Casciaro, Luciano Mammino",
-                        ISBN = "978-1783287314",
-                        PublicationYear = 2020,
-                        Publisher = "Packt Publishing",
-                        Category = "Web Development",
-                        Price = 47.99m,
-                        StockQuantity = 18,
-                        Description = "Design and implement production-grade Node.js applications",
-                        ImageUrl = "https://example.com/nodejs-design-patterns.jpg"
-                    },
-                    new Book
-                    {
-                        Title = "Database Design for Mere Mortals",
-                        Author = "Michael J. Hernandez",
-                        ISBN = "978-0321884497",
-                        PublicationYear = 2013,
-                        Publisher = "Addison-Wesley Professional",
-                        Category = "Database",
-                        Price = 52.99m,
-                        StockQuantity = 12,
-                        Description = "A Hands-On Guide to Relational Database Design",
-                        ImageUrl = "https://example.com/database-design.jpg"
-                    },
-                    new Book
-                    {
-                        Title = "SQL Performance Explained",
-                        Author = "Markus Winand",
-                        ISBN = "978-3950307825",
+                        Title = "The Serpent's Shadow",
+                        Author = "Rick Riordan",
+                        ISBN = "978-1423140573",
                         PublicationYear = 2012,
-                        Publisher = "Markus Winand",
-                        Category = "Database",
-                        Price = 38.99m,
-                        StockQuantity = 28,
-                        Description = "Everything Developers Need to Know about SQL Performance",
-                        ImageUrl = "https://example.com/sql-performance.jpg"
+                        Publisher = "Disney Hyperion",
+                        Category = "Fantasy",
+                        Price = 14.99m,
+                        StockQuantity = 30,
+                        Description = "The final book in the Kane Chronicles series. Carter and Sadie Kane face their greatest challenge yet.",
+                        ImageUrl = "https://example.com/serpents-shadow.jpg"
                     },
                     new Book
                     {
-                        Title = "System Design Interview",
-                        Author = "Alex Xu",
-                        ISBN = "978-1736049129",
-                        PublicationYear = 2020,
-                        Publisher = "Independently published",
-                        Category = "System Design",
-                        Price = 44.99m,
-                        StockQuantity = 40,
-                        Description = "An insider's guide by Alex Xu",
-                        ImageUrl = "https://example.com/system-design-interview.jpg"
+                        Title = "Percy Jackson: The Lightning Thief",
+                        Author = "Rick Riordan",
+                        ISBN = "978-0786838653",
+                        PublicationYear = 2005,
+                        Publisher = "Disney Hyperion",
+                        Category = "Fantasy",
+                        Price = 11.99m,
+                        StockQuantity = 45,
+                        Description = "The first book in the Percy Jackson series. Percy discovers he's a demigod and embarks on a quest to prevent a war between the gods.",
+                        ImageUrl = "https://example.com/lightning-thief.jpg"
+                    },
+                    new Book
+                    {
+                        Title = "Harry Potter and the Philosopher's Stone",
+                        Author = "J.K. Rowling",
+                        ISBN = "978-0747532699",
+                        PublicationYear = 1997,
+                        Publisher = "Bloomsbury",
+                        Category = "Fantasy",
+                        Price = 15.99m,
+                        StockQuantity = 60,
+                        Description = "The first book in the Harry Potter series. Harry discovers he's a wizard and begins his magical education at Hogwarts.",
+                        ImageUrl = "https://example.com/harry-potter-1.jpg"
                     }
                 };
 
