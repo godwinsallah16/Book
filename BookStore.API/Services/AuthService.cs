@@ -286,7 +286,10 @@ namespace BookStore.API.Services
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             var encodedToken = HttpUtility.UrlEncode(token);
 
-            var frontendUrl = _configuration["FrontendSettings:BaseUrl"];
+            // Get frontend URL from environment variable or fallback to config
+            var frontendUrl = Environment.GetEnvironmentVariable("FRONTEND_URL") 
+                ?? _configuration["FrontendSettings:BaseUrl"];
+            
             var verificationLink = $"{frontendUrl}/verify-email?userId={user.Id}&token={encodedToken}";
 
             await _emailService.SendEmailVerificationAsync(user.Email!, user.FirstName, verificationLink);

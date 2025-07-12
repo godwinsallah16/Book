@@ -43,6 +43,10 @@ The render.yaml blueprint configuration isn't properly setting the DATABASE_URL 
    DATABASE_URL=postgresql://username:password@hostname:port/database
    # ☝️ Replace with your actual External Database URL from step 1
    
+   # Frontend URL for email verification links
+   FRONTEND_URL=https://your-frontend-url.onrender.com
+   # ☝️ Replace with your actual frontend URL from step 3
+   
    # JWT Settings
    JwtSettings__SecretKey=BookStore-Super-Secret-Key-For-JWT-Tokens-2024-Must-Be-At-Least-256-Bits-Long
    JwtSettings__Issuer=BookStore.API
