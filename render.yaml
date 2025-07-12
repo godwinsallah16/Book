@@ -1,8 +1,9 @@
+# Render deployment configuration - Updated to use native runtimes
 services:
-  # Backend API Service
+  # Backend API Service (.NET)
   - type: web
-    name: bookstore-api
-    env: dotnet
+    name: bookstore-api-v2
+    runtime: dotnet
     buildCommand: cd BookStore.API && dotnet restore && dotnet publish -c Release -o out
     startCommand: cd BookStore.API && dotnet out/BookStore.API.dll
     plan: free
@@ -34,7 +35,7 @@ services:
         destination: /index.html
     envVars:
       - key: VITE_API_BASE_URL
-        value: https://bookstore-api.onrender.com/api
+        value: https://bookstore-api-v2.onrender.com/api
 
 databases:
   - name: bookstore-db
