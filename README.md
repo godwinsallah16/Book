@@ -114,12 +114,13 @@ The frontend will be available at `http://localhost:5173`
     "ExpirationHours": 24
   },
   "EmailSettings": {
-    "SmtpServer": "your-smtp-server",
+    "SmtpServer": "smtp.gmail.com",
     "SmtpPort": 587,
-    "SmtpUsername": "your-email",
-    "SmtpPassword": "your-password",
+    "SmtpUsername": "your-email@gmail.com",
+    "SmtpPassword": "your-app-password",
     "FromEmail": "noreply@bookstore.com",
-    "FromName": "BookStore"
+    "FromName": "BookStore",
+    "EnableSsl": true
   }
 }
 ```
@@ -132,8 +133,9 @@ VITE_APP_NAME=BookStore
 
 ## 🐳 Docker Deployment
 
-### Production Deployment
+### Quick Docker Deployment
 ```bash
+# Production deployment
 docker-compose -f docker-compose.prod.yml up -d
 ```
 
@@ -142,31 +144,47 @@ docker-compose -f docker-compose.prod.yml up -d
 docker-compose up -d
 ```
 
-## 🌐 GitHub Hosting & Deployment
+### Environment Variables for Docker
+Create a `.env` file in the project root:
+```env
+DB_PASSWORD=BookStore123!
+GITHUB_REPOSITORY=godwinsallah16/Book
+JWT_SECRET=BookStore-Super-Secret-Key-For-JWT-Tokens-2024-Must-Be-At-Least-256-Bits-Long
+SMTP_SERVER=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USERNAME=your-email@gmail.com
+SMTP_PASSWORD=your-gmail-app-password
+SMTP_FROM_EMAIL=noreply@bookstore.com
+FRONTEND_URL=http://localhost:3000
+```
 
-### Repository
-**GitHub Repository**: https://github.com/godwinsallah16/Book.git
+## 🌐 Cloud Deployment
 
-### Frontend Hosting on GitHub Pages
-The frontend can be automatically deployed to GitHub Pages using GitHub Actions:
+### Render.com (Recommended)
+1. **Run the deployment setup:**
+   ```bash
+   node deploy.js
+   ```
 
-1. **Automatic Deployment**: Push to `main` branch triggers deployment
-2. **Live URL**: https://godwinsallah16.github.io/Book/
-3. **Build Process**: Automated with GitHub Actions
+2. **Push to GitHub:**
+   ```bash
+   git add .
+   git commit -m "Deploy to Render.com"
+   git push origin main
+   ```
 
-### Backend Hosting Options
-For the backend API, consider these hosting platforms:
-- **Azure App Service**: Seamless .NET deployment
-- **Heroku**: Easy deployment with Git
-- **DigitalOcean**: Cost-effective VPS hosting
-- **AWS**: Scalable cloud infrastructure
-- **Railway**: Modern hosting platform
+3. **Deploy on Render.com:**
+   - Go to https://render.com
+   - Sign up/Login with GitHub
+   - Click "New +" → "Blueprint"
+   - Connect your GitHub repository
+   - Set email credentials as secrets
+   - Click "Apply" to deploy
 
-### CI/CD Pipeline
-The project includes GitHub Actions for:
-- Automated testing on pull requests
-- Frontend deployment to GitHub Pages
-- Backend containerization and deployment ready
+### GitHub Pages (Frontend)
+The frontend automatically deploys to GitHub Pages on every push to main branch.
+
+**Live Demo**: https://godwinsallah16.github.io/Book/
 
 ## 🧪 Running Tests
 
@@ -261,76 +279,55 @@ dotnet ef migrations remove
 
 ## 🚀 Deployment
 
+### Docker Deployment (Recommended)
+```bash
+# Quick deployment with Docker
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+### Cloud Deployment
+```bash
+# Deploy to Render.com
+node deploy.js
+```
+
 ### Frontend Deployment (GitHub Pages)
 The frontend is automatically deployed to GitHub Pages on every push to main branch.
 
 **Live Demo**: https://godwinsallah16.github.io/Book/
 
-#### Manual Deployment to GitHub Pages
-```bash
-cd BookStore-frontend
-npm run build
-# Files in dist/ folder are ready for deployment
-```
-
-### Backend Deployment Options
-
-#### 1. Azure App Service (Recommended for .NET)
-```bash
-# Install Azure CLI
-az login
-az webapp create --resource-group myResourceGroup --plan myAppServicePlan --name myBookStoreAPI --runtime "DOTNET:8.0"
-az webapp deployment source config --name myBookStoreAPI --resource-group myResourceGroup --repo-url https://github.com/godwinsallah16/Book.git --branch main
-```
-
-#### 2. Railway
-```bash
-# Install Railway CLI
-npm install -g @railway/cli
-railway login
-railway init
-railway up
-```
-
-#### 3. Heroku
-```bash
-# Install Heroku CLI
-heroku create your-bookstore-api
-git push heroku main
-```
-
-#### 4. DigitalOcean App Platform
-1. Connect your GitHub repository
-2. Select the BookStore.API folder
-3. Configure environment variables
-4. Deploy automatically
-
 ### Production Environment Variables
 
-#### Backend
-```bash
-# Required environment variables for production
-export ConnectionStrings__DefaultConnection="your-production-db-connection"
-export JwtSettings__SecretKey="your-secure-jwt-secret"
-export EmailSettings__SmtpServer="your-smtp-server"
-export EmailSettings__SmtpUsername="your-email"
-export EmailSettings__SmtpPassword="your-password"
+#### Backend (.env for Docker)
+```env
+DB_PASSWORD=BookStore123!
+JWT_SECRET=BookStore-Super-Secret-Key-For-JWT-Tokens-2024-Must-Be-At-Least-256-Bits-Long
+SMTP_SERVER=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USERNAME=your-email@gmail.com
+SMTP_PASSWORD=your-gmail-app-password
+SMTP_FROM_EMAIL=noreply@bookstore.com
+FRONTEND_URL=https://your-frontend-domain.com
 ```
 
-#### Frontend
-```bash
-# Update for your deployed backend API URL
-export VITE_API_BASE_URL="https://your-api-domain.com/api"
+#### Frontend (GitHub Secrets)
+```env
+VITE_API_BASE_URL=https://your-api-domain.com/api
 ```
+
+### Deployment Options:
+- **🐳 Docker**: Local/VPS deployment with docker-compose
+- **🌐 Render.com**: Easy cloud deployment with automatic SSL
+- **📄 GitHub Pages**: Automatic frontend deployment
 
 ### Production Checklist
-- [ ] Update connection strings
-- [ ] Configure email settings
-- [ ] Set secure JWT secret keys
-- [ ] Enable HTTPS
-- [ ] Configure CORS for production domains
-- [ ] Set up proper logging
-- [ ] Configure health checks monitoring
+- [ ] Docker containers running
+- [ ] Database migrations applied
+- [ ] Environment variables configured
+- [ ] Email service working
+- [ ] CORS configured for frontend domain
+- [ ] HTTPS enabled
+- [ ] Health checks responding
 
 ## 🤝 Contributing
 
@@ -361,10 +358,31 @@ For support, email godwinsallah16@example.com or create an issue in this reposit
 ## 🌐 Live Demo & Links
 
 - **GitHub Repository**: https://github.com/godwinsallah16/Book.git
-- **Frontend Demo**: https://godwinsallah16.github.io/Book/ (GitHub Pages - Deploying...)
+- **Frontend Demo**: https://godwinsallah16.github.io/Book/
 - **API Documentation**: Available when backend is deployed
-- **Project Portfolio**: Showcase of modern full-stack development
+- **Deployment Guide**: See `DEPLOYMENT.md` for detailed instructions
+- **Environment Setup**: See `ENVIRONMENT_VARIABLES.md` for configuration guide
+
+## 📚 Quick Start Commands
+
+```bash
+# Clone and setup
+git clone https://github.com/godwinsallah16/Book.git
+cd Book
+
+# Run with Docker (Recommended)
+docker-compose up -d
+
+# Or deploy to cloud
+node deploy.js
+
+# Or run locally
+cd BookStore.API && dotnet run
+cd BookStore-frontend && npm run dev
+```
 
 ---
 
-⭐ **Star this repo if you find it helpful!**
+⭐ **Star this repo if you find it helpful!** 
+
+🚀 **Ready to deploy?** Check out `DEPLOYMENT.md` for step-by-step instructions!

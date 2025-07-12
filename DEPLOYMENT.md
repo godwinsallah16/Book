@@ -40,43 +40,7 @@ Your frontend will automatically deploy to GitHub Pages when you push to the mai
      - `EmailSettings__SmtpPassword` (your app password)
    - Click "Apply" to deploy
 
-#### Option B: Railway (Alternative Easy Setup)
-
-**Steps:**
-1. Install Railway CLI:
-   ```bash
-   npm install -g @railway/cli
-   ```
-
-2. Login and deploy:
-   ```bash
-   railway login
-   railway init
-   railway up
-   ```
-
-3. Set environment variables in Railway dashboard:
-   - `ConnectionStrings__DefaultConnection` (Railway will provide a database)
-   - `JwtSettings__SecretKey=BookStore-Super-Secret-Key-For-JWT-Tokens-2024-Must-Be-At-Least-256-Bits-Long`
-   - `JwtSettings__Issuer=BookStore.API`
-   - `JwtSettings__Audience=BookStore.Client`
-
-#### Option C: Azure App Service
-
-**Prerequisites:**
-- Azure CLI installed
-- Azure subscription
-
-**Steps:**
-1. Run the deployment script:
-   ```powershell
-   ./deploy-azure.ps1
-   ```
-
-2. Update the app name in the script with your actual app name
-3. Configure database connection string in Azure portal
-
-#### Option D: Docker Deployment
+#### Option B: Docker Deployment (Local/VPS)
 
 **Local/VPS Deployment:**
 ```bash
@@ -90,6 +54,12 @@ Create a `.env` file:
 DB_PASSWORD=BookStore123!
 GITHUB_REPOSITORY=godwinsallah16/Book
 JWT_SECRET=BookStore-Super-Secret-Key-For-JWT-Tokens-2024-Must-Be-At-Least-256-Bits-Long
+SMTP_SERVER=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USERNAME=your-email@gmail.com
+SMTP_PASSWORD=your-gmail-app-password
+SMTP_FROM_EMAIL=noreply@bookstore.com
+FRONTEND_URL=http://localhost:3000
 ```
 
 ### 3. Connect Frontend to Backend
@@ -102,16 +72,13 @@ After deploying your backend, update the GitHub repository secrets:
 
 ### 4. Database Setup
 
-**For Railway:**
-- Railway provides PostgreSQL - you'll need to update your connection string format
-- Or use Railway's database addon
-
-**For Azure:**
-- Create Azure SQL Database
-- Update connection string in app settings
+**For Render.com:**
+- PostgreSQL database is automatically provisioned
+- Connection string is automatically configured
 
 **For Docker:**
 - SQL Server container is included in docker-compose
+- Database is automatically created and seeded
 
 ### 5. Deployment Verification
 
@@ -143,7 +110,9 @@ After deployment, verify:
 
 ## Next Steps
 
-1. **Choose your deployment method** (Railway recommended for beginners)
+1. **Choose your deployment method:**
+   - **Render.com** (recommended for cloud deployment)
+   - **Docker** (for local/VPS deployment)
 2. **Deploy backend** using chosen method
 3. **Update frontend API URL** in GitHub secrets
 4. **Push to main branch** to trigger frontend deployment
