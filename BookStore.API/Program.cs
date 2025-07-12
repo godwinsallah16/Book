@@ -186,7 +186,28 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 
 // Configure JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var key = Encoding.ASCII.GetBytes(jwtSettings["Secret"]!);
+var jwtSecret = jwtSettings["Secret"];
+if (string.IsNullOrEmpty(jwtSecret))
+{
+    Log.Error("JWT Secret is not configured. Check JwtSettings__Secret environment variable.");
+    throw new InvalidOperationException("JWT Secret is required but not configured");
+}
+
+var jwtIssuer = jwtSettings["Issuer"];
+if (string.IsNullOrEmpty(jwtIssuer))
+{
+    Log.Error("JWT Issuer is not configured. Check JwtSettings__Issuer environment variable.");
+    throw new InvalidOperationException("JWT Issuer is required but not configured");
+}
+
+var jwtAudience = jwtSettings["Audience"];
+if (string.IsNullOrEmpty(jwtAudience))
+{
+    Log.Error("JWT Audience is not configured. Check JwtSettings__Audience environment variable.");
+    throw new InvalidOperationException("JWT Audience is required but not configured");
+}
+
+var key = Encoding.ASCII.GetBytes(jwtSecret);
 
 builder.Services.AddAuthentication(options =>
 {
@@ -202,9 +223,9 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(key),
         ValidateIssuer = true,
-        ValidIssuer = jwtSettings["Issuer"],
+        ValidIssuer = jwtIssuer,
         ValidateAudience = true,
-        ValidAudience = jwtSettings["Audience"],
+        ValidAudience = jwtAudience,
         ValidateLifetime = true,
         ClockSkew = TimeSpan.Zero,
         RequireExpirationTime = true,
