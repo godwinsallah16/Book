@@ -1,0 +1,85 @@
+<!-- Simple HTML page for resending verification emails -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Resend Email Verification - BookStore</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f5f5f5; }
+        .container { max-width: 400px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="email"] { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        .btn { background: #007bff; color: white; padding: 12px 24px; border: none; border-radius: 4px; cursor: pointer; width: 100%; font-size: 16px; }
+        .btn:hover { background: #0056b3; }
+        .btn:disabled { background: #ccc; cursor: not-allowed; }
+        .message { padding: 10px; border-radius: 4px; margin: 10px 0; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #cce7ff; color: #004085; border: 1px solid #bee5eb; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Resend Email Verification</h2>
+        <p>If you received a verification email with a localhost link, use this form to get a new verification email with the correct link.</p>
+        
+        <form id="resendForm">
+            <div class="form-group">
+                <label for="email">Email Address:</label>
+                <input type="email" id="email" name="email" required placeholder="Enter your email address">
+            </div>
+            <button type="submit" class="btn" id="submitBtn">Resend Verification Email</button>
+        </form>
+        
+        <div id="message"></div>
+        
+        <div class="info" style="margin-top: 30px;">
+            <strong>Note:</strong> This will send a new verification email with the correct link. Check your email inbox (and spam folder) after clicking submit.
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'https://book-jkx8.onrender.com/api';
+        
+        document.getElementById('resendForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const submitBtn = document.getElementById('submitBtn');
+            const messageDiv = document.getElementById('message');
+            
+            if (!email) {
+                messageDiv.innerHTML = '<div class="error">Please enter your email address.</div>';
+                return;
+            }
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Sending...';
+            messageDiv.innerHTML = '<div class="info">Sending verification email...</div>';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/resend-verification`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email: email })
+                });
+                
+                if (response.ok) {
+                    messageDiv.innerHTML = '<div class="success">✅ Verification email sent successfully! Check your email inbox (and spam folder).</div>';
+                    document.getElementById('email').value = '';
+                } else {
+                    const errorText = await response.text();
+                    messageDiv.innerHTML = `<div class="error">❌ Failed to send verification email: ${errorText}</div>`;
+                }
+            } catch (error) {
+                messageDiv.innerHTML = `<div class="error">❌ Network error: ${error.message}</div>`;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Resend Verification Email';
+            }
+        });
+    </script>
+</body>
+</html>

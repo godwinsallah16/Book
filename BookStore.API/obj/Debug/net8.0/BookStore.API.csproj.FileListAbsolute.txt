@@ -59,6 +59,8 @@ C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Debu
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Debug\net8.0\Microsoft.Win32.SystemEvents.dll
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Debug\net8.0\MimeKit.dll
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Debug\net8.0\Mono.TextTemplating.dll
+C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Debug\net8.0\Npgsql.dll
+C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Debug\net8.0\Npgsql.EntityFrameworkCore.PostgreSQL.dll
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Debug\net8.0\Serilog.dll
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Debug\net8.0\Serilog.Extensions.Hosting.dll
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Debug\net8.0\Serilog.Extensions.Logging.dll
@@ -160,6 +162,7 @@ C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\obj\Debu
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\obj\Debug\net8.0\BookStore.API.csproj.CoreCompileInputs.cache
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\obj\Debug\net8.0\BookStore.API.MvcApplicationPartsAssemblyInfo.cs
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\obj\Debug\net8.0\BookStore.API.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\obj\Debug\net8.0\BookStore.API.sourcelink.json
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\obj\Debug\net8.0\rjimswa.dswa.cache.json
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\obj\Debug\net8.0\rjsmrazor.dswa.cache.json
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\obj\Debug\net8.0\rjsmcshtml.dswa.cache.json
@@ -174,6 +177,3 @@ C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\obj\Debu
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\obj\Debug\net8.0\BookStore.API.pdb
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\obj\Debug\net8.0\BookStore.API.genruntimeconfig.cache
 C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\obj\Debug\net8.0\ref\BookStore.API.dll
-C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Debug\net8.0\Npgsql.dll
-C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\bin\Debug\net8.0\Npgsql.EntityFrameworkCore.PostgreSQL.dll
-C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\obj\Debug\net8.0\BookStore.API.sourcelink.json

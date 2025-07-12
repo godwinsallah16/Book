@@ -1,0 +1,13 @@
+2025-07-12 09:16:48.817 +00:00 [INF] === Database Configuration Debug ===
+2025-07-12 09:16:48.838 +00:00 [INF] Environment: Development
+2025-07-12 09:16:48.839 +00:00 [INF] Is Production: false
+2025-07-12 09:16:48.839 +00:00 [INF] DATABASE_URL exists: false
+2025-07-12 09:16:48.839 +00:00 [INF] DefaultConnection exists: true
+2025-07-12 09:16:48.840 +00:00 [INF] Database-related environment variables count: 0
+2025-07-12 09:16:48.841 +00:00 [INF] Connection string source: Server=(localdb)\mss...
+2025-07-12 09:16:48.841 +00:00 [INF] Using SQL Server database
+2025-07-12 09:16:48.914 +00:00 [INF] Database operation attempt 1 of 5
+2025-07-12 09:16:48.957 +00:00 [INF] Database connection successful
+2025-07-12 09:16:48.958 +00:00 [INF] InMemory database created successfully
+2025-07-12 09:16:48.963 +00:00 [INF] Database seeding completed successfully
+2025-07-12 09:16:48.964 +00:00 [INF] Starting BookStore API

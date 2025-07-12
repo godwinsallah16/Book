@@ -67,12 +67,18 @@ namespace BookStore.API.Services
                     return null;
                 }
 
+                // Assign User role to new user
+                await _userManager.AddToRoleAsync(user, "User");
+
                 // Send email verification
                 await SendEmailVerificationAsync(user);
 
                 // Generate JWT token (user can use limited features until email verified)
                 var token = await GenerateJwtTokenAsync(user.Email!, user.Id);
                 var expiration = DateTime.UtcNow.AddHours(24);
+
+                // Get user roles
+                var roles = await _userManager.GetRolesAsync(user);
 
                 _logger.LogInformation("User registered successfully: {Email}", registerDto.Email);
 
@@ -83,7 +89,8 @@ namespace BookStore.API.Services
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     Expiration = expiration,
-                    EmailConfirmed = user.EmailConfirmed
+                    EmailConfirmed = user.EmailConfirmed,
+                    Roles = roles
                 };
             }
             catch (Exception ex)
@@ -132,6 +139,9 @@ namespace BookStore.API.Services
                 var token = await GenerateJwtTokenAsync(user.Email!, user.Id);
                 var expiration = DateTime.UtcNow.AddHours(24);
 
+                // Get user roles
+                var roles = await _userManager.GetRolesAsync(user);
+
                 _logger.LogInformation("User logged in successfully: {Email}", loginDto.Email);
 
                 return new AuthResponseDto
@@ -141,7 +151,8 @@ namespace BookStore.API.Services
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     Expiration = expiration,
-                    EmailConfirmed = user.EmailConfirmed
+                    EmailConfirmed = user.EmailConfirmed,
+                    Roles = roles
                 };
             }
             catch (Exception ex)
@@ -295,10 +306,16 @@ namespace BookStore.API.Services
             await _emailService.SendEmailVerificationAsync(user.Email!, user.FirstName, verificationLink);
         }
 
-        public Task<string> GenerateJwtTokenAsync(string email, string userId)
+        public async Task<string> GenerateJwtTokenAsync(string email, string userId)
         {
             try
             {
+                var user = await _userManager.FindByIdAsync(userId);
+                if (user == null)
+                {
+                    throw new ArgumentException("User not found", nameof(userId));
+                }
+
                 var jwtSettings = _configuration.GetSection("JwtSettings");
                 var key = Encoding.ASCII.GetBytes(jwtSettings["Secret"]!);
 
@@ -312,6 +329,13 @@ namespace BookStore.API.Services
                         ClaimValueTypes.Integer64)
                 };
 
+                // Add role claims
+                var roles = await _userManager.GetRolesAsync(user);
+                foreach (var role in roles)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, role));
+                }
+
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
                     Subject = new ClaimsIdentity(claims),
@@ -324,7 +348,7 @@ namespace BookStore.API.Services
 
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var token = tokenHandler.CreateToken(tokenDescriptor);
-                return Task.FromResult(tokenHandler.WriteToken(token));
+                return tokenHandler.WriteToken(token);
             }
             catch (Exception ex)
             {

@@ -128,6 +128,7 @@ export const MESSAGES = {
     PASSWORD_RESET_SENT: 'Password reset email sent! Check your inbox.',
     PASSWORD_RESET_SUCCESS: 'Password reset successfully! You can now log in.',
     EMAIL_VERIFIED: 'Email verified successfully! You can now log in.',
+    VERIFICATION_EMAIL_SENT: 'Verification email sent successfully! Check your inbox.',
     BOOK_CREATED: 'Book created successfully!',
     BOOK_UPDATED: 'Book updated successfully!',
     BOOK_DELETED: 'Book deleted successfully!',
@@ -145,6 +146,7 @@ export const MESSAGES = {
     INVALID_RESET_LINK: 'Invalid reset link',
     RESET_LINK_EXPIRED: 'The password reset link has expired',
     VERIFICATION_FAILED: 'Email verification failed. The link may have expired.',
+    VERIFICATION_EMAIL_FAILED: 'Failed to send verification email. Please try again.',
   },
   LOADING: {
     LOGGING_IN: 'Logging in...',

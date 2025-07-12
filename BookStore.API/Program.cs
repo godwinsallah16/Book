@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using System.Text;
+using System.Security.Claims;
 using Serilog;
 using FluentValidation.AspNetCore;
 using Npgsql;
@@ -279,7 +280,8 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = jwtSettings["Audience"],
         ValidateLifetime = true,
         ClockSkew = TimeSpan.Zero,
-        RequireExpirationTime = true
+        RequireExpirationTime = true,
+        RoleClaimType = ClaimTypes.Role // Ensure role claims are properly mapped
     };
 });
 
@@ -483,9 +485,18 @@ async Task RetryDatabaseOperations(IServiceProvider services, Microsoft.Extensio
             await context.Database.CanConnectAsync();
             logger.LogInformation("Database connection successful");
             
-            // Apply pending migrations
-            await context.Database.MigrateAsync();
-            logger.LogInformation("Database migrations applied successfully");
+            // Apply pending migrations (only for relational databases)
+            if (context.Database.IsRelational())
+            {
+                await context.Database.MigrateAsync();
+                logger.LogInformation("Database migrations applied successfully");
+            }
+            else
+            {
+                // For InMemory databases, ensure the database is created
+                await context.Database.EnsureCreatedAsync();
+                logger.LogInformation("InMemory database created successfully");
+            }
 
             // Seed initial data
             var seeder = new DataSeeder(context, userManager, roleManager);

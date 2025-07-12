@@ -25,6 +25,7 @@ namespace BookStore.API.Controllers
         /// </summary>
         /// <returns>List of books</returns>
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<BookDto>>> GetBooks()
         {
             try
@@ -45,6 +46,7 @@ namespace BookStore.API.Controllers
         /// <param name="id">Book ID</param>
         /// <returns>Book details</returns>
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<BookDto>> GetBook(int id)
         {
             try

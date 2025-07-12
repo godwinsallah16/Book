@@ -1,0 +1,48 @@
+2025-07-12 09:11:47.017 +00:00 [INF] === Database Configuration Debug ===
+2025-07-12 09:11:47.090 +00:00 [INF] Environment: Development
+2025-07-12 09:11:47.096 +00:00 [INF] Is Production: false
+2025-07-12 09:11:47.098 +00:00 [INF] DATABASE_URL exists: false
+2025-07-12 09:11:47.098 +00:00 [INF] DefaultConnection exists: true
+2025-07-12 09:11:47.104 +00:00 [INF] Database-related environment variables count: 0
+2025-07-12 09:11:47.105 +00:00 [INF] Connection string source: Server=(localdb)\mss...
+2025-07-12 09:11:47.106 +00:00 [INF] Using SQL Server database
+2025-07-12 09:11:47.367 +00:00 [INF] Database operation attempt 1 of 5
+2025-07-12 09:11:48.331 +00:00 [INF] Database connection successful
+2025-07-12 09:11:48.338 +00:00 [ERR] Database operation failed on attempt 1: Relational-specific methods can only be used when the context is using a relational database provider.
+System.InvalidOperationException: Relational-specific methods can only be used when the context is using a relational database provider.
+   at Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions.GetRelationalService[TService](IInfrastructure`1 databaseFacade)
+   at Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions.MigrateAsync(DatabaseFacade databaseFacade, CancellationToken cancellationToken)
+   at Program.<<Main>$>g__RetryDatabaseOperations|0_11(IServiceProvider services, ILogger`1 logger) in C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\Program.cs:line 489
+2025-07-12 09:11:48.357 +00:00 [INF] Retrying database operation in 10 seconds...
+2025-07-12 09:11:58.362 +00:00 [INF] Database operation attempt 2 of 5
+2025-07-12 09:11:58.385 +00:00 [INF] Database connection successful
+2025-07-12 09:11:58.386 +00:00 [ERR] Database operation failed on attempt 2: Relational-specific methods can only be used when the context is using a relational database provider.
+System.InvalidOperationException: Relational-specific methods can only be used when the context is using a relational database provider.
+   at Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions.GetRelationalService[TService](IInfrastructure`1 databaseFacade)
+   at Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions.MigrateAsync(DatabaseFacade databaseFacade, CancellationToken cancellationToken)
+   at Program.<<Main>$>g__RetryDatabaseOperations|0_11(IServiceProvider services, ILogger`1 logger) in C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\Program.cs:line 489
+2025-07-12 09:11:58.387 +00:00 [INF] Retrying database operation in 10 seconds...
+2025-07-12 09:12:08.393 +00:00 [INF] Database operation attempt 3 of 5
+2025-07-12 09:12:08.473 +00:00 [INF] Database connection successful
+2025-07-12 09:12:08.474 +00:00 [ERR] Database operation failed on attempt 3: Relational-specific methods can only be used when the context is using a relational database provider.
+System.InvalidOperationException: Relational-specific methods can only be used when the context is using a relational database provider.
+   at Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions.GetRelationalService[TService](IInfrastructure`1 databaseFacade)
+   at Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions.MigrateAsync(DatabaseFacade databaseFacade, CancellationToken cancellationToken)
+   at Program.<<Main>$>g__RetryDatabaseOperations|0_11(IServiceProvider services, ILogger`1 logger) in C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\Program.cs:line 489
+2025-07-12 09:12:08.483 +00:00 [INF] Retrying database operation in 10 seconds...
+2025-07-12 09:12:18.484 +00:00 [INF] Database operation attempt 4 of 5
+2025-07-12 09:12:18.487 +00:00 [INF] Database connection successful
+2025-07-12 09:12:18.487 +00:00 [ERR] Database operation failed on attempt 4: Relational-specific methods can only be used when the context is using a relational database provider.
+System.InvalidOperationException: Relational-specific methods can only be used when the context is using a relational database provider.
+   at Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions.GetRelationalService[TService](IInfrastructure`1 databaseFacade)
+   at Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions.MigrateAsync(DatabaseFacade databaseFacade, CancellationToken cancellationToken)
+   at Program.<<Main>$>g__RetryDatabaseOperations|0_11(IServiceProvider services, ILogger`1 logger) in C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\Program.cs:line 489
+2025-07-12 09:12:18.490 +00:00 [INF] Retrying database operation in 10 seconds...
+2025-07-12 09:12:28.490 +00:00 [INF] Database operation attempt 5 of 5
+2025-07-12 09:12:28.492 +00:00 [INF] Database connection successful
+2025-07-12 09:12:28.492 +00:00 [ERR] Database operation failed on attempt 5: Relational-specific methods can only be used when the context is using a relational database provider.
+System.InvalidOperationException: Relational-specific methods can only be used when the context is using a relational database provider.
+   at Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions.GetRelationalService[TService](IInfrastructure`1 databaseFacade)
+   at Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions.MigrateAsync(DatabaseFacade databaseFacade, CancellationToken cancellationToken)
+   at Program.<<Main>$>g__RetryDatabaseOperations|0_11(IServiceProvider services, ILogger`1 logger) in C:\Users\godwi\OneDrive\Documents\WORK\INNORIK\book-store\BookStore.API\Program.cs:line 489
+2025-07-12 09:12:28.493 +00:00 [ERR] All database operation attempts failed. Application will exit.

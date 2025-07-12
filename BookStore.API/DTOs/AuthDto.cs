@@ -45,6 +45,7 @@ namespace BookStore.API.DTOs
         public string LastName { get; set; } = string.Empty;
         public DateTime Expiration { get; set; }
         public bool EmailConfirmed { get; set; }
+        public IList<string> Roles { get; set; } = new List<string>();
     }
 
     public class ForgotPasswordDto
