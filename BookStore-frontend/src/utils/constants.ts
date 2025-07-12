@@ -35,6 +35,15 @@ export const API_CONFIG = {
       CATEGORIES: '/books/categories',
       AUTHORS: '/books/authors',
     },
+    CART: {
+      BASE: '/cart',
+      BY_ID: (id: string | number) => `/cart/${id}`,
+      SUMMARY: '/cart/summary',
+    },
+    FAVORITES: {
+      BASE: '/favorites',
+      BY_ID: (id: string | number) => `/favorites/${id}`,
+    },
     HEALTH: '/health',
   },
   

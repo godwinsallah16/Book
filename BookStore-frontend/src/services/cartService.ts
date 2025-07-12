@@ -1,20 +1,8 @@
-import axios from 'axios';
 import type { CartItem, AddToCartRequest, UpdateCartItemRequest, CartSummary } from '../types/cart.types';
+import { apiClient } from '../utils/httpClient';
 import { API_CONFIG } from '../utils/constants';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://localhost:5001/api';
-
 class CartService {
-  private baseURL = `${API_BASE_URL}/cart`;
-
-  private getAuthHeaders() {
-    const token = localStorage.getItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN);
-    return {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    };
-  }
-
   async getCart(): Promise<CartItem[]> {
     try {
       const token = localStorage.getItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN);
@@ -22,9 +10,7 @@ class CartService {
         return []; // Return empty array if not authenticated
       }
       
-      const response = await axios.get<CartItem[]>(this.baseURL, {
-        headers: this.getAuthHeaders()
-      });
+      const response = await apiClient.get<CartItem[]>(API_CONFIG.ENDPOINTS.CART.BASE);
       return response.data || [];
     } catch (error) {
       console.error('Error fetching cart:', error);
@@ -34,12 +20,9 @@ class CartService {
 
   async addToCart(request: AddToCartRequest): Promise<CartItem> {
     try {
-      const response = await axios.post<CartItem>(
-        this.baseURL,
-        request,
-        {
-          headers: this.getAuthHeaders()
-        }
+      const response = await apiClient.post<CartItem>(
+        API_CONFIG.ENDPOINTS.CART.BASE,
+        request
       );
       return response.data;
     } catch (error) {
@@ -50,12 +33,9 @@ class CartService {
 
   async updateCartItem(request: UpdateCartItemRequest): Promise<CartItem> {
     try {
-      const response = await axios.put<CartItem>(
-        this.baseURL,
-        request,
-        {
-          headers: this.getAuthHeaders()
-        }
+      const response = await apiClient.put<CartItem>(
+        API_CONFIG.ENDPOINTS.CART.BASE,
+        request
       );
       return response.data;
     } catch (error) {
@@ -66,9 +46,7 @@ class CartService {
 
   async removeFromCart(bookId: number): Promise<void> {
     try {
-      await axios.delete(`${this.baseURL}/${bookId}`, {
-        headers: this.getAuthHeaders()
-      });
+      await apiClient.delete(API_CONFIG.ENDPOINTS.CART.BY_ID(bookId));
     } catch (error) {
       console.error('Error removing from cart:', error);
       throw error;
@@ -77,9 +55,7 @@ class CartService {
 
   async clearCart(): Promise<void> {
     try {
-      await axios.delete(this.baseURL, {
-        headers: this.getAuthHeaders()
-      });
+      await apiClient.delete(API_CONFIG.ENDPOINTS.CART.BASE);
     } catch (error) {
       console.error('Error clearing cart:', error);
       throw error;

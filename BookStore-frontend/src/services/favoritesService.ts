@@ -1,20 +1,8 @@
-import axios from 'axios';
 import type { Favorite, AddToFavoritesRequest } from '../types/favorites.types';
+import { apiClient } from '../utils/httpClient';
 import { API_CONFIG } from '../utils/constants';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://localhost:5001/api';
-
 class FavoritesService {
-  private baseURL = `${API_BASE_URL}/favorites`;
-
-  private getAuthHeaders() {
-    const token = localStorage.getItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN);
-    return {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    };
-  }
-
   async getFavorites(): Promise<Favorite[]> {
     try {
       const token = localStorage.getItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN);
@@ -22,9 +10,7 @@ class FavoritesService {
         return []; // Return empty array if not authenticated
       }
       
-      const response = await axios.get<Favorite[]>(this.baseURL, {
-        headers: this.getAuthHeaders()
-      });
+      const response = await apiClient.get<Favorite[]>(API_CONFIG.ENDPOINTS.FAVORITES.BASE);
       return response.data || [];
     } catch (error) {
       console.error('Error fetching favorites:', error);
@@ -34,9 +20,7 @@ class FavoritesService {
 
   async addToFavorites(request: AddToFavoritesRequest): Promise<void> {
     try {
-      await axios.post(this.baseURL, request, {
-        headers: this.getAuthHeaders()
-      });
+      await apiClient.post(API_CONFIG.ENDPOINTS.FAVORITES.BASE, request);
     } catch (error) {
       console.error('Error adding to favorites:', error);
       throw error;
@@ -45,9 +29,7 @@ class FavoritesService {
 
   async removeFromFavorites(bookId: number): Promise<void> {
     try {
-      await axios.delete(`${this.baseURL}/${bookId}`, {
-        headers: this.getAuthHeaders()
-      });
+      await apiClient.delete(API_CONFIG.ENDPOINTS.FAVORITES.BY_ID(bookId));
     } catch (error) {
       console.error('Error removing from favorites:', error);
       throw error;
@@ -56,9 +38,7 @@ class FavoritesService {
 
   async isFavorite(bookId: number): Promise<boolean> {
     try {
-      const response = await axios.get<boolean>(`${this.baseURL}/${bookId}`, {
-        headers: this.getAuthHeaders()
-      });
+      const response = await apiClient.get<boolean>(API_CONFIG.ENDPOINTS.FAVORITES.BY_ID(bookId));
       return response.data;
     } catch (error) {
       console.error('Error checking favorite status:', error);
