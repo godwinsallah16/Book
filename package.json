@@ -1,0 +1,18 @@
+{
+  "name": "bookstore-deployment",
+  "version": "1.0.0",
+  "description": "BookStore deployment utilities",
+  "main": "deploy.js",
+  "scripts": {
+    "deploy:render": "node deploy.js",
+    "deploy:github": "powershell -ExecutionPolicy Bypass -File deploy.ps1",
+    "deploy:docker": "docker-compose -f docker-compose.prod.yml up -d",
+    "deploy:azure": "powershell -ExecutionPolicy Bypass -File deploy-azure.ps1"
+  },
+  "keywords": ["deployment", "render", "github-pages", "docker", "azure"],
+  "author": "Godwin Sallah",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

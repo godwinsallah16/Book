@@ -14,7 +14,30 @@ Your frontend will automatically deploy to GitHub Pages when you push to the mai
 
 ### 2. Backend Deployment Options
 
-#### Option A: Railway (Recommended - Easy Setup)
+#### Option A: Render.com (Recommended - Easy Setup)
+
+**Steps:**
+1. Run the deployment setup:
+   ```bash
+   node deploy.js
+   ```
+
+2. Commit and push changes:
+   ```bash
+   git add .
+   git commit -m "Add Render.com deployment configuration"
+   git push origin main
+   ```
+
+3. Deploy on Render.com:
+   - Go to https://render.com
+   - Sign up/Login with GitHub
+   - Click "New +" → "Blueprint"
+   - Connect your GitHub repository
+   - Render will detect render.yaml automatically
+   - Click "Apply" to deploy
+
+#### Option B: Railway (Alternative Easy Setup)
 
 **Steps:**
 1. Install Railway CLI:
@@ -35,7 +58,7 @@ Your frontend will automatically deploy to GitHub Pages when you push to the mai
    - `JwtSettings__Issuer=BookStore.API`
    - `JwtSettings__Audience=BookStore.Client`
 
-#### Option B: Azure App Service
+#### Option C: Azure App Service
 
 **Prerequisites:**
 - Azure CLI installed
@@ -50,7 +73,7 @@ Your frontend will automatically deploy to GitHub Pages when you push to the mai
 2. Update the app name in the script with your actual app name
 3. Configure database connection string in Azure portal
 
-#### Option C: Docker Deployment
+#### Option D: Docker Deployment
 
 **Local/VPS Deployment:**
 ```bash
