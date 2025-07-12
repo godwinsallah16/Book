@@ -72,15 +72,21 @@ The render.yaml blueprint configuration isn't properly setting the DATABASE_URL 
    - Name: `bookstore-frontend`
    - Branch: `main`
    - Root Directory: `BookStore-frontend`
-   - Build Command: `npm install && npm run build`
+   - Build Command: Leave empty (automatic build via postinstall script)
    - Publish Directory: `dist`
 
 2. **Configure Environment Variables**
    ```env
-   VITE_API_BASE_URL=https://bookstore-api.onrender.com/api
-   # ☝️ Replace with your actual API service URL
+   VITE_API_BASE_URL=https://your-actual-api-url.onrender.com/api
    VITE_APP_NAME=BookStore
    ```
+
+   **Replace `your-actual-api-url.onrender.com` with your actual API service URL from step 2.**
+
+**IMPORTANT**: 
+- Set the Root Directory to `BookStore-frontend` in the Render.com dashboard
+- Set the VITE_API_BASE_URL environment variable to your actual backend API URL
+- **No build command needed** - the `postinstall` script in package.json automatically runs `npm run build` after `npm install`
 
 ### 4. Deploy and Test
 
@@ -90,8 +96,8 @@ The render.yaml blueprint configuration isn't properly setting the DATABASE_URL 
    - Look for: `DATABASE_URL exists: YES`
 
 2. **Deploy Frontend**
-   - Update the `VITE_API_BASE_URL` with your actual backend URL
-   - The frontend will automatically deploy
+   - Set the `VITE_API_BASE_URL` environment variable to your actual backend URL
+   - The frontend will automatically deploy and connect to your API
 
 3. **Test the Application**
    - Backend: `https://your-backend-url.onrender.com/health`
