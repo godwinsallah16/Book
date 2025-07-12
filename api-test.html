@@ -20,13 +20,13 @@
         
         async function checkAPI() {
             const endpoints = [
-                'https://book-jkc8.onrender.com/health',
-                'https://book-jkc8.onrender.com/api/health',
-                'https://bookstore-api.onrender.com/health',
-                'https://bookstore-api.onrender.com/api/health'
+                'https://book-jkx8.onrender.com/health',
+                'https://book-jkx8.onrender.com/api/books',
+                'https://book-jkx8.onrender.com/api/health'
             ];
             
-            statusDiv.innerHTML = '<div class="loading">Testing API endpoints...</div>';
+            statusDiv.innerHTML = '<div class="loading">Testing BookStore API endpoints...</div>';
+            statusDiv.innerHTML += '<div class="info">Frontend URL: https://bookstore-frontend-074u.onrender.com</div>';
             
             for (const endpoint of endpoints) {
                 try {
@@ -35,7 +35,7 @@
                     
                     if (response.ok) {
                         const data = await response.json();
-                        statusDiv.innerHTML += `<div class="success">✅ SUCCESS: ${endpoint}<br>Response: ${JSON.stringify(data)}</div>`;
+                        statusDiv.innerHTML += `<div class="success">✅ SUCCESS: ${endpoint}<br>Response: ${JSON.stringify(data, null, 2)}</div>`;
                     } else {
                         statusDiv.innerHTML += `<div class="error">❌ FAILED: ${endpoint} (Status: ${response.status})</div>`;
                     }

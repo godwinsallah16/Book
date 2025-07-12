@@ -323,7 +323,8 @@ builder.Services.AddCors(options =>
                 "https://localhost:5174", 
                 "https://localhost:3000",
                 "https://localhost:5001", // Allow API to call itself if needed
-                "https://godwinsallah16.github.io" // Allow GitHub Pages frontend
+                "https://godwinsallah16.github.io", // Allow GitHub Pages frontend
+                "https://bookstore-frontend-074u.onrender.com" // Allow Render.com frontend
             )
               .AllowAnyHeader()
               .AllowAnyMethod()
@@ -430,7 +431,11 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 // Use HSTS in all environments to enforce HTTPS
 app.UseHsts();
 
-app.UseHttpsRedirection();
+// Only use HTTPS redirection in development (Render.com handles HTTPS termination)
+if (app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 // Add security headers
 app.Use(async (context, next) =>
