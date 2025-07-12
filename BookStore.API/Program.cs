@@ -393,8 +393,11 @@ async Task RetryDatabaseOperations(IServiceProvider services, Microsoft.Extensio
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
+            logger.LogInformation("Attempting database connection (attempt {Attempt}/{MaxRetries})", attempt, maxRetries);
+            
             // Test database connection first
             await context.Database.CanConnectAsync();
+            logger.LogInformation("Database connection successful");
             
             // Apply pending migrations (only for relational databases)
             if (context.Database.IsRelational())
@@ -415,14 +418,29 @@ async Task RetryDatabaseOperations(IServiceProvider services, Microsoft.Extensio
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Database operation failed on attempt {Attempt}", attempt);
+            logger.LogError(ex, "Database operation failed on attempt {Attempt}/{MaxRetries}. Error: {ErrorMessage}", 
+                attempt, maxRetries, ex.Message);
+            
+            // Log connection string info (without sensitive data)
+            using var scope = services.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            var connectionString = context.Database.GetConnectionString();
+            if (!string.IsNullOrEmpty(connectionString))
+            {
+                // Log sanitized connection string (remove password)
+                var sanitized = connectionString.Contains("Password=") 
+                    ? connectionString.Substring(0, connectionString.IndexOf("Password=")) + "Password=****"
+                    : connectionString;
+                logger.LogError("Connection string: {ConnectionString}", sanitized);
+            }
             
             if (attempt == maxRetries)
             {
-                logger.LogError("All database operation attempts failed");
+                logger.LogCritical("All database operation attempts failed. Application will exit.");
                 throw;
             }
             
+            logger.LogWarning("Retrying in {DelaySeconds} seconds...", delaySeconds);
             await Task.Delay(TimeSpan.FromSeconds(delaySeconds));
         }
     }
