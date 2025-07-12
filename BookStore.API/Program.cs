@@ -41,10 +41,33 @@ else
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
     var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
     
+    // Enhanced debugging for Docker/Render environment
+    Log.Information("=== Database Configuration Debug ===");
+    Log.Information("Environment: {Environment}", builder.Environment.EnvironmentName);
+    Log.Information("Is Production: {IsProduction}", builder.Environment.IsProduction());
+    Log.Information("DATABASE_URL exists: {HasDatabaseUrl}", databaseUrl != null);
+    Log.Information("DefaultConnection exists: {HasDefaultConnection}", connectionString != null);
+    
+    // Log all environment variables starting with DATABASE for debugging
+    var dbEnvVars = Environment.GetEnvironmentVariables()
+        .Cast<System.Collections.DictionaryEntry>()
+        .Where(e => e.Key?.ToString()?.StartsWith("DATABASE", StringComparison.OrdinalIgnoreCase) == true)
+        .ToDictionary(e => e.Key?.ToString() ?? "unknown", e => e.Value?.ToString() ?? "null");
+    
+    Log.Information("Database-related environment variables count: {Count}", dbEnvVars.Count);
+    foreach (var kvp in dbEnvVars)
+    {
+        var safeValue = kvp.Value?.Length > 20 ? kvp.Value.Substring(0, 20) + "..." : kvp.Value ?? "null";
+        Log.Information("  {Key}: {Value}", kvp.Key, safeValue);
+    }
+    
     // Log the connection string source for debugging (without sensitive data)
     if (databaseUrl != null)
     {
         Log.Information("Connection string source: DATABASE_URL environment variable");
+        Log.Information("DATABASE_URL format: {Format}", 
+            databaseUrl.StartsWith("postgres://") ? "postgres://" : 
+            databaseUrl.StartsWith("postgresql://") ? "postgresql://" : "unknown");
     }
     else if (connectionString != null)
     {
@@ -358,18 +381,55 @@ app.MapControllers();
 // Create database and seed data (skip in test environment)
 if (!builder.Environment.IsEnvironment("Testing"))
 {
-    using (var scope = app.Services.CreateScope())
+    using var scope = app.Services.CreateScope();
+    var logger = scope.ServiceProvider.GetRequiredService<Microsoft.Extensions.Logging.ILogger<Program>>();
+    await RetryDatabaseOperations(app.Services, logger);
+}
+
+async Task RetryDatabaseOperations(IServiceProvider services, Microsoft.Extensions.Logging.ILogger<Program> logger)
+{
+    const int maxRetries = 5;
+    const int delaySeconds = 10;
+    
+    for (int attempt = 1; attempt <= maxRetries; attempt++)
     {
-        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+        try
+        {
+            logger.LogInformation("Database operation attempt {Attempt} of {MaxRetries}", attempt, maxRetries);
+            
+            using var scope = services.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-        // Apply pending migrations
-        context.Database.Migrate();
+            // Test database connection first
+            await context.Database.CanConnectAsync();
+            logger.LogInformation("Database connection successful");
+            
+            // Apply pending migrations
+            await context.Database.MigrateAsync();
+            logger.LogInformation("Database migrations applied successfully");
 
-        // Seed initial data
-        var seeder = new DataSeeder(context, userManager, roleManager);
-        await seeder.SeedAsync();
+            // Seed initial data
+            var seeder = new DataSeeder(context, userManager, roleManager);
+            await seeder.SeedAsync();
+            logger.LogInformation("Database seeding completed successfully");
+            
+            return; // Success - exit retry loop
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Database operation failed on attempt {Attempt}: {Message}", attempt, ex.Message);
+            
+            if (attempt == maxRetries)
+            {
+                logger.LogError("All database operation attempts failed. Application will exit.");
+                throw;
+            }
+            
+            logger.LogInformation("Retrying database operation in {DelaySeconds} seconds...", delaySeconds);
+            await Task.Delay(TimeSpan.FromSeconds(delaySeconds));
+        }
     }
 }
 

@@ -22,4 +22,16 @@ COPY --from=publish /app/publish .
 ENV ASPNETCORE_URLS=http://+:10000
 ENV ASPNETCORE_ENVIRONMENT=Production
 
-ENTRYPOINT ["dotnet", "BookStore.API.dll"]
+# Add debugging script to check environment variables
+RUN echo '#!/bin/bash' > /app/debug-env.sh && \
+    echo 'echo "=== Environment Variables Debug ==="' >> /app/debug-env.sh && \
+    echo 'echo "ASPNETCORE_ENVIRONMENT: $ASPNETCORE_ENVIRONMENT"' >> /app/debug-env.sh && \
+    echo 'echo "DATABASE_URL exists: $(if [ -n "$DATABASE_URL" ]; then echo "YES"; else echo "NO"; fi)"' >> /app/debug-env.sh && \
+    echo 'echo "DATABASE_URL length: ${#DATABASE_URL}"' >> /app/debug-env.sh && \
+    echo 'echo "All env vars with DATABASE:"' >> /app/debug-env.sh && \
+    echo 'env | grep -i database || echo "No DATABASE env vars found"' >> /app/debug-env.sh && \
+    echo 'echo "=== Starting Application ==="' >> /app/debug-env.sh && \
+    echo 'dotnet BookStore.API.dll' >> /app/debug-env.sh && \
+    chmod +x /app/debug-env.sh
+
+ENTRYPOINT ["/app/debug-env.sh"]
