@@ -1,12 +1,21 @@
 # Render.com Blueprint Configuration
 # This file defines how to deploy your BookStore application on Render.com
 
+# Database (PostgreSQL) - Must be created first
+databases:
+  - name: bookstore-db
+    databaseName: bookstore
+    user: bookstore_user
+    region: ohio # or your preferred region
+
 services:
   # Backend API Service
   - type: web
     name: bookstore-api
     env: docker
     dockerfilePath: ./Dockerfile
+    region: ohio # should match database region
+    plan: free
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
         value: Production
@@ -54,9 +63,3 @@ services:
         value: https://bookstore-api.onrender.com/api
       - key: VITE_APP_NAME
         value: BookStore
-
-# Database (PostgreSQL)
-databases:
-  - name: bookstore-db
-    databaseName: bookstore
-    user: bookstore_user

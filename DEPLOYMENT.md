@@ -15,7 +15,40 @@
 
 ### 2. Backend Deployment Options
 
-#### Option A: Render.com (Recommended - Easy Setup)
+#### Option A: Render.com Manual Setup (Recommended)
+
+**Why Manual Setup?**
+The automated Blueprint deployment sometimes fails to properly set the `DATABASE_URL` environment variable. Manual setup ensures proper configuration.
+
+**Steps:**
+1. **Create PostgreSQL Database First:**
+   - Go to https://render.com/dashboard
+   - Click "New +" → "PostgreSQL"
+   - Name: `bookstore-db`, Database: `bookstore`, User: `bookstore_user`
+   - **Copy the External Database URL** (starts with `postgres://`)
+
+2. **Create Web Service:**
+   - Click "New +" → "Web Service"
+   - Connect your GitHub repository
+   - Environment: `Docker`, Dockerfile Path: `./Dockerfile`
+   - **Important:** Set these environment variables:
+     ```
+     ASPNETCORE_ENVIRONMENT = Production
+     ASPNETCORE_URLS = http://0.0.0.0:10000
+     DATABASE_URL = [paste the External Database URL from step 1]
+     JwtSettings__SecretKey = [generate 32+ character random string]
+     JwtSettings__Issuer = BookStore.API
+     JwtSettings__Audience = BookStore.Client
+     JwtSettings__ExpirationHours = 24
+     ```
+
+3. **Deploy:**
+   - Click "Create Web Service"
+   - Monitor logs for successful database connection
+
+📋 **For detailed step-by-step instructions, see:** [`RENDER_MANUAL_SETUP.md`](./RENDER_MANUAL_SETUP.md)
+
+#### Option B: Render.com Blueprint (Alternative)
 
 **Steps:**
 1. Run the deployment setup:
@@ -35,11 +68,7 @@
    - Sign up/Login with GitHub
    - Click "New +" → "Blueprint"
    - Connect your GitHub repository
-   - Render will detect render.yaml automatically
-   - **Important:** Set these environment variables as secrets:
-     - `EmailSettings__SmtpUsername` (your email)
-     - `EmailSettings__SmtpPassword` (your app password)
-   - Click "Apply" to deploy
+   - **Note:** If DATABASE_URL is not set, use Manual Setup instead
 
 #### Option B: Docker Deployment (Local/VPS)
 
