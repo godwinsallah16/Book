@@ -2,9 +2,9 @@ services:
   # Backend API Service
   - type: web
     name: bookstore-api
-    env: docker
-    dockerfilePath: ./BookStore.API/Dockerfile
-    dockerContext: ./BookStore.API
+    env: dotnet
+    buildCommand: cd BookStore.API && dotnet restore && dotnet publish -c Release -o out
+    startCommand: cd BookStore.API && dotnet out/BookStore.API.dll
     plan: free
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
