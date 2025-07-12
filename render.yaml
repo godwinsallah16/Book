@@ -6,7 +6,7 @@ databases:
   - name: bookstore-db
     databaseName: bookstore
     user: bookstore_user
-    region: oregon # Match the actual database region
+    region: ohio # or your preferred region
 
 services:
   # Backend API Service
@@ -14,7 +14,7 @@ services:
     name: bookstore-api
     env: docker
     dockerfilePath: ./Dockerfile
-    region: oregon # should match database region
+    region: ohio # should match database region
     plan: free
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
@@ -22,7 +22,9 @@ services:
       - key: ASPNETCORE_URLS
         value: http://0.0.0.0:10000
       - key: DATABASE_URL
-        value: postgresql://bookstore_user:pYhnPFVIWFll51nbQZ3eIFkVdPQLsmrj@dpg-d1osbobuibrs73d4661g-a.oregon-postgres.render.com/bookstore_cxbv
+        fromDatabase:
+          name: bookstore-db
+          property: connectionString
       - key: JwtSettings__Secret
         generateValue: true
       - key: JwtSettings__Issuer

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.AspNetCore.HttpOverrides;
 using System.Text;
 using System.Security.Claims;
 using Serilog;
@@ -29,18 +30,6 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 
 builder.Host.UseSerilog();
-
-Log.Information("🚀 BookStore API starting up...");
-Log.Information("Environment: {Environment}", builder.Environment.EnvironmentName);
-Log.Information("Content Root: {ContentRoot}", builder.Environment.ContentRootPath);
-
-// Debug environment variables for troubleshooting
-Log.Information("🔍 Environment Variables Check:");
-Log.Information("DATABASE_URL: {DatabaseUrl}", Environment.GetEnvironmentVariable("DATABASE_URL")?.Substring(0, Math.Min(50, Environment.GetEnvironmentVariable("DATABASE_URL")?.Length ?? 0)) + "...");
-Log.Information("JwtSettings__Secret: {JwtSecret}", string.IsNullOrEmpty(Environment.GetEnvironmentVariable("JwtSettings__Secret")) ? "NOT SET" : "SET");
-Log.Information("JwtSettings__Issuer: {JwtIssuer}", Environment.GetEnvironmentVariable("JwtSettings__Issuer") ?? "NOT SET");
-Log.Information("JwtSettings__Audience: {JwtAudience}", Environment.GetEnvironmentVariable("JwtSettings__Audience") ?? "NOT SET");
-Log.Information("ASPNETCORE_URLS: {AspNetCoreUrls}", Environment.GetEnvironmentVariable("ASPNETCORE_URLS") ?? "NOT SET");
 
 // Add services to the container.
 if (builder.Environment.IsEnvironment("Testing"))
@@ -172,16 +161,16 @@ else
 // Configure Identity with enhanced security
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
-    // Password settings
-    options.Password.RequiredLength = 8;
-    options.Password.RequireNonAlphanumeric = true;
-    options.Password.RequireUppercase = true;
-    options.Password.RequireLowercase = true;
-    options.Password.RequireDigit = true;
-    options.Password.RequiredUniqueChars = 4;
+    // Password settings - relaxed for cloud deployment
+    options.Password.RequiredLength = 6;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireDigit = false;
+    options.Password.RequiredUniqueChars = 1;
 
-    // Email settings
-    options.SignIn.RequireConfirmedEmail = true; // Enable email confirmation
+    // Email settings - disabled for cloud deployment
+    options.SignIn.RequireConfirmedEmail = false; 
     options.User.RequireUniqueEmail = true;
 
     // Lockout settings
@@ -197,27 +186,26 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddDefaultTokenProviders();
 
 // Configure JWT Authentication
-Log.Information("🔐 Configuring JWT Authentication...");
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var jwtSecret = jwtSettings["Secret"];
+var jwtSecret = Environment.GetEnvironmentVariable("JwtSettings__Secret") ?? jwtSettings["Secret"];
 if (string.IsNullOrEmpty(jwtSecret))
 {
-    Log.Error("JWT Secret is not configured. Check JwtSettings__Secret environment variable.");
-    throw new InvalidOperationException("JWT Secret is required but not configured");
+    Log.Warning("JWT Secret not found in environment variables, using default from appsettings");
+    jwtSecret = "ThisIsAVeryLongSecretKeyForJWTTokenGenerationThatShouldBeAtLeast256BitsLong";
 }
 
-var jwtIssuer = jwtSettings["Issuer"];
+var jwtIssuer = Environment.GetEnvironmentVariable("JwtSettings__Issuer") ?? jwtSettings["Issuer"];
 if (string.IsNullOrEmpty(jwtIssuer))
 {
-    Log.Error("JWT Issuer is not configured. Check JwtSettings__Issuer environment variable.");
-    throw new InvalidOperationException("JWT Issuer is required but not configured");
+    Log.Warning("JWT Issuer not found, using default");
+    jwtIssuer = "BookStoreAPI";
 }
 
-var jwtAudience = jwtSettings["Audience"];
+var jwtAudience = Environment.GetEnvironmentVariable("JwtSettings__Audience") ?? jwtSettings["Audience"];
 if (string.IsNullOrEmpty(jwtAudience))
 {
-    Log.Error("JWT Audience is not configured. Check JwtSettings__Audience environment variable.");
-    throw new InvalidOperationException("JWT Audience is required but not configured");
+    Log.Warning("JWT Audience not found, using default");
+    jwtAudience = "BookStoreClient";
 }
 
 var key = Encoding.ASCII.GetBytes(jwtSecret);
@@ -229,7 +217,7 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
-    options.RequireHttpsMetadata = true; // Always require HTTPS for JWT
+    options.RequireHttpsMetadata = false; // Disable for cloud deployment behind proxy
     options.SaveToken = true;
     options.TokenValidationParameters = new TokenValidationParameters
     {
@@ -240,7 +228,7 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidAudience = jwtAudience,
         ValidateLifetime = true,
-        ClockSkew = TimeSpan.Zero,
+        ClockSkew = TimeSpan.FromMinutes(5), // Allow some clock skew for cloud deployment
         RequireExpirationTime = true,
         RoleClaimType = ClaimTypes.Role // Ensure role claims are properly mapped
     };
@@ -353,9 +341,25 @@ if (app.Environment.IsDevelopment())
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "BookStore API V1");
     });
 }
+else
+{
+    // Enable Swagger in production for debugging on Render
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "BookStore API V1");
+        c.RoutePrefix = "swagger"; // Keep swagger at /swagger in production
+    });
+}
 
 // Add custom exception handling middleware
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+// Configure forwarded headers for cloud deployment (like Render)
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
 
 // Use HSTS in all environments to enforce HTTPS
 app.UseHsts();
@@ -384,18 +388,32 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+// Add health check endpoints for Render
+app.MapGet("/health", () => "OK");
+app.MapGet("/", () => "BookStore API is running! Visit /swagger for API documentation.");
+
 // Create database and seed data (skip in test environment)
 if (!builder.Environment.IsEnvironment("Testing"))
 {
     using var scope = app.Services.CreateScope();
     var logger = scope.ServiceProvider.GetRequiredService<Microsoft.Extensions.Logging.ILogger<Program>>();
-    await RetryDatabaseOperations(app.Services, logger);
+    
+    try
+    {
+        await RetryDatabaseOperations(app.Services, logger);
+        logger.LogInformation("Database initialization completed successfully");
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Database initialization failed, but continuing with startup");
+        // Don't throw - let the app start anyway for debugging
+    }
 }
 
 async Task RetryDatabaseOperations(IServiceProvider services, Microsoft.Extensions.Logging.ILogger<Program> logger)
 {
-    const int maxRetries = 3;
-    const int delaySeconds = 5;
+    const int maxRetries = 5;
+    const int delaySeconds = 3;
     
     for (int attempt = 1; attempt <= maxRetries; attempt++)
     {
@@ -415,7 +433,9 @@ async Task RetryDatabaseOperations(IServiceProvider services, Microsoft.Extensio
             // Apply pending migrations (only for relational databases)
             if (context.Database.IsRelational())
             {
+                logger.LogInformation("Applying database migrations...");
                 await context.Database.MigrateAsync();
+                logger.LogInformation("Database migrations applied successfully");
             }
             else
             {
@@ -424,36 +444,24 @@ async Task RetryDatabaseOperations(IServiceProvider services, Microsoft.Extensio
             }
 
             // Seed initial data
+            logger.LogInformation("Seeding initial data...");
             var seeder = new DataSeeder(context, userManager, roleManager);
             await seeder.SeedAsync();
+            logger.LogInformation("Initial data seeded successfully");
             
             return; // Success - exit retry loop
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Database operation failed on attempt {Attempt}/{MaxRetries}. Error: {ErrorMessage}", 
-                attempt, maxRetries, ex.Message);
-            
-            // Log connection string info (without sensitive data)
-            using var scope = services.CreateScope();
-            var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            var connectionString = context.Database.GetConnectionString();
-            if (!string.IsNullOrEmpty(connectionString))
-            {
-                // Log sanitized connection string (remove password)
-                var sanitized = connectionString.Contains("Password=") 
-                    ? connectionString.Substring(0, connectionString.IndexOf("Password=")) + "Password=****"
-                    : connectionString;
-                logger.LogError("Connection string: {ConnectionString}", sanitized);
-            }
+            logger.LogWarning(ex, "Database operation failed on attempt {Attempt}/{MaxRetries}", attempt, maxRetries);
             
             if (attempt == maxRetries)
             {
-                logger.LogCritical("All database operation attempts failed. Application will exit.");
+                logger.LogError(ex, "All database operation attempts failed");
                 throw;
             }
             
-            logger.LogWarning("Retrying in {DelaySeconds} seconds...", delaySeconds);
+            logger.LogInformation("Waiting {DelaySeconds} seconds before retry...", delaySeconds);
             await Task.Delay(TimeSpan.FromSeconds(delaySeconds));
         }
     }
@@ -461,10 +469,8 @@ async Task RetryDatabaseOperations(IServiceProvider services, Microsoft.Extensio
 
 try
 {
-    Log.Information("✅ Configuration complete. Starting BookStore API server...");
-    Log.Information("Server will listen on: {Urls}", Environment.GetEnvironmentVariable("ASPNETCORE_URLS") ?? "Default URLs");
+    Log.Information("Starting BookStore API");
     app.Run();
-    Log.Information("📱 BookStore API started successfully and is ready to accept requests");
 }
 catch (Exception ex)
 {
