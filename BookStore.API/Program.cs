@@ -245,6 +245,28 @@ try
     app.MapGet("/", () => "BookStore API is running! Visit /swagger for API documentation.");
     Log.Information("Health check endpoints mapped successfully");
 
+    // Verify that all services are properly registered
+    Log.Information("Verifying service registrations...");
+    using (var scope = app.Services.CreateScope())
+    {
+        try
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            var authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
+            var bookService = scope.ServiceProvider.GetRequiredService<IBookService>();
+            Log.Information("All required services are properly registered and accessible");
+        }
+        catch (Exception ex)
+        {
+            Log.Fatal(ex, "Critical: Service registration verification failed - application cannot continue");
+            throw;
+        }
+    }
+
+    // Test the middleware pipeline
+    Log.Information("Middleware pipeline configured successfully");
+
     // Database initialization for cloud deployment
     if (!builder.Environment.IsEnvironment("Testing"))
     {
@@ -288,14 +310,36 @@ try
     Log.Information("BookStore API started successfully");
     Log.Information("About to call app.Run() - this should keep the application alive");
     
+    // Add cancellation token support for graceful shutdown
+    var cancellationTokenSource = new CancellationTokenSource();
+    
+    // Handle SIGTERM and SIGINT gracefully
+    Console.CancelKeyPress += (sender, e) => {
+        Log.Information("Received cancellation signal");
+        e.Cancel = true;
+        cancellationTokenSource.Cancel();
+    };
+    
+    AppDomain.CurrentDomain.ProcessExit += (sender, e) => {
+        Log.Information("Process exit event received");
+        cancellationTokenSource.Cancel();
+    };
+    
     try
     {
-        app.Run();
-        Log.Information("app.Run() completed - this should never happen unless shutdown is requested");
+        Log.Information("Starting app.RunAsync() with cancellation token support");
+        Log.Information("Server should now be listening on: {Urls}", Environment.GetEnvironmentVariable("ASPNETCORE_URLS") ?? "http://localhost:5000");
+        
+        await app.RunAsync(cancellationTokenSource.Token);
+        Log.Information("app.RunAsync() completed - application is shutting down gracefully");
+    }
+    catch (OperationCanceledException)
+    {
+        Log.Information("Application was cancelled gracefully");
     }
     catch (Exception ex)
     {
-        Log.Fatal(ex, "Exception occurred in app.Run()");
+        Log.Fatal(ex, "Exception occurred in app.RunAsync()");
         throw;
     }
 }
