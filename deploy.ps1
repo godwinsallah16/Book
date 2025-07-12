@@ -91,7 +91,14 @@ switch ($choice) {
 DB_PASSWORD=BookStore123!
 GITHUB_REPOSITORY=godwinsallah16/Book
 JWT_SECRET=BookStore-Super-Secret-Key-For-JWT-Tokens-2024-Must-Be-At-Least-256-Bits-Long
+SMTP_SERVER=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USERNAME=your-email@gmail.com
+SMTP_PASSWORD=your-app-password
+SMTP_FROM_EMAIL=noreply@bookstore.com
+FRONTEND_URL=http://localhost:3000
 "@ | Out-File -FilePath ".env" -Encoding UTF8
+            Write-Host "Please update the .env file with your actual email credentials" -ForegroundColor Yellow
         }
         
         # Deploy with Docker Compose

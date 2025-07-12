@@ -19,7 +19,14 @@ az webapp config appsettings set --resource-group bookstore-rg --name bookstore-
   "JwtSettings__SecretKey=BookStore-Super-Secret-Key-For-JWT-Tokens-2024-Must-Be-At-Least-256-Bits-Long" `
   "JwtSettings__Issuer=BookStore.API" `
   "JwtSettings__Audience=BookStore.Client" `
-  "JwtSettings__ExpirationHours=24"
+  "JwtSettings__ExpirationHours=24" `
+  "EmailSettings__SmtpServer=smtp.gmail.com" `
+  "EmailSettings__SmtpPort=587" `
+  "EmailSettings__SmtpUsername=your-email@gmail.com" `
+  "EmailSettings__SmtpPassword=your-app-password" `
+  "EmailSettings__FromEmail=noreply@bookstore.com" `
+  "EmailSettings__FromName=BookStore" `
+  "EmailSettings__EnableSsl=true"
 
 # Deploy from GitHub
 az webapp deployment source config --name bookstore-api-$(Get-Random) --resource-group bookstore-rg --repo-url https://github.com/godwinsallah16/Book.git --branch main --manual-integration

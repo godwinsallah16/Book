@@ -35,6 +35,9 @@ Your frontend will automatically deploy to GitHub Pages when you push to the mai
    - Click "New +" → "Blueprint"
    - Connect your GitHub repository
    - Render will detect render.yaml automatically
+   - **Important:** Set these environment variables as secrets:
+     - `EmailSettings__SmtpUsername` (your email)
+     - `EmailSettings__SmtpPassword` (your app password)
    - Click "Apply" to deploy
 
 #### Option B: Railway (Alternative Easy Setup)

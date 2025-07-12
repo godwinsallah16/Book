@@ -24,6 +24,21 @@ services:
         value: BookStore.Client
       - key: JwtSettings__ExpirationHours
         value: "24"
+      # Email Configuration
+      - key: EmailSettings__SmtpServer
+        value: smtp.gmail.com
+      - key: EmailSettings__SmtpPort
+        value: "587"
+      - key: EmailSettings__SmtpUsername
+        sync: false  # Set this as a secret in Render dashboard
+      - key: EmailSettings__SmtpPassword
+        sync: false  # Set this as a secret in Render dashboard
+      - key: EmailSettings__FromEmail
+        value: noreply@bookstore.com
+      - key: EmailSettings__FromName
+        value: BookStore
+      - key: EmailSettings__EnableSsl
+        value: "true"
     healthCheckPath: /health
     
   # Frontend Static Site
