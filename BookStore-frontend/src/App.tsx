@@ -58,10 +58,8 @@ function App() {
     setUser(authService.getCurrentUser());
   };
 
-  const handleRegister = () => {
-    setIsAuthenticated(true);
-    setUser(authService.getCurrentUser());
-  };
+  // Registration no longer automatically logs in users
+  // Users must verify email first
 
   const handleLogout = () => {
     authService.logout();
@@ -129,7 +127,7 @@ function App() {
             path="/register" 
             element={
               !isAuthenticated ? (
-                <Register onRegister={handleRegister} />
+                <Register />
               ) : (
                 <Navigate to="/dashboard" replace />
               )

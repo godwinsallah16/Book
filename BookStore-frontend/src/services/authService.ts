@@ -76,13 +76,8 @@ export const authService = {
       console.log('Sending registration data:', registerData);
       const response = await publicApiClient.post<AuthResponse>(API_CONFIG.ENDPOINTS.AUTH.REGISTER, registerData);
       
-      // Store token in localStorage
-      localStorage.setItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN, response.data.token);
-      localStorage.setItem(API_CONFIG.STORAGE_KEYS.USER, JSON.stringify({
-        email: response.data.email,
-        firstName: response.data.firstName,
-        lastName: response.data.lastName,
-      }));
+      // DO NOT store token after registration - user must verify email first
+      console.log('Registration successful - email verification required');
       
       return response.data;
     } catch (error: unknown) {

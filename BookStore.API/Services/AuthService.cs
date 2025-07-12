@@ -73,24 +73,18 @@ namespace BookStore.API.Services
                 // Send email verification
                 await SendEmailVerificationAsync(user);
 
-                // Generate JWT token (user can use limited features until email verified)
-                var token = await GenerateJwtTokenAsync(user.Email!, user.Id);
-                var expiration = DateTime.UtcNow.AddHours(24);
-
-                // Get user roles
-                var roles = await _userManager.GetRolesAsync(user);
-
-                _logger.LogInformation("User registered successfully: {Email}", registerDto.Email);
+                // DO NOT generate JWT token - require email verification first
+                _logger.LogInformation("User registered successfully: {Email} - Email verification required", registerDto.Email);
 
                 return new AuthResponseDto
                 {
-                    Token = token,
+                    Token = string.Empty, // No token until email verified
                     Email = user.Email!,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
-                    Expiration = expiration,
+                    Expiration = DateTime.MinValue, // No expiration since no token
                     EmailConfirmed = user.EmailConfirmed,
-                    Roles = roles
+                    Roles = new List<string>() // No roles until verified
                 };
             }
             catch (Exception ex)

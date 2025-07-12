@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { authService, type RegisterRequest } from '../../../services';
 import './Register.css';
 
 interface RegisterProps {
-  onRegister: () => void;
+  onRegister?: () => void; // Make it optional since we won't use it anymore
 }
 
-const Register: React.FC<RegisterProps> = ({ onRegister }) => {
+const Register: React.FC<RegisterProps> = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<RegisterRequest>({
     email: '',
     password: '',
@@ -17,6 +18,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister }) => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -30,6 +32,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister }) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setSuccess('');
 
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
@@ -39,7 +42,12 @@ const Register: React.FC<RegisterProps> = ({ onRegister }) => {
 
     try {
       await authService.register(formData);
-      onRegister();
+      setSuccess('Registration successful! Please check your email to verify your account before logging in.');
+      
+      // Redirect to login after a short delay
+      setTimeout(() => {
+        navigate('/login');
+      }, 3000);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Registration failed. Please try again.';
       setError(errorMessage);
@@ -126,6 +134,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister }) => {
           </div>
 
           {error && <div className="error-message">{error}</div>}
+          {success && <div className="success-message">{success}</div>}
 
           <button type="submit" disabled={loading} className="register-btn">
             {loading ? 'Registering...' : 'Register'}

@@ -11,3 +11,16 @@
 2025-07-12 09:47:52.401 +00:00 [INF] InMemory database created successfully
 2025-07-12 09:47:52.402 +00:00 [INF] Database seeding completed successfully
 2025-07-12 09:47:52.403 +00:00 [INF] Starting BookStore API
+[2025-07-12 10:16:45.040 +00:00 INF] === Database Configuration Debug === {}
+[2025-07-12 10:16:45.134 +00:00 INF] Environment: Development {}
+[2025-07-12 10:16:45.140 +00:00 INF] Is Production: false {}
+[2025-07-12 10:16:45.142 +00:00 INF] DATABASE_URL exists: false {}
+[2025-07-12 10:16:45.142 +00:00 INF] DefaultConnection exists: true {}
+[2025-07-12 10:16:45.145 +00:00 INF] Database-related environment variables count: 0 {}
+[2025-07-12 10:16:45.146 +00:00 INF] Connection string source: Server=(localdb)\mss... {}
+[2025-07-12 10:16:45.146 +00:00 INF] Using SQL Server database {}
+[2025-07-12 10:16:45.375 +00:00 INF] Database operation attempt 1 of 5 {"SourceContext":"Program"}
+[2025-07-12 10:16:45.997 +00:00 INF] Database connection successful {"SourceContext":"Program"}
+[2025-07-12 10:16:46.166 +00:00 INF] InMemory database created successfully {"SourceContext":"Program"}
+[2025-07-12 10:16:46.414 +00:00 INF] Database seeding completed successfully {"SourceContext":"Program"}
+[2025-07-12 10:16:46.417 +00:00 INF] Starting BookStore API {}
