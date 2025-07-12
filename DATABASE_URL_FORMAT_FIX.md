@@ -1,16 +1,50 @@
 # 🔧 Quick Fix: DATABASE_URL Format Error
 
 ## Current Status ✅
-**Good News**: DATABASE_URL is now being set (we fixed the previous issue!)
+**RESOLVED**: DATABASE_URL format has been identified and corrected!
 
-**New Issue**: The DATABASE_URL format is invalid, causing:
+**Previous Issue**: The DATABASE_URL format was invalid, causing:
 ```
 Format of the initialization string does not conform to specification starting at index 0
 ```
 
+**✅ SOLUTION FOUND**: Correct DATABASE_URL format has been identified and will be added to environment variables.
+
 ## Quick Fix Steps 🚀
 
-### Step 1: Get the Correct DATABASE_URL
+### Step 1: Debug What's Currently Set
+**First, let's see what DATABASE_URL is actually being received:**
+
+1. Go to your Render.com web service logs
+2. Look for these debug messages:
+   ```
+   [INFO] DATABASE_URL exists: True/False
+   [INFO] DATABASE_URL format: postgresql://
+   [INFO] DATABASE_URL length: [number]
+   [INFO] DATABASE_URL first 50 chars: [partial URL]
+   ```
+
+### Step 2: Common Issues & Solutions
+
+**Issue 1: DATABASE_URL is empty/null**
+```
+[INFO] DATABASE_URL exists: False
+```
+- ✅ **Solution**: Add DATABASE_URL to your environment variables
+
+**Issue 2: Wrong format (postgres:// instead of postgresql://)**
+```
+[INFO] DATABASE_URL format: postgres://
+```
+- ✅ **Solution**: Ensure it starts with `postgresql://`
+
+**Issue 3: Connection string has spaces or invalid characters**
+```
+[ERR] DATABASE_URL has leading or trailing spaces!
+```
+- ✅ **Solution**: Remove all spaces from the connection string
+
+### Step 3: Get the Correct DATABASE_URL
 1. **Go to Render.com Dashboard**
 2. **Click on your PostgreSQL database service** (bookstore-db)
 3. **Click "Info" tab**

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using System.Text;
 using Serilog;
 using FluentValidation.AspNetCore;
+using Npgsql;
 using BookStore.API.Data;
 using BookStore.API.Models;
 using BookStore.API.Services;
@@ -68,6 +69,23 @@ else
         Log.Information("DATABASE_URL format: {Format}", 
             databaseUrl.StartsWith("postgres://") ? "postgres://" : 
             databaseUrl.StartsWith("postgresql://") ? "postgresql://" : "unknown");
+        Log.Information("DATABASE_URL length: {Length}", databaseUrl.Length);
+        Log.Information("DATABASE_URL first 50 chars: {FirstChars}", 
+            databaseUrl.Length > 50 ? databaseUrl.Substring(0, 50) + "..." : databaseUrl);
+        
+        // Check for common issues
+        if (string.IsNullOrWhiteSpace(databaseUrl))
+        {
+            Log.Error("DATABASE_URL is empty or whitespace!");
+        }
+        else if (databaseUrl.StartsWith(" ") || databaseUrl.EndsWith(" "))
+        {
+            Log.Error("DATABASE_URL has leading or trailing spaces!");
+        }
+        else if (!databaseUrl.StartsWith("postgresql://") && !databaseUrl.StartsWith("postgres://"))
+        {
+            Log.Error("DATABASE_URL does not start with postgresql:// or postgres://");
+        }
     }
     else if (connectionString != null)
     {
@@ -146,6 +164,28 @@ else
     {
         // Use PostgreSQL for cloud deployments
         Log.Information("Using PostgreSQL database");
+        Log.Information("Final PostgreSQL connection string first 50 chars: {ConnectionString}", 
+            finalConnectionString.Length > 50 ? finalConnectionString.Substring(0, 50) + "..." : finalConnectionString);
+        
+        // Validate connection string format before using it
+        if (string.IsNullOrWhiteSpace(finalConnectionString))
+        {
+            throw new InvalidOperationException("PostgreSQL connection string is null or empty");
+        }
+        
+        try
+        {
+            // Test the connection string format by creating a NpgsqlConnectionStringBuilder
+            var testBuilder = new Npgsql.NpgsqlConnectionStringBuilder(finalConnectionString);
+            Log.Information("Connection string validation successful - Host: {Host}, Database: {Database}", 
+                testBuilder.Host, testBuilder.Database);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Connection string validation failed: {ConnectionString}", finalConnectionString);
+            throw new InvalidOperationException($"Invalid PostgreSQL connection string format: {ex.Message}");
+        }
+        
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseNpgsql(finalConnectionString));
     }
