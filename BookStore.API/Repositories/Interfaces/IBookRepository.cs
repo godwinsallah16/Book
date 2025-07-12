@@ -6,6 +6,7 @@ namespace BookStore.API.Repositories.Interfaces
     {
         Task<IEnumerable<Book>> GetAllBooksAsync();
         Task<Book?> GetBookByIdAsync(int id);
+        Task<Book?> GetBookByIdIncludingDeletedAsync(int id);
         Task<IEnumerable<Book>> SearchBooksAsync(string searchTerm);
         Task<IEnumerable<Book>> GetBooksByCategoryAsync(string category);
         Task<Book> CreateBookAsync(Book book);

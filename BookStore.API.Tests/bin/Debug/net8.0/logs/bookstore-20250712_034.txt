@@ -1,0 +1,13 @@
+[2025-07-12 09:47:52.329 +00:00 INF] === Database Configuration Debug === {}
+[2025-07-12 09:47:52.348 +00:00 INF] Environment: Development {}
+[2025-07-12 09:47:52.348 +00:00 INF] Is Production: false {}
+[2025-07-12 09:47:52.349 +00:00 INF] DATABASE_URL exists: false {}
+[2025-07-12 09:47:52.349 +00:00 INF] DefaultConnection exists: true {}
+[2025-07-12 09:47:52.349 +00:00 INF] Database-related environment variables count: 0 {}
+[2025-07-12 09:47:52.349 +00:00 INF] Connection string source: Server=(localdb)\mss... {}
+[2025-07-12 09:47:52.349 +00:00 INF] Using SQL Server database {}
+[2025-07-12 09:47:52.391 +00:00 INF] Database operation attempt 1 of 5 {"SourceContext":"Program"}
+[2025-07-12 09:47:52.399 +00:00 INF] Database connection successful {"SourceContext":"Program"}
+[2025-07-12 09:47:52.401 +00:00 INF] InMemory database created successfully {"SourceContext":"Program"}
+[2025-07-12 09:47:52.402 +00:00 INF] Database seeding completed successfully {"SourceContext":"Program"}
+[2025-07-12 09:47:52.403 +00:00 INF] Starting BookStore API {}

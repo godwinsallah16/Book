@@ -1,6 +1,7 @@
 import React, { createContext, useReducer, useCallback } from 'react';
 import type { Book, BookFilters, CreateBookRequest, UpdateBookRequest } from '../../types/book.types';
 import { bookService } from '../../services/bookService';
+import type { AxiosError } from 'axios';
 
 interface BookState {
   books: Book[];
@@ -151,8 +152,30 @@ export const BookProvider: React.FC<BookProviderProps> = ({ children }) => {
       await bookService.deleteBook(id);
       dispatch({ type: 'DELETE_BOOK', payload: id });
       dispatch({ type: 'SET_LOADING', payload: false });
+      
+      // Check if we're on a page that no longer exists (e.g., viewing a deleted book)
+      if (window.location.pathname.includes(`/book/${id}`)) {
+        // Redirect to dashboard/home page
+        window.location.href = '/dashboard';
+      }
     } catch (error) {
       console.error('Error deleting book:', error);
+      // Even if API returns 404, the book might still be deleted
+      // Check if the error is 404 and handle accordingly
+      if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as AxiosError;
+        if (axiosError.response?.status === 404) {
+          // Book was deleted but API returned 404, still remove from state
+          dispatch({ type: 'DELETE_BOOK', payload: id });
+          dispatch({ type: 'SET_LOADING', payload: false });
+          
+          // Redirect if on book detail page
+          if (window.location.pathname.includes(`/book/${id}`)) {
+            window.location.href = '/dashboard';
+          }
+          return;
+        }
+      }
       dispatch({ type: 'SET_ERROR', payload: 'Failed to delete book' });
     }
   }, []);

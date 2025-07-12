@@ -46,6 +46,20 @@ namespace BookStore.API.Repositories
             }
         }
 
+        public async Task<Book?> GetBookByIdIncludingDeletedAsync(int id)
+        {
+            try
+            {
+                return await _context.Books
+                    .FirstOrDefaultAsync(b => b.Id == id); // Include soft-deleted books
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while fetching book with ID {BookId} (including deleted)", id);
+                throw;
+            }
+        }
+
         public async Task<IEnumerable<Book>> SearchBooksAsync(string searchTerm)
         {
             try

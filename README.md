@@ -186,6 +186,11 @@ The frontend automatically deploys to GitHub Pages on every push to main branch.
 
 **Live Demo**: https://godwinsallah16.github.io/Book/
 
+#### Backend API (Render.com)
+- **API Base URL**: https://bookstore-api.onrender.com/api
+- **Health Check**: https://bookstore-api.onrender.com/health
+- **Swagger UI**: https://bookstore-api.onrender.com/swagger
+
 ## 🧪 Running Tests
 
 ### Backend Tests
@@ -359,7 +364,9 @@ For support, email godwinsallah16@example.com or create an issue in this reposit
 
 - **GitHub Repository**: https://github.com/godwinsallah16/Book.git
 - **Frontend Demo**: https://godwinsallah16.github.io/Book/
-- **API Documentation**: Available when backend is deployed
+- **Backend API**: https://bookstore-api.onrender.com/api
+- **API Documentation**: https://bookstore-api.onrender.com/swagger
+- **Health Check**: https://bookstore-api.onrender.com/health
 - **Deployment Guide**: See `DEPLOYMENT.md` for detailed instructions
 - **Environment Setup**: See `ENVIRONMENT_VARIABLES.md` for configuration guide
 

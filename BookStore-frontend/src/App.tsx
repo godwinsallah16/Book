@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { BookProvider } from './context/BookContext';
 import { CartProvider } from './context/CartContext';
-import { BookForm, BookSearch, Login, Register, ForgotPassword, ResetPassword, VerifyEmail, EnhancedBookList, Navigation, Favorites } from './components';
+import { BookForm, BookSearch, Login, Register, ForgotPassword, ResetPassword, VerifyEmail, EnhancedBookList, Navigation, Favorites, NotFound } from './components';
 import { authService } from './services/authService';
 import type { Book, BookFilters } from './types/book.types';
 import './App.css';
@@ -156,6 +156,17 @@ function App() {
             path="/" 
             element={
               <Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />
+            } 
+          />
+          
+          {/* 404 Route - must be last */}
+          <Route 
+            path="*" 
+            element={
+              <NotFound 
+                message="The page you're looking for doesn't exist. You might have been redirected here after deleting a book or accessing an invalid URL."
+                redirectTo={isAuthenticated ? "/dashboard" : "/login"}
+              />
             } 
           />
         </Routes>

@@ -116,6 +116,19 @@ namespace BookStore.API.Services
         {
             try
             {
+                // First, check if the book exists (including soft-deleted books)
+                var book = await _bookRepository.GetBookByIdIncludingDeletedAsync(id);
+                if (book == null)
+                {
+                    return false; // Book doesn't exist at all
+                }
+
+                // If book is already soft-deleted, consider it already deleted
+                if (book.IsDeleted)
+                {
+                    return true; // Already deleted, return success
+                }
+
                 // Check if user can delete this book
                 if (!await CanUserEditBookAsync(id, userId, isAdmin))
                 {
