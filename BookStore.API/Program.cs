@@ -20,18 +20,18 @@ using BookStore.API.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure Serilog for cloud deployment
+// Configure Serilog for production
 Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
     .WriteTo.Console()
     .WriteTo.File("logs/bookstore-.txt", rollingInterval: RollingInterval.Day)
-    .MinimumLevel.Information()
     .CreateLogger();
 
 builder.Host.UseSerilog();
 
 try
 {
-    Log.Information("Starting BookStore API for cloud deployment");
+    Log.Information("Starting BookStore API");
 
     // Add services to the container.
     if (builder.Environment.IsEnvironment("Testing"))
@@ -67,24 +67,25 @@ try
             // Fallback to connection string from appsettings
             connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
                 ?? "Host=localhost;Database=BookStore;Username=postgres;Password=postgres;";
-            Log.Information("Using fallback PostgreSQL connection string");
+            Log.Information("Using connection string from configuration");
         }
 
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseNpgsql(connectionString));
     }
 
-    // Configure Identity with simplified settings for cloud deployment
+    // Configure Identity for production
     builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     {
-        // Simplified password settings for cloud deployment
-        options.Password.RequiredLength = 6;
-        options.Password.RequireNonAlphanumeric = false;
-        options.Password.RequireUppercase = false;
-        options.Password.RequireLowercase = false;
-        options.Password.RequireDigit = false;
+        // Password settings
+        options.Password.RequiredLength = 8;
+        options.Password.RequireNonAlphanumeric = true;
+        options.Password.RequireUppercase = true;
+        options.Password.RequireLowercase = true;
+        options.Password.RequireDigit = true;
+        options.Password.RequiredUniqueChars = 4;
         
-        // Disable email confirmation for simpler cloud deployment
+        // Email settings (disabled for cloud deployment without email service)
         options.SignIn.RequireConfirmedEmail = false;
         options.User.RequireUniqueEmail = true;
 
@@ -92,6 +93,10 @@ try
         options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
         options.Lockout.MaxFailedAccessAttempts = 5;
         options.Lockout.AllowedForNewUsers = true;
+
+        // Token settings
+        options.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider;
+        options.Tokens.PasswordResetTokenProvider = TokenOptions.DefaultEmailProvider;
     })
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
@@ -134,7 +139,7 @@ try
             ValidateAudience = true,
             ValidAudience = jwtAudience,
             ValidateLifetime = true,
-            ClockSkew = TimeSpan.FromMinutes(5), // Allow some clock skew for cloud deployment
+            ClockSkew = TimeSpan.Zero,
             RequireExpirationTime = true,
             RoleClaimType = ClaimTypes.Role
         };
@@ -150,19 +155,25 @@ try
     builder.Services.AddScoped<IBookRepository, BookRepository>();
     builder.Services.AddScoped<IBookService, BookService>();
     builder.Services.AddScoped<IAuthService, AuthService>();
-    builder.Services.AddScoped<IEmailService, MockEmailService>(); // Use mock email service for cloud
+    builder.Services.AddScoped<IEmailService, MockEmailService>(); // Using mock email service
     builder.Services.AddScoped<IFavoriteService, FavoriteService>();
     builder.Services.AddScoped<ICartService, CartService>();
     builder.Services.AddScoped<IOrderService, OrderService>();
 
-    // Configure CORS for cloud deployment
+    // Configure CORS for production
     builder.Services.AddCors(options =>
     {
-        options.AddPolicy("AllowAll", policy =>
+        options.AddPolicy("AllowReactApp", policy =>
         {
-            policy.AllowAnyOrigin()
+            policy.WithOrigins(
+                    "https://localhost:5173",
+                    "https://localhost:3000",
+                    "https://godwinsallah16.github.io", // GitHub Pages frontend
+                    "https://bookstore-frontend-074u.onrender.com" // Render.com frontend
+                )
                   .AllowAnyHeader()
-                  .AllowAnyMethod();
+                  .AllowAnyMethod()
+                  .AllowCredentials();
         });
     });
 
@@ -206,20 +217,26 @@ try
     });
 
     var app = builder.Build();
-    
-    Log.Information("WebApplication built successfully");
-    Log.Information("Environment: {Environment}", app.Environment.EnvironmentName);
-    Log.Information("Application URLs will be: {Urls}", Environment.GetEnvironmentVariable("ASPNETCORE_URLS") ?? "default");
 
-    // Configure the HTTP request pipeline for cloud deployment
+    // Configure the HTTP request pipeline
     
-    // Always enable Swagger for cloud deployment (for testing purposes)
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
+    // Enable Swagger for development and testing
+    if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
     {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "BookStore API V1");
-        c.RoutePrefix = string.Empty; // Serve swagger at root
-    });
+        app.UseSwagger();
+        app.UseSwaggerUI(c =>
+        {
+            c.SwaggerEndpoint("/swagger/v1/swagger.json", "BookStore API V1");
+            if (app.Environment.IsProduction())
+            {
+                c.RoutePrefix = "swagger"; // Keep swagger at /swagger in production
+            }
+            else
+            {
+                c.RoutePrefix = string.Empty; // Serve swagger at root in development
+            }
+        });
+    }
 
     // Add custom exception handling middleware
     app.UseMiddleware<ExceptionHandlingMiddleware>();
@@ -231,41 +248,17 @@ try
                           Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto
     });
 
-    // Use relaxed CORS for cloud deployment
-    app.UseCors("AllowAll");
+    // Use CORS for production
+    app.UseCors("AllowReactApp");
 
     app.UseAuthentication();
     app.UseAuthorization();
 
     app.MapControllers();
-    Log.Information("Controllers mapped successfully");
 
-    // Add health check endpoint
+    // Add health check and API test endpoints
     app.MapGet("/health", () => "OK");
     app.MapGet("/", () => "BookStore API is running! Visit /swagger for API documentation.");
-    Log.Information("Health check endpoints mapped successfully");
-
-    // Verify that all services are properly registered
-    Log.Information("Verifying service registrations...");
-    using (var scope = app.Services.CreateScope())
-    {
-        try
-        {
-            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-            var authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
-            var bookService = scope.ServiceProvider.GetRequiredService<IBookService>();
-            Log.Information("All required services are properly registered and accessible");
-        }
-        catch (Exception ex)
-        {
-            Log.Fatal(ex, "Critical: Service registration verification failed - application cannot continue");
-            throw;
-        }
-    }
-
-    // Test the middleware pipeline
-    Log.Information("Middleware pipeline configured successfully");
 
     // Database initialization for cloud deployment
     if (!builder.Environment.IsEnvironment("Testing"))
@@ -307,39 +300,15 @@ try
         }
     }
 
-    Log.Information("BookStore API started successfully");
-    Log.Information("About to call app.Run() - this should keep the application alive");
-    
-    // Add cancellation token support for graceful shutdown
-    var cancellationTokenSource = new CancellationTokenSource();
-    
-    // Handle SIGTERM and SIGINT gracefully
-    Console.CancelKeyPress += (sender, e) => {
-        Log.Information("Received cancellation signal");
-        e.Cancel = true;
-        cancellationTokenSource.Cancel();
-    };
-    
-    AppDomain.CurrentDomain.ProcessExit += (sender, e) => {
-        Log.Information("Process exit event received");
-        cancellationTokenSource.Cancel();
-    };
+    Log.Information("BookStore API initialization completed successfully");
     
     try
     {
-        Log.Information("Starting app.RunAsync() with cancellation token support");
-        Log.Information("Server should now be listening on: {Urls}", Environment.GetEnvironmentVariable("ASPNETCORE_URLS") ?? "http://localhost:5000");
-        
-        await app.RunAsync(cancellationTokenSource.Token);
-        Log.Information("app.RunAsync() completed - application is shutting down gracefully");
-    }
-    catch (OperationCanceledException)
-    {
-        Log.Information("Application was cancelled gracefully");
+        await app.RunAsync();
     }
     catch (Exception ex)
     {
-        Log.Fatal(ex, "Exception occurred in app.RunAsync()");
+        Log.Fatal(ex, "Exception occurred during application execution");
         throw;
     }
 }
