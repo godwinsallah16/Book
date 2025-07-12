@@ -30,6 +30,18 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 
+Log.Information("🚀 BookStore API starting up...");
+Log.Information("Environment: {Environment}", builder.Environment.EnvironmentName);
+Log.Information("Content Root: {ContentRoot}", builder.Environment.ContentRootPath);
+
+// Debug environment variables for troubleshooting
+Log.Information("🔍 Environment Variables Check:");
+Log.Information("DATABASE_URL: {DatabaseUrl}", Environment.GetEnvironmentVariable("DATABASE_URL")?.Substring(0, Math.Min(50, Environment.GetEnvironmentVariable("DATABASE_URL")?.Length ?? 0)) + "...");
+Log.Information("JwtSettings__Secret: {JwtSecret}", string.IsNullOrEmpty(Environment.GetEnvironmentVariable("JwtSettings__Secret")) ? "NOT SET" : "SET");
+Log.Information("JwtSettings__Issuer: {JwtIssuer}", Environment.GetEnvironmentVariable("JwtSettings__Issuer") ?? "NOT SET");
+Log.Information("JwtSettings__Audience: {JwtAudience}", Environment.GetEnvironmentVariable("JwtSettings__Audience") ?? "NOT SET");
+Log.Information("ASPNETCORE_URLS: {AspNetCoreUrls}", Environment.GetEnvironmentVariable("ASPNETCORE_URLS") ?? "NOT SET");
+
 // Add services to the container.
 if (builder.Environment.IsEnvironment("Testing"))
 {
@@ -185,6 +197,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddDefaultTokenProviders();
 
 // Configure JWT Authentication
+Log.Information("🔐 Configuring JWT Authentication...");
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var jwtSecret = jwtSettings["Secret"];
 if (string.IsNullOrEmpty(jwtSecret))
@@ -448,8 +461,10 @@ async Task RetryDatabaseOperations(IServiceProvider services, Microsoft.Extensio
 
 try
 {
-    Log.Information("Starting BookStore API");
+    Log.Information("✅ Configuration complete. Starting BookStore API server...");
+    Log.Information("Server will listen on: {Urls}", Environment.GetEnvironmentVariable("ASPNETCORE_URLS") ?? "Default URLs");
     app.Run();
+    Log.Information("📱 BookStore API started successfully and is ready to accept requests");
 }
 catch (Exception ex)
 {
