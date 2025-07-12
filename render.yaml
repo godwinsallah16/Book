@@ -1,0 +1,62 @@
+# Render.com Blueprint Configuration
+# This file defines how to deploy your BookStore application on Render.com
+
+services:
+  # Backend API Service
+  - type: web
+    name: bookstore-api
+    env: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://0.0.0.0:10000
+      - key: DATABASE_URL
+        fromDatabase:
+          name: bookstore-db
+          property: connectionString
+      - key: JwtSettings__SecretKey
+        generateValue: true
+      - key: JwtSettings__Issuer
+        value: BookStore.API
+      - key: JwtSettings__Audience
+        value: BookStore.Client
+      - key: JwtSettings__ExpirationHours
+        value: "24"
+      # Email Configuration
+      - key: EmailSettings__SmtpServer
+        value: smtp.gmail.com
+      - key: EmailSettings__SmtpPort
+        value: "587"
+      - key: EmailSettings__SmtpUsername
+        sync: false  # Set this as a secret in Render dashboard
+      - key: EmailSettings__SmtpPassword
+        sync: false  # Set this as a secret in Render dashboard
+      - key: EmailSettings__FromEmail
+        value: noreply@bookstore.com
+      - key: EmailSettings__FromName
+        value: BookStore
+      - key: EmailSettings__EnableSsl
+        value: "true"
+    healthCheckPath: /health
+    
+  # Frontend Static Site
+  - type: static
+    name: bookstore-frontend
+    buildCommand: |
+      cd BookStore-frontend
+      npm install
+      npm run build
+    publishPath: BookStore-frontend/dist
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: https://bookstore-api.onrender.com/api
+      - key: VITE_APP_NAME
+        value: BookStore
+
+# Database (PostgreSQL)
+databases:
+  - name: bookstore-db
+    databaseName: bookstore
+    user: bookstore_user

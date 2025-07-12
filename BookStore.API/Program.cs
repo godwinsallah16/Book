@@ -74,6 +74,7 @@ else
         if (databaseUrl != null)
         {
             finalConnectionString = databaseUrl;
+            Log.Information("Using DATABASE_URL for PostgreSQL connection");
         }
         else if (connectionString != null)
         {
@@ -83,9 +84,37 @@ else
                 connectionString.Contains("Integrated Security", StringComparison.OrdinalIgnoreCase))
             {
                 // This is a SQL Server connection string, but we need PostgreSQL
-                // Create a fallback connection string (this should not happen in production)
-                finalConnectionString = "Host=localhost;Database=BookStore;Username=postgres;Password=postgres;";
                 Log.Warning("SQL Server connection string detected but PostgreSQL is required. Using fallback connection string.");
+                
+                // In production, we should fail if DATABASE_URL is not set
+                if (builder.Environment.IsProduction())
+                {
+                    throw new InvalidOperationException("DATABASE_URL environment variable is required for PostgreSQL in production environment. Please ensure your database service is properly configured.");
+                }
+                else
+                {
+                    // Use fallback for development/testing
+                    finalConnectionString = "Host=localhost;Database=BookStore;Username=postgres;Password=postgres;";
+                    Log.Warning("Using fallback PostgreSQL connection string for development.");
+                }
+            }
+            else
+            {
+                finalConnectionString = connectionString;
+                Log.Information("Using connection string for PostgreSQL connection");
+            }
+        }
+        else
+        {
+            // No connection string available
+            if (builder.Environment.IsProduction())
+            {
+                throw new InvalidOperationException("No database connection string available. DATABASE_URL environment variable is required for production.");
+            }
+            else
+            {
+                finalConnectionString = "Host=localhost;Database=BookStore;Username=postgres;Password=postgres;";
+                Log.Warning("No connection string found. Using default PostgreSQL connection for development.");
             }
         }
     }
