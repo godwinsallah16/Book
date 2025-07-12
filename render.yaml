@@ -13,8 +13,8 @@ services:
   - type: web
     name: bookstore-api
     runtime: docker
-    dockerfilePath: ./BookStore.API/Dockerfile
-    dockerContext: ./BookStore.API
+    dockerfilePath: BookStore.API/Dockerfile
+    dockerContext: BookStore.API
     region: ohio # should match database region
     plan: free
     envVars:
@@ -40,8 +40,8 @@ services:
   - type: web
     name: bookstore-frontend
     runtime: docker
-    dockerfilePath: ./BookStore-frontend/Dockerfile
-    dockerContext: ./BookStore-frontend
+    dockerfilePath: BookStore-frontend/Dockerfile
+    dockerContext: BookStore-frontend
     region: ohio
     plan: free
     envVars:
