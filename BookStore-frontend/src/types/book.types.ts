@@ -12,6 +12,8 @@ export interface Book {
   imageUrl?: string;
   createdAt: string;
   updatedAt: string;
+  userId?: string;
+  uploaderName?: string;
 }
 
 export interface CreateBookRequest {

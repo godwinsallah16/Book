@@ -12,7 +12,7 @@ function App() {
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [searchFilters, setSearchFilters] = useState<BookFilters>({});
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<{ email: string; firstName: string; lastName: string } | null>(null);
+  const [user, setUser] = useState<{ userId: string; email: string; firstName: string; lastName: string } | null>(null);
 
   useEffect(() => {
     // Check if user is already authenticated

@@ -79,6 +79,7 @@ namespace BookStore.API.Services
                 return new AuthResponseDto
                 {
                     Token = string.Empty, // No token until email verified
+                    UserId = user.Id,
                     Email = user.Email!,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
@@ -141,6 +142,7 @@ namespace BookStore.API.Services
                 return new AuthResponseDto
                 {
                     Token = token,
+                    UserId = user.Id,
                     Email = user.Email!,
                     FirstName = user.FirstName,
                     LastName = user.LastName,

@@ -16,6 +16,7 @@ export interface RegisterRequest {
 
 export interface AuthResponse {
   token: string;
+  userId: string;
   email: string;
   firstName: string;
   lastName: string;
@@ -58,6 +59,7 @@ export const authService = {
       // Store token in localStorage
       localStorage.setItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN, response.data.token);
       localStorage.setItem(API_CONFIG.STORAGE_KEYS.USER, JSON.stringify({
+        userId: response.data.userId,
         email: response.data.email,
         firstName: response.data.firstName,
         lastName: response.data.lastName,
@@ -139,7 +141,7 @@ export const authService = {
   },
 
   // Get current user
-  getCurrentUser(): { email: string; firstName: string; lastName: string } | null {
+  getCurrentUser(): { userId: string; email: string; firstName: string; lastName: string } | null {
     const userStr = localStorage.getItem(API_CONFIG.STORAGE_KEYS.USER);
     return userStr ? JSON.parse(userStr) : null;
   },

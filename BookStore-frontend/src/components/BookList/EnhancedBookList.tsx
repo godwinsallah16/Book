@@ -21,6 +21,15 @@ export function EnhancedBookList({ filters, onBookSelect, onBookEdit, onBookDele
   const { books, loading, error } = state;
   const [favorites, setFavorites] = useState<Set<number>>(new Set());
   const [loadingStates, setLoadingStates] = useState<Record<number, { cart: boolean; favorite: boolean }>>({});
+  const currentUser = authService.getCurrentUser();
+
+  // Check if current user can edit/delete a book
+  const canUserEditBook = (book: Book): boolean => {
+    if (!currentUser) return false;
+    
+    // Check if user owns the book
+    return book.userId === currentUser.userId;
+  };
 
   useEffect(() => {
     fetchBooks(filters);
@@ -253,7 +262,7 @@ export function EnhancedBookList({ filters, onBookSelect, onBookEdit, onBookDele
                     View
                   </button>
                 )}
-                {onBookEdit && (
+                {onBookEdit && canUserEditBook(book) && (
                   <button
                     onClick={() => onBookEdit(book)}
                     className="btn btn-secondary"
@@ -262,7 +271,7 @@ export function EnhancedBookList({ filters, onBookSelect, onBookEdit, onBookDele
                     Edit
                   </button>
                 )}
-                {onBookDelete && (
+                {onBookDelete && canUserEditBook(book) && (
                   <button
                     onClick={() => handleDelete(book)}
                     className="btn btn-danger"

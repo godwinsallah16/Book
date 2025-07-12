@@ -8,8 +8,7 @@
     "dev:https": "vite --host --https",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "postinstall": "npm run build"
+    "preview": "vite preview"
   },
   "dependencies": {
     "axios": "^1.10.0",

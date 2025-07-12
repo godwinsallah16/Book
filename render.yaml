@@ -12,7 +12,7 @@ services:
   # Backend API Service (Docker)
   - type: web
     name: bookstore-api
-    env: docker
+    runtime: docker
     dockerfilePath: ./BookStore.API/Dockerfile
     dockerContext: ./BookStore.API
     region: ohio # should match database region
@@ -39,11 +39,14 @@ services:
   # Frontend Static Site (Docker)
   - type: web
     name: bookstore-frontend
-    env: docker
+    runtime: docker
     dockerfilePath: ./BookStore-frontend/Dockerfile
     dockerContext: ./BookStore-frontend
     region: ohio
     plan: free
     envVars:
       - key: VITE_API_BASE_URL
-        value: https://bookstore-api.onrender.com/api
+        fromService:
+          type: web
+          name: bookstore-api
+          property: host
