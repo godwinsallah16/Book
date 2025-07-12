@@ -114,8 +114,39 @@ else
         // Use DATABASE_URL if available, otherwise use the connection string
         if (databaseUrl != null)
         {
-            finalConnectionString = databaseUrl;
-            Log.Information("Using DATABASE_URL for PostgreSQL connection");
+            // Convert PostgreSQL URL format to .NET connection string format
+            if (databaseUrl.StartsWith("postgresql://") || databaseUrl.StartsWith("postgres://"))
+            {
+                try
+                {
+                    var uri = new Uri(databaseUrl);
+                    var connectionStringBuilder = new NpgsqlConnectionStringBuilder
+                    {
+                        Host = uri.Host,
+                        Port = uri.Port == -1 ? 5432 : uri.Port,
+                        Database = uri.LocalPath.TrimStart('/'),
+                        Username = uri.UserInfo.Split(':')[0],
+                        Password = uri.UserInfo.Split(':')[1],
+                        SslMode = SslMode.Require // Required for most cloud providers
+                    };
+                    
+                    finalConnectionString = connectionStringBuilder.ConnectionString;
+                    Log.Information("Successfully converted DATABASE_URL to connection string format");
+                    Log.Information("Host: {Host}, Database: {Database}, Username: {Username}", 
+                        connectionStringBuilder.Host, connectionStringBuilder.Database, connectionStringBuilder.Username);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "Failed to parse DATABASE_URL: {DatabaseUrl}", databaseUrl);
+                    throw new InvalidOperationException($"Invalid DATABASE_URL format: {ex.Message}");
+                }
+            }
+            else
+            {
+                // Already in .NET connection string format
+                finalConnectionString = databaseUrl;
+                Log.Information("Using DATABASE_URL as-is (already in .NET format)");
+            }
         }
         else if (connectionString != null)
         {
