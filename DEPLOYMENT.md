@@ -2,15 +2,16 @@
 
 ## Quick Start Deployment
 
-### 1. Frontend (GitHub Pages) - Already Configured ✅
+### 1. Frontend (GitHub Pages) - Setup Required
 
-Your frontend will automatically deploy to GitHub Pages when you push to the main branch.
+**Initial Setup:**
+1. Go to your GitHub repository settings
+2. Navigate to "Pages" in the left sidebar
+3. Under "Source", select "GitHub Actions"
+4. Push your code to the main branch (the workflow will run automatically)
+5. Your frontend will be available at: `https://godwinsallah16.github.io/Book/`
 
-**Steps:**
-1. Push your code to the main branch
-2. Go to your GitHub repository settings
-3. Enable GitHub Pages (if not already enabled)
-4. Your frontend will be available at: `https://godwinsallah16.github.io/Book/`
+**Note:** The GitHub Actions workflow is configured with the proper permissions to deploy to GitHub Pages automatically.
 
 ### 2. Backend Deployment Options
 
@@ -98,7 +99,21 @@ After deployment, verify:
    - **Solution**: The app automatically detects PostgreSQL connection strings and uses the appropriate database provider
    - **Fix**: Ensure your connection string contains "postgres" or "postgresql" for cloud deployments
 
-2. **CORS Errors:**
+2. **PostgreSQL Connection String Issues:**
+   - **Error**: "Couldn't set trusted_connection" or "The given key was not present in the dictionary"
+   - **Cause**: SQL Server connection string parameters being passed to PostgreSQL
+   - **Solution**: Ensure `DATABASE_URL` environment variable is set correctly on Render.com
+   - **Fix**: The app now automatically detects and handles this, but verify your Render database URL is properly set
+
+3. **GitHub Pages Deployment Permission Issues:**
+   - **Error**: "Permission denied to github-actions[bot]"
+   - **Solution**: Ensure repository settings have:
+     - Go to Settings → Actions → General → Workflow permissions
+     - Select "Read and write permissions"
+     - Check "Allow GitHub Actions to create and approve pull requests"
+     - Go to Settings → Pages → Select "GitHub Actions" as source
+
+4. **CORS Errors:**
    - Update CORS settings in your API to allow your frontend domain
 
 3. **JWT Token Issues:**

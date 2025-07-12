@@ -41,38 +41,68 @@ else
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
     var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
     
-    // Log the connection string for debugging (without sensitive data)
-    Log.Information("Connection string source: {Source}", 
-        connectionString != null ? connectionString.Substring(0, Math.Min(20, connectionString.Length)) + "..." : "null");
+    // Log the connection string source for debugging (without sensitive data)
+    if (databaseUrl != null)
+    {
+        Log.Information("Connection string source: DATABASE_URL environment variable");
+    }
+    else if (connectionString != null)
+    {
+        Log.Information("Connection string source: {Source}", 
+            connectionString.Substring(0, Math.Min(20, connectionString.Length)) + "...");
+    }
+    else
+    {
+        Log.Information("Connection string source: null");
+    }
     
     // Determine if we should use PostgreSQL
     bool usePostgreSQL = false;
+    string finalConnectionString = connectionString ?? "";
     
     // Check multiple indicators for PostgreSQL
-    if (connectionString?.Contains("postgres", StringComparison.OrdinalIgnoreCase) == true ||
+    if (databaseUrl != null ||
+        connectionString?.Contains("postgres", StringComparison.OrdinalIgnoreCase) == true ||
         connectionString?.Contains("postgresql", StringComparison.OrdinalIgnoreCase) == true ||
         connectionString?.Contains("npgsql", StringComparison.OrdinalIgnoreCase) == true ||
         connectionString?.Contains("Port=5432") == true ||
-        databaseUrl != null ||
         builder.Environment.IsProduction()) // Assume PostgreSQL in production
     {
         usePostgreSQL = true;
+        
+        // Use DATABASE_URL if available, otherwise use the connection string
+        if (databaseUrl != null)
+        {
+            finalConnectionString = databaseUrl;
+        }
+        else if (connectionString != null)
+        {
+            // If connection string contains SQL Server specific settings, create a basic PostgreSQL connection string
+            if (connectionString.Contains("Server=(localdb)", StringComparison.OrdinalIgnoreCase) ||
+                connectionString.Contains("trusted_connection", StringComparison.OrdinalIgnoreCase) ||
+                connectionString.Contains("Integrated Security", StringComparison.OrdinalIgnoreCase))
+            {
+                // This is a SQL Server connection string, but we need PostgreSQL
+                // Create a fallback connection string (this should not happen in production)
+                finalConnectionString = "Host=localhost;Database=BookStore;Username=postgres;Password=postgres;";
+                Log.Warning("SQL Server connection string detected but PostgreSQL is required. Using fallback connection string.");
+            }
+        }
     }
     
     if (usePostgreSQL)
     {
         // Use PostgreSQL for cloud deployments
-        var pgConnectionString = connectionString ?? databaseUrl;
         Log.Information("Using PostgreSQL database");
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseNpgsql(pgConnectionString));
+            options.UseNpgsql(finalConnectionString));
     }
     else
     {
         // Use SQL Server for local development
         Log.Information("Using SQL Server database");
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(connectionString));
+            options.UseSqlServer(finalConnectionString));
     }
 }
 
