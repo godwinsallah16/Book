@@ -72,11 +72,36 @@ EmailSettings__EnableSsl = true
 
 ## Important Notes
 
-### Database URL Format
-The DATABASE_URL should look like:
+### Database URL Format - CRITICAL!
+The DATABASE_URL should look **exactly** like this:
 ```
-postgres://username:password@host:port/database
+postgresql://username:password@host:port/database
 ```
+
+**Common Format Issues:**
+1. **Missing protocol**: Must start with `postgresql://` (not `postgres://`)
+2. **Extra spaces**: No spaces anywhere in the URL
+3. **Special characters**: Password may need URL encoding
+4. **Wrong format**: Must be complete URL, not partial
+
+**Example of correct format:**
+```
+postgresql://bookstore_user:mypassword123@dpg-abc123-a.ohio-postgres.render.com:5432/bookstore
+```
+
+### How to Get the Correct DATABASE_URL:
+1. Go to your PostgreSQL database in Render.com
+2. Click on "Info" tab
+3. Look for "External Database URL"
+4. **Copy the ENTIRE URL** (it's usually quite long)
+5. **Important**: If it starts with `postgres://`, change it to `postgresql://`
+
+### DATABASE_URL Troubleshooting:
+If you see "Format of the initialization string does not conform to specification":
+1. **Check the DATABASE_URL format** - it should be the complete External Database URL
+2. **Verify no extra spaces** at the beginning or end
+3. **Ensure it starts with `postgresql://`**
+4. **Test the URL** - you can test it with a PostgreSQL client
 
 ### JWT Secret Generation
 Generate a secure JWT secret (32+ characters):
@@ -110,6 +135,33 @@ After correct setup, you should see:
 ```
 
 ## Troubleshooting
+
+### Connection String Format Error
+**Error**: "Format of the initialization string does not conform to specification starting at index 0"
+**Cause**: Invalid DATABASE_URL format
+**Solution**:
+1. Go to your PostgreSQL database in Render.com
+2. Copy the complete "External Database URL" from the Info tab
+3. Ensure it starts with `postgresql://` (not `postgres://`)
+4. Remove any extra spaces
+5. Update the DATABASE_URL environment variable in your web service
+6. Redeploy
+
+### Other Common Issues
+1. **Database not ready**: Wait 2-3 minutes after creating the database before deploying the web service
+2. **Wrong region**: Ensure both database and web service are in the same region
+3. **Invalid DATABASE_URL**: Make sure you copied the complete External Database URL
+4. **Missing environment variables**: Double-check all required variables are set
+
+### Quick Fix Steps for Connection String Error:
+1. **Go to Render.com dashboard**
+2. **Click on your PostgreSQL database**
+3. **Go to "Info" tab**
+4. **Copy the "External Database URL"** (the long URL)
+5. **Go to your web service → Environment**
+6. **Update DATABASE_URL** with the copied URL
+7. **Ensure it starts with `postgresql://`**
+8. **Save and redeploy**
 
 If deployment still fails:
 1. Check that DATABASE_URL is properly set in the web service environment variables

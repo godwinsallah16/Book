@@ -2,41 +2,42 @@
 
 ## Problem Identified ✅
 
-The logs clearly show the issue:
+**Update**: We've made progress! The DATABASE_URL is now being set (previous issue fixed), but we have a new issue:
+
 ```
-DATABASE_URL exists: NO
-DATABASE_URL length: 0
-All env vars with DATABASE:
-No DATABASE env vars found
+Format of the initialization string does not conform to specification starting at index 0
 ```
 
-**Root Cause**: The `render.yaml` blueprint configuration is **NOT** properly setting the `DATABASE_URL` environment variable.
+**Root Cause**: The DATABASE_URL format is invalid or malformed.
+
+## Current Status:
+- ✅ DATABASE_URL is being set (previous issue fixed)
+- ❌ DATABASE_URL format is invalid (new issue)
 
 ## Solution ✅
 
-**Use Manual Setup Instead of Blueprint**
+**Fix the DATABASE_URL Format**
 
 ### Quick Fix Steps:
 
 1. **Go to your Render.com Dashboard**
-   - Find your current `bookstore-api` service
-   - Go to Environment tab
-   - Manually add the `DATABASE_URL` environment variable
+2. **Click on your PostgreSQL database service**
+3. **Go to "Info" tab**
+4. **Copy the complete "External Database URL"** (the very long URL)
+5. **Go to your web service → Environment tab**
+6. **Update DATABASE_URL** with the copied URL
+7. **Ensure it starts with `postgresql://`** (not `postgres://`)
+8. **Save and redeploy**
 
-2. **Get the Database URL:**
-   - Go to your PostgreSQL database service in Render
-   - Copy the "External Database URL"
-   - It should look like: `postgresql://username:password@hostname:port/database`
+### Required DATABASE_URL Format:
+```
+postgresql://username:password@hostname:port/database
+```
 
-3. **Set the Environment Variable:**
-   - In your web service, add:
-     ```
-     DATABASE_URL = postgresql://username:password@hostname:port/database
-     ```
-
-4. **Redeploy:**
-   - The service will automatically redeploy
-   - Check logs for: `DATABASE_URL exists: YES`
+**Example:**
+```
+postgresql://bookstore_user:abcd1234@dpg-xyz789-a.ohio-postgres.render.com:5432/bookstore
+```
 
 ### Expected Success Logs:
 
