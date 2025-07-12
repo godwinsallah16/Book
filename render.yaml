@@ -31,8 +31,20 @@ services:
         value: BookStore.API
       - key: JwtSettings__Audience
         value: BookStore.Client
-      - key: JwtSettings__ExpirationHours
+      - key: JwtSettings__ExpiryInHours
         value: "24"
+      - key: EmailSettings__From
+        value: noreply@bookstore.com
+      - key: EmailSettings__FromName
+        value: BookStore
+      - key: EmailSettings__SmtpServer
+        value: smtp.gmail.com
+      - key: EmailSettings__SmtpPort
+        value: "587"
+      - key: EmailSettings__EnableSsl
+        value: "true"
+      - key: EmailSettings__UseDefaultCredentials
+        value: "false"
     healthCheckPath: /health
         
   # Frontend Static Site
