@@ -1,0 +1,116 @@
+.verify-email-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.verify-email-card {
+  background: white;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 450px;
+  min-width: 350px;
+  text-align: center;
+}
+
+.verify-email-card h2 {
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 1.8rem;
+}
+
+.loading {
+  margin-bottom: 30px;
+}
+
+.loading p {
+  margin-top: 10px;
+  color: #666;
+}
+
+.success {
+  margin-bottom: 30px;
+}
+
+.success-icon {
+  font-size: 48px;
+  color: #28a745;
+  margin-bottom: 15px;
+}
+
+.success p {
+  color: #155724;
+  margin-bottom: 20px;
+}
+
+.error {
+  margin-bottom: 30px;
+}
+
+.error-icon {
+  font-size: 48px;
+  color: #dc3545;
+  margin-bottom: 15px;
+}
+
+.error p {
+  color: #721c24;
+  margin-bottom: 20px;
+}
+
+.spinner {
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #667eea;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 15px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.login-link {
+  display: inline-block;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: 600;
+  transition: opacity 0.3s ease;
+}
+
+.login-link:hover {
+  opacity: 0.9;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .verify-email-container {
+    padding: 10px;
+  }
+  
+  .verify-email-card {
+    padding: 30px 20px;
+    min-width: 300px;
+    max-width: 95vw;
+  }
+  
+  .verify-email-card h2 {
+    font-size: 1.5rem;
+  }
+}

@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  # SQL Server Database
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "BookStore123!"
+      MSSQL_PID: "Express"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    networks:
+      - bookstore-network
+    restart: unless-stopped
+
+  # BookStore API
+  bookstore-api:
+    build: 
+      context: .
+      dockerfile: BookStore.API/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=https://+:8081;http://+:8080
+      - ASPNETCORE_HTTPS_PORT=8081
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=BookStoreDb;User Id=sa;Password=BookStore123!;TrustServerCertificate=true;MultipleActiveResultSets=true
+      - JwtSettings__Secret=BookStore-Super-Secret-Key-For-JWT-Tokens-2024-Must-Be-At-Least-256-Bits-Long
+      - JwtSettings__Issuer=BookStore.API
+      - JwtSettings__Audience=BookStore.Client
+      - JwtSettings__ExpiryInHours=24
+      - EmailSettings__From=noreply@bookstore.com
+      - EmailSettings__FromName=BookStore
+      - EmailSettings__SmtpServer=smtp.gmail.com
+      - EmailSettings__SmtpPort=587
+      - EmailSettings__SmtpUsername=${SMTP_USERNAME}
+      - EmailSettings__SmtpPassword=${SMTP_PASSWORD}
+      - FrontendSettings__BaseUrl=https://localhost:443
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    depends_on:
+      - sqlserver
+    networks:
+      - bookstore-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "-k", "https://localhost:8081/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # BookStore Frontend
+  bookstore-frontend:
+    build:
+      context: ./BookStore-frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - bookstore-api
+    networks:
+      - bookstore-network
+    restart: unless-stopped
+
+volumes:
+  sqlserver_data:
+
+networks:
+  bookstore-network:
+    driver: bridge

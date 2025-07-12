@@ -1,0 +1,92 @@
+version: '3.8'
+
+services:
+  # SQL Server Database
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "${DB_PASSWORD}"
+      MSSQL_PID: "Express"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - bookstore-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P ${DB_PASSWORD} -Q 'SELECT 1'"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # BookStore API
+  bookstore-api:
+    image: ghcr.io/${GITHUB_REPOSITORY}/bookstore-api:main
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=https://+:8081;http://+:8080
+      - ASPNETCORE_HTTPS_PORT=8081
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=BookStoreDb;User Id=sa;Password=${DB_PASSWORD};TrustServerCertificate=true;MultipleActiveResultSets=true
+      - JwtSettings__Secret=${JWT_SECRET}
+      - JwtSettings__Issuer=BookStore.API
+      - JwtSettings__Audience=BookStore.Client
+      - JwtSettings__ExpiryInHours=24
+      - EmailSettings__From=${SMTP_FROM_EMAIL}
+      - EmailSettings__FromName=BookStore
+      - EmailSettings__SmtpServer=${SMTP_SERVER}
+      - EmailSettings__SmtpPort=${SMTP_PORT}
+      - EmailSettings__SmtpUsername=${SMTP_USERNAME}
+      - EmailSettings__SmtpPassword=${SMTP_PASSWORD}
+      - FrontendSettings__BaseUrl=${FRONTEND_URL}
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    networks:
+      - bookstore-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "-k", "https://localhost:8081/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # BookStore Frontend
+  bookstore-frontend:
+    image: ghcr.io/${GITHUB_REPOSITORY}/bookstore-frontend:main
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      bookstore-api:
+        condition: service_healthy
+    networks:
+      - bookstore-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Reverse Proxy (Nginx)
+  reverse-proxy:
+    image: nginx:alpine
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    volumes:
+      - ./nginx-proxy.conf:/etc/nginx/nginx.conf:ro
+      - ./certs:/etc/nginx/certs:ro
+    depends_on:
+      - bookstore-api
+    networks:
+      - bookstore-network
+    restart: unless-stopped
+
+volumes:
+  sqlserver_data:
+
+networks:
+  bookstore-network:
+    driver: bridge
