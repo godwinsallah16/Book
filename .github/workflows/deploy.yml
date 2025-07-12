@@ -1,0 +1,57 @@
+name: Deploy Frontend to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+        
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: BookStore-frontend/package-lock.json
+    
+    # Backend Tests
+    - name: Restore .NET dependencies
+      run: dotnet restore BookStore.API/BookStore.API.csproj
+      
+    - name: Build .NET project
+      run: dotnet build BookStore.API/BookStore.API.csproj --no-restore
+      
+    - name: Run .NET tests
+      run: dotnet test BookStore.API.Tests/BookStore.API.Tests.csproj --no-build --verbosity normal
+    
+    # Frontend Build and Deploy
+    - name: Install frontend dependencies
+      run: |
+        cd BookStore-frontend
+        npm ci
+    
+    - name: Build frontend
+      run: |
+        cd BookStore-frontend
+        npm run build
+      env:
+        VITE_API_BASE_URL: https://your-api-url.com/api
+        VITE_APP_NAME: BookStore
+    
+    - name: Deploy to GitHub Pages
+      if: github.ref == 'refs/heads/main'
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./BookStore-frontend/dist

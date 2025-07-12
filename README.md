@@ -54,6 +54,8 @@ A modern, full-stack bookstore application built with .NET 8 and React. This app
 - **Docker**: Containerization
 - **Docker Compose**: Multi-container orchestration
 - **GitHub**: Version control and CI/CD ready
+- **GitHub Pages**: Frontend hosting
+- **GitHub Actions**: Automated CI/CD pipeline
 
 ## 📋 Prerequisites
 
@@ -139,6 +141,32 @@ docker-compose -f docker-compose.prod.yml up -d
 ```bash
 docker-compose up -d
 ```
+
+## 🌐 GitHub Hosting & Deployment
+
+### Repository
+**GitHub Repository**: https://github.com/godwinsallah16/Book.git
+
+### Frontend Hosting on GitHub Pages
+The frontend can be automatically deployed to GitHub Pages using GitHub Actions:
+
+1. **Automatic Deployment**: Push to `main` branch triggers deployment
+2. **Live URL**: https://godwinsallah16.github.io/Book/
+3. **Build Process**: Automated with GitHub Actions
+
+### Backend Hosting Options
+For the backend API, consider these hosting platforms:
+- **Azure App Service**: Seamless .NET deployment
+- **Heroku**: Easy deployment with Git
+- **DigitalOcean**: Cost-effective VPS hosting
+- **AWS**: Scalable cloud infrastructure
+- **Railway**: Modern hosting platform
+
+### CI/CD Pipeline
+The project includes GitHub Actions for:
+- Automated testing on pull requests
+- Frontend deployment to GitHub Pages
+- Backend containerization and deployment ready
 
 ## 🧪 Running Tests
 
@@ -233,6 +261,68 @@ dotnet ef migrations remove
 
 ## 🚀 Deployment
 
+### Frontend Deployment (GitHub Pages)
+The frontend is automatically deployed to GitHub Pages on every push to main branch.
+
+**Live Demo**: https://godwinsallah16.github.io/Book/
+
+#### Manual Deployment to GitHub Pages
+```bash
+cd BookStore-frontend
+npm run build
+# Files in dist/ folder are ready for deployment
+```
+
+### Backend Deployment Options
+
+#### 1. Azure App Service (Recommended for .NET)
+```bash
+# Install Azure CLI
+az login
+az webapp create --resource-group myResourceGroup --plan myAppServicePlan --name myBookStoreAPI --runtime "DOTNET:8.0"
+az webapp deployment source config --name myBookStoreAPI --resource-group myResourceGroup --repo-url https://github.com/godwinsallah16/Book.git --branch main
+```
+
+#### 2. Railway
+```bash
+# Install Railway CLI
+npm install -g @railway/cli
+railway login
+railway init
+railway up
+```
+
+#### 3. Heroku
+```bash
+# Install Heroku CLI
+heroku create your-bookstore-api
+git push heroku main
+```
+
+#### 4. DigitalOcean App Platform
+1. Connect your GitHub repository
+2. Select the BookStore.API folder
+3. Configure environment variables
+4. Deploy automatically
+
+### Production Environment Variables
+
+#### Backend
+```bash
+# Required environment variables for production
+export ConnectionStrings__DefaultConnection="your-production-db-connection"
+export JwtSettings__SecretKey="your-secure-jwt-secret"
+export EmailSettings__SmtpServer="your-smtp-server"
+export EmailSettings__SmtpUsername="your-email"
+export EmailSettings__SmtpPassword="your-password"
+```
+
+#### Frontend
+```bash
+# Update for your deployed backend API URL
+export VITE_API_BASE_URL="https://your-api-domain.com/api"
+```
+
 ### Production Checklist
 - [ ] Update connection strings
 - [ ] Configure email settings
@@ -267,6 +357,13 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📞 Support
 
 For support, email godwinsallah16@example.com or create an issue in this repository.
+
+## 🌐 Live Demo & Links
+
+- **GitHub Repository**: https://github.com/godwinsallah16/Book.git
+- **Frontend Demo**: https://godwinsallah16.github.io/Book/ (GitHub Pages)
+- **API Documentation**: Available when backend is deployed
+- **Project Portfolio**: Showcase of modern full-stack development
 
 ---
 

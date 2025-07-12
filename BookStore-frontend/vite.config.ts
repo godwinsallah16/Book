@@ -5,6 +5,7 @@ import basicSsl from '@vitejs/plugin-basic-ssl'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), basicSsl()],
+  base: process.env.NODE_ENV === 'production' ? '/Book/' : '/',
   server: {
     host: true,
     port: 5174,
@@ -18,5 +19,10 @@ export default defineConfig({
   },
   preview: {
     port: 5174
+  },
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    sourcemap: false
   }
 })
