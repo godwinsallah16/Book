@@ -1,91 +1,120 @@
 # Deployment Status
 
-## Latest Updates (Package Version Fix)
+## Latest Updates (PostgreSQL Connection String Fix)
 
 ### Issue Fixed
-- **Problem**: TypeLoadException due to version mismatch between EF Core packages
-- **Root Cause**: EF Core packages were at version 9.0.7 while other ASP.NET Core packages were at 8.0.11
-- **Solution**: Downgraded all EF Core packages to 8.0.11 to match the .NET 8 framework
+- **Problem**: PostgreSQL receiving SQL Server connection string parameters like `trusted_connection`
+- **Root Cause**: Connection string detection was correct, but SQL Server connection string was being passed to PostgreSQL
+- **Solution**: Added proper connection string conversion and prioritized `DATABASE_URL` environment variable
 
-### Package Versions Now Aligned
-```xml
-<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.11" />
-<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.11" />
-<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.11" />
-<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.11" />
-<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
-<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.11" />
+### Key Improvements
+1. **Connection String Priority**: 
+   - `DATABASE_URL` environment variable (Render.com standard)
+   - Automatic detection of PostgreSQL vs SQL Server
+   - Fallback handling for mismatched connection strings
+
+2. **Enhanced Logging**:
+   - Clear indication of connection string source
+   - Improved debugging for database provider selection
+   - Warning messages for connection string mismatches
+
+3. **GitHub Pages Deployment**:
+   - Updated workflow with proper permissions
+   - Uses newer GitHub Pages actions for better reliability
+   - Separated build and deployment jobs
+
+### Fixed Code Logic
+```csharp
+// Prioritize DATABASE_URL for cloud deployments
+if (databaseUrl != null)
+{
+    finalConnectionString = databaseUrl;
+}
+else if (connectionString != null)
+{
+    // Handle SQL Server connection strings in PostgreSQL environment
+    if (connectionString.Contains("Server=(localdb)") ||
+        connectionString.Contains("trusted_connection") ||
+        connectionString.Contains("Integrated Security"))
+    {
+        finalConnectionString = "Host=localhost;Database=BookStore;Username=postgres;Password=postgres;";
+        Log.Warning("SQL Server connection string detected but PostgreSQL is required. Using fallback connection string.");
+    }
+}
 ```
 
 ### Verification
-- ✅ Local build successful: `dotnet build` completed without errors
-- ✅ Package restore successful: All dependencies resolved
+- ✅ Local build successful with improved connection string handling
+- ✅ Package versions aligned (all 8.0.11)
+- ✅ Connection string detection logic enhanced
+- ✅ GitHub Actions workflow updated with proper permissions
 - ✅ Changes committed and pushed to GitHub
-- ⏳ Render.com deployment in progress
+- ⏳ Render.com deployment in progress with DATABASE_URL priority
 
 ## Current Configuration
 
 ### Database Support
 - **Local Development**: SQL Server (Windows)
-- **Cloud/Production**: PostgreSQL (Render.com)
-- **Auto-detection**: Based on connection string and environment variables
+- **Cloud/Production**: PostgreSQL (Render.com via DATABASE_URL)
+- **Auto-detection**: Prioritizes DATABASE_URL, then connection string analysis
 
 ### Deployment Platforms
-- **Primary**: Render.com (PostgreSQL)
-- **Frontend**: Render.com (Static Site)
-- **CI/CD**: GitHub Actions
+- **Backend**: Render.com (PostgreSQL)
+- **Frontend**: GitHub Pages (with proper permissions)
+- **CI/CD**: GitHub Actions (updated workflow)
+
+## Expected Deployment Success
+
+The deployment should now succeed because:
+1. **DATABASE_URL takes priority** - Render.com provides proper PostgreSQL connection string
+2. **No SQL Server parameters** - Connection string conversion prevents `trusted_connection` errors
+3. **Proper logging** - Clear visibility into connection string source and database provider selection
+4. **Package compatibility** - All EF Core packages aligned at version 8.0.11
 
 ## Monitoring Deployment
 
 ### Check Render.com Status
-1. Visit your Render.com dashboard
-2. Check the BookStore API service logs
-3. Look for successful startup messages:
-   ```
-   Application started successfully
-   Using PostgreSQL database
-   Connection string source: Environment Variable
-   ```
+Look for these success indicators in logs:
+```
+[INFO] Connection string source: DATABASE_URL environment variable
+[INFO] Using PostgreSQL database
+Application started successfully
+```
 
-### Expected Deployment Timeline
-- **Build Time**: 5-10 minutes
+### Timeline
+- **Build Time**: 3-5 minutes
 - **Migration Time**: 1-2 minutes
-- **Total**: ~10-15 minutes
+- **Total**: ~5-10 minutes
 
-### Success Indicators
-- ✅ No TypeLoadException errors
-- ✅ PostgreSQL connection established
-- ✅ Database migrations applied
-- ✅ Seed data created
-- ✅ API endpoints responding
+## Next Steps After Success
 
-## Next Steps
+1. **Test API endpoints** - Verify all endpoints respond correctly
+2. **Check database data** - Ensure migrations and seeding worked
+3. **Test frontend** - Verify GitHub Pages deployment
+4. **Integration testing** - Test frontend-backend communication
 
-1. **Monitor Render.com deployment** (should complete in ~15 minutes)
-2. **Test API endpoints** once deployment is complete
-3. **Verify database functionality** (CRUD operations)
-4. **Test frontend integration** with backend API
+## GitHub Pages Status
+
+The GitHub Actions workflow now includes:
+- ✅ Proper permissions for GitHub Pages deployment
+- ✅ Separated build and deployment jobs
+- ✅ Uses modern GitHub Pages actions (v3/v4)
+- ✅ Handles repository permissions correctly
 
 ## If Issues Persist
 
-If you still encounter deployment errors:
+If deployment still fails:
+1. Check Render.com logs for the exact error
+2. Verify `DATABASE_URL` environment variable is set
+3. Ensure the database service is running
+4. Check that PostgreSQL connection string format is correct
 
-1. Check Render.com logs for specific error messages
-2. Verify environment variables are set correctly
-3. Ensure PostgreSQL connection string format is correct
-4. Check database migration status
-
-## Documentation Updated
+## Documentation Status
 
 - ✅ `README.md` - Updated with Docker and Render.com focus
-- ✅ `DEPLOYMENT.md` - Comprehensive deployment guide
-- ✅ `ENVIRONMENT_VARIABLES.md` - Environment configuration
+- ✅ `DEPLOYMENT.md` - Enhanced with troubleshooting section
+- ✅ `ENVIRONMENT_VARIABLES.md` - Environment configuration guide
 - ✅ `DATABASE_MIGRATION.md` - Database migration guide
-- ✅ Removed deprecated deployment files
+- ✅ `DEPLOYMENT_STATUS.md` - This status document
 
-## Contact
-
-If you need assistance with the deployment, please check:
-1. Render.com service logs
-2. GitHub Actions workflow results
-3. This deployment status document
+The deployment should now succeed with proper PostgreSQL connection string handling!
