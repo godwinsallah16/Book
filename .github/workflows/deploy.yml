@@ -53,6 +53,7 @@ jobs:
       env:
         VITE_API_BASE_URL: https://book-jkx8.onrender.com/api
         VITE_APP_NAME: BookStore
+        VITE_DEPLOYMENT_TARGET: github-pages
     
     - name: Upload build artifacts
       if: github.ref == 'refs/heads/main'

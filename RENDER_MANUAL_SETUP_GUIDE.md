@@ -79,6 +79,7 @@ The render.yaml blueprint configuration isn't properly setting the DATABASE_URL 
    ```env
    VITE_API_BASE_URL=https://your-actual-api-url.onrender.com/api
    VITE_APP_NAME=BookStore
+   VITE_DEPLOYMENT_TARGET=render
    ```
 
    **Replace `your-actual-api-url.onrender.com` with your actual API service URL from step 2.**
