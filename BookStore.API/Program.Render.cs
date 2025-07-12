@@ -57,7 +57,8 @@ try
                 Database = uri.LocalPath.TrimStart('/'),
                 Username = uri.UserInfo.Split(':')[0],
                 Password = uri.UserInfo.Split(':')[1],
-                SslMode = SslMode.Require
+                SslMode = SslMode.Require,
+                TrustServerCertificate = true // For cloud deployments
             };
             connectionString = connectionStringBuilder.ConnectionString;
             Log.Information("Using DATABASE_URL for PostgreSQL connection");
@@ -206,10 +207,6 @@ try
     });
 
     var app = builder.Build();
-    
-    Log.Information("WebApplication built successfully");
-    Log.Information("Environment: {Environment}", app.Environment.EnvironmentName);
-    Log.Information("Application URLs will be: {Urls}", Environment.GetEnvironmentVariable("ASPNETCORE_URLS") ?? "default");
 
     // Configure the HTTP request pipeline for cloud deployment
     
@@ -238,12 +235,10 @@ try
     app.UseAuthorization();
 
     app.MapControllers();
-    Log.Information("Controllers mapped successfully");
 
     // Add health check endpoint
     app.MapGet("/health", () => "OK");
     app.MapGet("/", () => "BookStore API is running! Visit /swagger for API documentation.");
-    Log.Information("Health check endpoints mapped successfully");
 
     // Database initialization for cloud deployment
     if (!builder.Environment.IsEnvironment("Testing"))
@@ -258,7 +253,7 @@ try
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
             // Wait for database to be ready
-            await WaitForDatabase(context, (Microsoft.Extensions.Logging.ILogger)logger);
+            await WaitForDatabase(context, logger);
             
             // Apply migrations
             if (context.Database.IsRelational())
@@ -286,18 +281,7 @@ try
     }
 
     Log.Information("BookStore API started successfully");
-    Log.Information("About to call app.Run() - this should keep the application alive");
-    
-    try
-    {
-        app.Run();
-        Log.Information("app.Run() completed - this should never happen unless shutdown is requested");
-    }
-    catch (Exception ex)
-    {
-        Log.Fatal(ex, "Exception occurred in app.Run()");
-        throw;
-    }
+    app.Run();
 }
 catch (Exception ex)
 {
@@ -310,7 +294,7 @@ finally
 }
 
 // Helper method to wait for database
-static async Task WaitForDatabase(ApplicationDbContext context, Microsoft.Extensions.Logging.ILogger logger)
+static async Task WaitForDatabase(ApplicationDbContext context, ILogger logger)
 {
     const int maxRetries = 10;
     const int delaySeconds = 3;
