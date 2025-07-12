@@ -322,7 +322,8 @@ builder.Services.AddCors(options =>
                 "https://localhost:5173",
                 "https://localhost:5174", 
                 "https://localhost:3000",
-                "https://localhost:5001" // Allow API to call itself if needed
+                "https://localhost:5001", // Allow API to call itself if needed
+                "https://godwinsallah16.github.io" // Allow GitHub Pages frontend
             )
               .AllowAnyHeader()
               .AllowAnyMethod()

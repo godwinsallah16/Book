@@ -1,7 +1,7 @@
 // API Configuration Constants
 export const API_CONFIG = {
-  // Base URLs
-  BASE_URL: 'https://localhost:5001/api',
+  // Base URLs - Use environment variable or fallback to localhost
+  BASE_URL: import.meta.env.VITE_API_BASE_URL || 'https://localhost:5001/api',
   
   // Timeouts
   DEFAULT_TIMEOUT: 10000,
