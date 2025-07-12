@@ -93,12 +93,13 @@ After deployment, verify:
 
 ### Common Issues:
 
-1. **CORS Errors:**
-   - Update CORS settings in your API to allow your frontend domain
+1. **Database Connection Issues (LocalDB Error on Render):**
+   - **Error**: "LocalDB is not supported on this platform"
+   - **Solution**: The app automatically detects PostgreSQL connection strings and uses the appropriate database provider
+   - **Fix**: Ensure your connection string contains "postgres" or "postgresql" for cloud deployments
 
-2. **Database Connection Issues:**
-   - Verify connection string format matches your database provider
-   - Check firewall rules
+2. **CORS Errors:**
+   - Update CORS settings in your API to allow your frontend domain
 
 3. **JWT Token Issues:**
    - Ensure JWT secret is at least 256 bits (32 characters)
@@ -107,6 +108,11 @@ After deployment, verify:
 4. **Frontend Build Issues:**
    - Check environment variables are set correctly
    - Verify API base URL is correct
+
+5. **Email Configuration Issues:**
+   - Verify SMTP credentials are correct
+   - Check if Gmail App Password is properly configured
+   - Ensure email settings environment variables are set
 
 ## Next Steps
 

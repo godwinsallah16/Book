@@ -15,6 +15,7 @@ using BookStore.API.Repositories;
 using BookStore.API.Repositories.Interfaces;
 using BookStore.API.Mappings;
 using BookStore.API.Middleware;
+using Npgsql.EntityFrameworkCore.PostgreSQL;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,9 +37,21 @@ if (builder.Environment.IsEnvironment("Testing"))
 }
 else
 {
-    // Use SQL Server for all other environments
-    builder.Services.AddDbContext<ApplicationDbContext>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    // Check if we're using PostgreSQL (for cloud deployments like Render)
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    
+    if (connectionString?.Contains("postgres") == true || connectionString?.Contains("postgresql") == true)
+    {
+        // Use PostgreSQL for cloud deployments
+        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseNpgsql(connectionString));
+    }
+    else
+    {
+        // Use SQL Server for local development
+        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseSqlServer(connectionString));
+    }
 }
 
 // Configure Identity with enhanced security
