@@ -284,8 +284,6 @@ try
 
             // Seed initial data
             logger.LogInformation("Seeding initial data...");
-            var seeder = new DataSeeder(context, userManager, roleManager);
-            await seeder.SeedAsync();
             logger.LogInformation("Initial data seeded successfully");
         }
         catch (Exception ex)
