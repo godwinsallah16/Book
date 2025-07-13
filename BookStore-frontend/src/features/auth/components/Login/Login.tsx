@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { authService } from '../../../../services';
 import type { LoginRequest } from '../../../../services/authService';
 import { Button, Input, Card } from '../../../../shared/components/ui';
@@ -16,6 +16,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -35,6 +36,11 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
       onLogin();
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Login failed. Please try again.';
+      // Check for unverified user error
+      if (typeof errorMessage === 'string' && errorMessage.toLowerCase().includes('not verified')) {
+        navigate('/verify');
+        return;
+      }
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -61,11 +67,10 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
               value={formData.email}
               onChange={handleChange}
               placeholder="Enter your email"
-              leftIcon={<span>📧</span>}
               required
               fullWidth
             />
-            
+
             <Input
               label="Password"
               type="password"
@@ -73,7 +78,6 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
               value={formData.password}
               onChange={handleChange}
               placeholder="Enter your password"
-              leftIcon={<span>🔒</span>}
               required
               fullWidth
             />
