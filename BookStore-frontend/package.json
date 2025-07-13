@@ -19,7 +19,8 @@
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\"",
     "test:type": "npm run type-check",
-    "analyze": "npm run build && npx vite-bundle-analyzer dist"
+    "analyze": "npm run build && npx vite-bundle-analyzer dist",
+    "postinstall": "npm run build"
   },
   "engines": {
     "node": ">=18.0.0",
