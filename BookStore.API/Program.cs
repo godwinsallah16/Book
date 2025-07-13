@@ -163,18 +163,11 @@ try
     // Configure CORS for production
     builder.Services.AddCors(options =>
     {
-        options.AddPolicy("AllowReactApp", policy =>
-        {
-            policy.WithOrigins(
-                    "https://localhost:5173",
-                    "https://localhost:3000",
-                    "https://godwinsallah16.github.io", // GitHub Pages frontend
-                    "https://bookstore-frontend-074u.onrender.com" // Render.com frontend
-                )
-                  .AllowAnyHeader()
-                  .AllowAnyMethod()
-                  .AllowCredentials();
-        });
+        options.AddPolicy("AllowFrontend",
+            policy => policy
+                .WithOrigins("https://bookstore-frontend-074u.onrender.com")
+                .AllowAnyHeader()
+                .AllowAnyMethod());
     });
 
     builder.Services.AddControllers();
@@ -249,7 +242,7 @@ try
     });
 
     // Use CORS for production
-    app.UseCors("AllowReactApp");
+    app.UseCors("AllowFrontend");
 
     app.UseAuthentication();
     app.UseAuthorization();
