@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import BookCard from './BookCard';
 import type { Book } from '../../../types/book.types';
-import { authService } from '../../../services';
-import bookService from '../../../services/bookService';
+import { bookService } from '../../../services/';
 import './FavoriteBooks.css';
 
 const FavoriteBooks: React.FC = () => {
-  const currentUser = authService.getCurrentUser();
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

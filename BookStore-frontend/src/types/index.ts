@@ -15,3 +15,10 @@ export * from './order.types';
 
 // Favorites types
 export * from './favorites.types';
+
+//Book Categories and Authors
+export * from './book.categories';
+
+//user types 
+export * from './user.types';
+

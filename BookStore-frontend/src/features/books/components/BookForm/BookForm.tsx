@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useBooks } from '../../../../hooks';
 import type { Book, CreateBookRequest } from '../../../../types/book.types';
+import { BOOK_CATEGORIES } from '../../../../types/book.categories';
 import './BookForm.css';
 
 interface BookFormProps {
@@ -10,8 +11,8 @@ interface BookFormProps {
 }
 
 const BookForm: React.FC<BookFormProps> = ({ book, onCancel, onSuccess }) => {
-  const { createBook, updateBook, fetchCategories, state } = useBooks();
-  const { loading, error, categories } = state;
+  const { createBook, updateBook, state } = useBooks();
+  const { loading, error } = state;
 
   const [formData, setFormData] = useState<CreateBookRequest>({
     title: '',
@@ -28,9 +29,7 @@ const BookForm: React.FC<BookFormProps> = ({ book, onCancel, onSuccess }) => {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  useEffect(() => {
-    fetchCategories();
-  }, [fetchCategories]);
+
 
   useEffect(() => {
     if (book) {
@@ -193,10 +192,16 @@ const BookForm: React.FC<BookFormProps> = ({ book, onCancel, onSuccess }) => {
             onChange={handleChange}
             className={errors.category ? 'error' : ''}
             required
+            aria-label="Select book category"
           >
             <option value="">Select a category</option>
-            {categories.map((cat: string) => (
-              <option key={cat} value={cat}>{cat}</option>
+            {BOOK_CATEGORIES.map(cat => (
+              <optgroup key={cat.name} label={cat.name}>
+                <option value={cat.name}>{cat.name}</option>
+                {cat.subgenres && cat.subgenres.map(sub => (
+                  <option key={cat.name + '-' + sub} value={sub}>{cat.name} - {sub}</option>
+                ))}
+              </optgroup>
             ))}
           </select>
           {errors.category && <span className="error-text">{errors.category}</span>}

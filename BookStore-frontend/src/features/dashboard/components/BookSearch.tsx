@@ -1,6 +1,7 @@
 import React from 'react';
 import './BookSearch.css';
 import type { BookFilters } from '../../../types/book.types';
+import { BOOK_CATEGORIES } from '../../../types/book.categories';
 
 interface BookSearchProps {
   onSearch: (filters: BookFilters) => void;
@@ -39,13 +40,18 @@ const BookSearch: React.FC<BookSearchProps> = ({ onSearch }) => {
         onChange={e => setAuthor(e.target.value)}
         className="book-search-input"
       />
-      <input
-        type="text"
-        placeholder="Category"
+      <select
         value={category}
         onChange={e => setCategory(e.target.value)}
         className="book-search-input"
-      />
+        aria-label="Category"
+        title="Category"
+      >
+        <option value="">All Categories</option>
+        {BOOK_CATEGORIES.map(cat => (
+          <option key={cat.name} value={cat.name}>{cat.name}</option>
+        ))}
+      </select>
       <button type="submit" className="book-search-btn">Search</button>
     </form>
   );
