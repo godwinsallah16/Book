@@ -1,0 +1,97 @@
+.book-card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  margin: 1rem;
+  width: 220px;
+  position: relative;
+}
+.book-card-image {
+  position: relative;
+  width: 120px;
+  height: 160px;
+  margin-bottom: 0.5rem;
+}
+.book-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 6px;
+  background: #f3f3f3;
+}
+.favorite-btn, .cart-btn {
+  position: absolute;
+  top: 8px;
+  background: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+.favorite-btn {
+  left: 8px;
+}
+.favorite-btn.active {
+  color: #e74c3c;
+}
+.cart-btn {
+  right: 8px;
+}
+.book-card-details {
+  text-align: center;
+}
+.book-card-details h3 {
+  font-size: 1.1rem;
+  margin: 0.2rem 0;
+}
+.book-card-details .author {
+  color: #555;
+  font-size: 0.95rem;
+}
+.book-card-details .price {
+  color: #2ecc71;
+  font-weight: bold;
+  margin: 0.2rem 0;
+}
+.book-card-details .category {
+  font-size: 0.85rem;
+  color: #888;
+}
+.book-card-details .desc {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0.3rem 0;
+}
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+.edit-btn {
+  background: #ffe066;
+  border: none;
+  border-radius: 4px;
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+  font-weight: 500;
+}
+.delete-btn {
+  background: #ff6b6b;
+  border: none;
+  border-radius: 4px;
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+  color: #fff;
+  font-weight: 500;
+}

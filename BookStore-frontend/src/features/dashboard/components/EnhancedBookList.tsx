@@ -1,6 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import './EnhancedBookList.css';
+import BookCard from './BookCard';
 import type { Book, BookFilters, PaginatedResponse } from '../../../types/book.types';
 import { authService } from '../../../services';
 import bookService from '../../../services/bookService';
@@ -63,6 +64,20 @@ const EnhancedBookList: React.FC<EnhancedBookListProps> = ({ filters, onBookEdit
     }
   };
 
+  // Dummy favorite state for demonstration (replace with real favorite logic)
+  const [favorites, setFavorites] = useState<number[]>([]);
+
+  const handleAddToCart = (book: Book) => {
+    // TODO: Implement add to cart logic
+    alert(`Added "${book.title}" to cart!`);
+  };
+
+  const handleToggleFavorite = (book: Book) => {
+    setFavorites((prev) =>
+      prev.includes(book.id) ? prev.filter(id => id !== book.id) : [...prev, book.id]
+    );
+  };
+
   return (
     <div>
       <h2>Book List</h2>
@@ -75,22 +90,23 @@ const EnhancedBookList: React.FC<EnhancedBookListProps> = ({ filters, onBookEdit
           {(books?.length ?? 0) === 0 ? (
             <p>No books found.</p>
           ) : (
-            <ul>
+            <div className="book-list-grid">
               {books?.map((book) => {
                 const canEditOrDelete = isAdmin || book.userId === currentUser?.userId;
                 return (
-                  <li key={book.id}>
-                    <strong>{book.title}</strong> by {book.author}
-                    {canEditOrDelete && (
-                      <>
-                        <button onClick={() => onBookEdit(book)} className="edit-btn">Edit</button>
-                        <button onClick={() => handleDelete(book.id)} className="delete-btn">Delete</button>
-                      </>
-                    )}
-                  </li>
+                  <BookCard
+                    key={book.id}
+                    book={book}
+                    onEdit={onBookEdit}
+                    onDelete={handleDelete}
+                    onAddToCart={handleAddToCart}
+                    onToggleFavorite={handleToggleFavorite}
+                    isFavorite={favorites.includes(book.id)}
+                    canEditOrDelete={canEditOrDelete}
+                  />
                 );
               })}
-            </ul>
+            </div>
           )}
           <div className="pagination">
             <button onClick={() => handlePageChange(page - 1)} disabled={page === 1}>

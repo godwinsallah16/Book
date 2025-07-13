@@ -1,3 +1,10 @@
+.book-list-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: flex-start;
+  margin: 1.5rem 0;
+}
 ul {
   list-style: none;
   padding: 0;
