@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { EnhancedBookList, BookSearch, Favorites } from '../../';
+import EnhancedBookList from '../components/EnhancedBookList';
+import BookSearch from '../components/BookSearch';
+import Favorites from '../components/Favorites';
 import type { Book, BookFilters } from '../../../types/book.types';
 import './DashboardPage.css';
 

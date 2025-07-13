@@ -1,21 +1,26 @@
-import type { Book, CreateBookRequest, UpdateBookRequest, BookFilters } from '../types';
+import type { Book, CreateBookRequest, UpdateBookRequest, BookFilters, PaginatedResponse } from '../types';
 import { apiClient } from '../utils/httpClient';
 import { API_CONFIG } from '../utils/constants';
 
 export const bookService = {
   // Get all books with optional filters
-  async getBooks(filters?: BookFilters): Promise<Book[]> {
+  async getBooks(
+    filters?: BookFilters,
+    page: number = 1,
+    pageSize: number = 10
+  ): Promise<PaginatedResponse<Book>> {
     try {
       const params = new URLSearchParams();
-      
       if (filters?.search) params.append('search', filters.search);
       if (filters?.category) params.append('category', filters.category);
       if (filters?.author) params.append('author', filters.author);
       if (filters?.minPrice !== undefined) params.append('minPrice', filters.minPrice.toString());
       if (filters?.maxPrice !== undefined) params.append('maxPrice', filters.maxPrice.toString());
       if (filters?.inStock !== undefined) params.append('inStock', filters.inStock.toString());
+      params.append('page', page.toString());
+      params.append('pageSize', pageSize.toString());
 
-      const response = await apiClient.get<Book[]>(`${API_CONFIG.ENDPOINTS.BOOKS.BASE}?${params.toString()}`);
+      const response = await apiClient.get<PaginatedResponse<Book>>(`${API_CONFIG.ENDPOINTS.BOOKS.BASE}?${params.toString()}`);
       return response.data;
     } catch (error) {
       console.error('Error fetching books:', error);

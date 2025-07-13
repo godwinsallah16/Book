@@ -64,6 +64,7 @@ export const authService = {
         email: response.data.email,
         firstName: response.data.firstName,
         lastName: response.data.lastName,
+        roles: response.data.roles,
       }));
       
       return response.data;
@@ -164,7 +165,7 @@ export const authService = {
   },
 
   // Get current user
-  getCurrentUser(): { userId: string; email: string; firstName: string; lastName: string; emailConfirmed?: boolean } | null {
+  getCurrentUser(): { userId: string; email: string; firstName: string; lastName: string; emailConfirmed?: boolean; roles?: string[] } | null {
     const userStr = localStorage.getItem(API_CONFIG.STORAGE_KEYS.USER);
     return userStr ? JSON.parse(userStr) : null;
   },
