@@ -13,10 +13,12 @@ interface BookListProps {
 const BookList: React.FC<BookListProps> = ({ filters, onBookSelect, onBookEdit, onBookDelete }) => {
   const { state, fetchBooks, deleteBook } = useBooks();
   const { books, loading, error } = state;
+  const [page, setPage] = React.useState(1);
+  const [pageSize, setPageSize] = React.useState(10);
 
   useEffect(() => {
-    fetchBooks(filters);
-  }, [fetchBooks, filters]);
+    fetchBooks(filters, page, pageSize);
+  }, [fetchBooks, filters, page, pageSize]);
 
   const handleDelete = async (book: Book) => {
     if (window.confirm(`Are you sure you want to delete "${book.title}"?`)) {
@@ -39,8 +41,27 @@ const BookList: React.FC<BookListProps> = ({ filters, onBookSelect, onBookEdit, 
     return <div className="error">{error}</div>;
   }
 
+
   if ((books?.length ?? 0) === 0) {
-    return <div className="empty">No books found</div>;
+    return (
+      <div>
+        <div className="empty">No books found</div>
+        <div className="pagination-controls">
+          <button disabled={page === 1} onClick={() => setPage(page - 1)}>Previous</button>
+          <span>Page {page}</span>
+          <button onClick={() => setPage(page + 1)}>Next</button>
+          <label>
+            Page Size:
+            <select value={pageSize} onChange={e => setPageSize(Number(e.target.value))}>
+              <option value={5}>5</option>
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+              <option value={50}>50</option>
+            </select>
+          </label>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -96,6 +117,20 @@ const BookList: React.FC<BookListProps> = ({ filters, onBookSelect, onBookEdit, 
             </div>
           </div>
         ))}
+      </div>
+      <div className="pagination-controls">
+        <button disabled={page === 1} onClick={() => setPage(page - 1)}>Previous</button>
+        <span>Page {page}</span>
+        <button onClick={() => setPage(page + 1)}>Next</button>
+        <label>
+          Page Size:
+          <select value={pageSize} onChange={e => setPageSize(Number(e.target.value))}>
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={20}>20</option>
+            <option value={50}>50</option>
+          </select>
+        </label>
       </div>
     </div>
   );

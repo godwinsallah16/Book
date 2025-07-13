@@ -19,16 +19,17 @@ namespace BookStore.API.Services
             _logger = logger;
         }
 
-        public async Task<IEnumerable<BookDto>> GetAllBooksAsync()
+
+        public async Task<IEnumerable<BookDto>> GetBooksPaginatedAsync(int page, int pageSize)
         {
             try
             {
-                var books = await _bookRepository.GetAllBooksAsync();
+                var books = await _bookRepository.GetBooksPaginatedAsync(page, pageSize);
                 return _mapper.Map<IEnumerable<BookDto>>(books);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while getting all books");
+                _logger.LogError(ex, "Error occurred while getting paginated books");
                 throw;
             }
         }

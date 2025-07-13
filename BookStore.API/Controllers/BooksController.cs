@@ -24,21 +24,21 @@ namespace BookStore.API.Controllers
         /// Get all books
         /// </summary>
         /// <returns>List of books</returns>
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<BookDto>>> GetBooks()
-        {
-            try
-            {
-                var books = await _bookService.GetAllBooksAsync();
-                return Ok(books);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while fetching books");
-                return StatusCode(500, "An error occurred while fetching books");
-            }
-        }
+[HttpGet]
+[AllowAnonymous]
+public async Task<ActionResult<IEnumerable<BookDto>>> GetBooks([FromQuery] int page = 1, [FromQuery] int pageSize = 20)
+{
+    try
+    {
+        var books = await _bookService.GetBooksPaginatedAsync(page, pageSize);
+        return Ok(books);
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "Error occurred while fetching books");
+        return StatusCode(500, "An error occurred while fetching books");
+    }
+}
 
         /// <summary>
         /// Get book by ID

@@ -16,18 +16,21 @@ namespace BookStore.API.Repositories
             _logger = logger;
         }
 
-        public async Task<IEnumerable<Book>> GetAllBooksAsync()
+
+        public async Task<IEnumerable<Book>> GetBooksPaginatedAsync(int page, int pageSize)
         {
             try
             {
                 return await _context.Books
                     .Where(b => !b.IsDeleted)
                     .OrderBy(b => b.Title)
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
                     .ToListAsync();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while fetching all books");
+                _logger.LogError(ex, "Error occurred while fetching paginated books");
                 throw;
             }
         }
@@ -65,7 +68,7 @@ namespace BookStore.API.Repositories
             try
             {
                 if (string.IsNullOrWhiteSpace(searchTerm))
-                    return await GetAllBooksAsync();
+                    return await GetBooksPaginatedAsync(1, 20); // Default page and size
 
                 var lowerSearchTerm = searchTerm.ToLower();
                 return await _context.Books

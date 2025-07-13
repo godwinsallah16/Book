@@ -74,7 +74,7 @@ function bookReducer(state: BookState, action: BookAction): BookState {
 
 interface BookContextType {
   state: BookState;
-  fetchBooks: (filters?: BookFilters) => Promise<void>;
+  fetchBooks: (filters?: BookFilters, page?: number, pageSize?: number) => Promise<void>;
   fetchBook: (id: number) => Promise<void>;
   createBook: (book: CreateBookRequest) => Promise<void>;
   updateBook: (id: number, book: UpdateBookRequest) => Promise<void>;
@@ -96,10 +96,10 @@ interface BookProviderProps {
 export const BookProvider: React.FC<BookProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(bookReducer, initialState);
 
-  const fetchBooks = useCallback(async (filters?: BookFilters) => {
+  const fetchBooks = useCallback(async (filters?: BookFilters, page: number = 1, pageSize: number = 10) => {
     dispatch({ type: 'SET_LOADING', payload: true });
     try {
-      const paginated = await bookService.getBooks(filters);
+      const paginated = await bookService.getBooks(filters, page, pageSize);
       dispatch({ type: 'SET_BOOKS', payload: paginated.data });
       if (filters) {
         dispatch({ type: 'SET_FILTERS', payload: filters });
