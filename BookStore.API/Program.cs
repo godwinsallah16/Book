@@ -155,7 +155,7 @@ try
     builder.Services.AddScoped<IBookRepository, BookRepository>();
     builder.Services.AddScoped<IBookService, BookService>();
     builder.Services.AddScoped<IAuthService, AuthService>();
-    builder.Services.AddScoped<IEmailService, MockEmailService>(); // Using mock email service
+    builder.Services.AddScoped<IEmailService, EmailService>(); // Using real email service
     builder.Services.AddScoped<IFavoriteService, FavoriteService>();
     builder.Services.AddScoped<ICartService, CartService>();
     builder.Services.AddScoped<IOrderService, OrderService>();
