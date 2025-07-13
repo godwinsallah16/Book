@@ -158,6 +158,8 @@ try
     builder.Services.AddScoped<IEmailService, EmailService>(); // Using real email service
     builder.Services.AddScoped<IFavoriteService, FavoriteService>();
     builder.Services.AddScoped<ICartService, CartService>();
+    builder.Services.AddScoped<IUserFavoriteRepository, UserFavoriteRepository>();
+    builder.Services.AddScoped<IUserFavoriteService, UserFavoriteService>();
     builder.Services.AddScoped<IOrderService, OrderService>();
 
     // Configure CORS for production

@@ -64,18 +64,34 @@ const EnhancedBookList: React.FC<EnhancedBookListProps> = ({ filters, onBookEdit
     }
   };
 
-  // Dummy favorite state for demonstration (replace with real favorite logic)
+
   const [favorites, setFavorites] = useState<number[]>([]);
+
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      try {
+        const favBooks = await bookService.getFavoriteBooks();
+        setFavorites(favBooks.map(b => b.id));
+      } catch {
+        setFavorites([]);
+      }
+    };
+    fetchFavorites();
+  }, []);
 
   const handleAddToCart = (book: Book) => {
     // TODO: Implement add to cart logic
     alert(`Added "${book.title}" to cart!`);
   };
 
-  const handleToggleFavorite = (book: Book) => {
-    setFavorites((prev) =>
-      prev.includes(book.id) ? prev.filter(id => id !== book.id) : [...prev, book.id]
-    );
+  const handleToggleFavorite = async (book: Book) => {
+    if (favorites.includes(book.id)) {
+      await bookService.removeFavorite(book.id);
+      setFavorites((prev) => prev.filter(id => id !== book.id));
+    } else {
+      await bookService.addFavorite(book.id);
+      setFavorites((prev) => [...prev, book.id]);
+    }
   };
 
   return (

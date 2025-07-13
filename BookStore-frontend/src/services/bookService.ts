@@ -91,6 +91,38 @@ export const bookService = {
       console.error('Error fetching authors:', error);
       throw error;
     }
+  },
+
+
+  // Get favorite books for current user
+  getFavoriteBooks: async (): Promise<Book[]> => {
+    try {
+      const response = await apiClient.get<Book[]>("/favorites");
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching favorite books:', error);
+      throw error;
+    }
+  },
+
+  // Add book to favorites
+  addFavorite: async (bookId: number): Promise<void> => {
+    try {
+      await apiClient.post(`/favorites/${bookId}`);
+    } catch (error) {
+      console.error('Error adding favorite:', error);
+      throw error;
+    }
+  },
+
+  // Remove book from favorites
+  removeFavorite: async (bookId: number): Promise<void> => {
+    try {
+      await apiClient.delete(`/favorites/${bookId}`);
+    } catch (error) {
+      console.error('Error removing favorite:', error);
+      throw error;
+    }
   }
 };
 
