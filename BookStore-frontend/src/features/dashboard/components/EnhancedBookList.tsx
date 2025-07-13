@@ -28,8 +28,8 @@ const EnhancedBookList: React.FC<EnhancedBookListProps> = ({ filters, onBookEdit
     setError(null);
     try {
       const result: PaginatedResponse<Book> = await bookService.getBooks(filters, page, pageSize);
-      setBooks(result.data);
-      setTotalPages(result.totalPages);
+      setBooks(Array.isArray(result.data) ? result.data : []);
+      setTotalPages(typeof result.totalPages === 'number' && result.totalPages > 0 ? result.totalPages : 1);
     } catch {
       setBooks([]);
       setTotalPages(1);
