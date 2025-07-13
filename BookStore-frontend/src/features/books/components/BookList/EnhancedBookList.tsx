@@ -156,7 +156,7 @@ export function EnhancedBookList({ filters, onBookSelect, onBookEdit, onBookDele
     );
   }
 
-  if (books.length === 0) {
+  if ((books?.length ?? 0) === 0) {
     return (
       <div className="enhanced-book-list">
         <div className="empty">No books found</div>
@@ -168,11 +168,11 @@ export function EnhancedBookList({ filters, onBookSelect, onBookEdit, onBookDele
     <div className="enhanced-book-list">
       <div className="books-header">
         <h2>Books</h2>
-        <p>{books.length} book(s) found</p>
+        <p>{books?.length ?? 0} book(s) found</p>
       </div>
       
       <div className="books-grid">
-        {books.map((book: Book) => (
+        {books?.map((book: Book) => (
           <div key={book.id} className="enhanced-book-card">
             <div className="book-image">
               {book.imageUrl ? (

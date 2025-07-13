@@ -91,9 +91,9 @@ const Orders: React.FC = () => {
         </button>
       </div>
 
-      {orders.length === 0 ? (
+      {(orders?.length ?? 0) === 0 ? (
         <div className="no-orders">
-          <div className="no-orders-icon">📦</div>
+          <div className="no-orders-icon"></div>
           <h2>No orders yet</h2>
           <p>You haven't placed any orders yet. Start shopping to see your orders here!</p>
           <button 
@@ -105,7 +105,7 @@ const Orders: React.FC = () => {
         </div>
       ) : (
         <div className="orders-list">
-          {orders.map(order => (
+          {orders?.map(order => (
             <div key={order.id} className="order-card">
               <div className="order-header">
                 <div className="order-info">
@@ -121,17 +121,17 @@ const Orders: React.FC = () => {
 
               <div className="order-details">
                 <div className="order-items">
-                  <h4>Items ({order.orderItems.length})</h4>
+                  <h4>Items ({order.orderItems?.length ?? 0})</h4>
                   <div className="items-summary">
-                    {order.orderItems.slice(0, 3).map(item => (
+                    {order.orderItems?.slice(0, 3).map(item => (
                       <div key={item.id} className="item-summary">
                         <span className="item-name">{item.bookTitle}</span>
                         <span className="item-quantity">x{item.quantity}</span>
                       </div>
                     ))}
-                    {order.orderItems.length > 3 && (
+                    {(order.orderItems?.length ?? 0) > 3 && (
                       <div className="more-items">
-                        +{order.orderItems.length - 3} more items
+                        +{(order.orderItems?.length ?? 0) - 3} more items
                       </div>
                     )}
                   </div>

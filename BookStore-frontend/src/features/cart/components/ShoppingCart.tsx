@@ -23,7 +23,7 @@ export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
   };
 
   const handleCheckout = async () => {
-    if (state.items.length === 0) {
+    if ((state.items?.length ?? 0) === 0) {
       alert('Your cart is empty');
       return;
     }
@@ -67,7 +67,7 @@ export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
         )}
 
         <div className="cart-content">
-          {state.items.length === 0 ? (
+          {(state.items?.length ?? 0) === 0 ? (
             <div className="empty-cart">
               <p>Your cart is empty</p>
               <button className="continue-shopping-btn" onClick={onClose}>
@@ -77,7 +77,7 @@ export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
           ) : (
             <>
               <div className="cart-items">
-                {state.items.map((item: CartItem) => (
+                {state.items?.map((item: CartItem) => (
                   <div key={item.id} className="cart-item">
                     <div className="item-image">
                       {item.book.imageUrl ? (

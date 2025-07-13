@@ -88,10 +88,10 @@ export function Favorites() {
     <div className="favorites-container">
       <div className="favorites-header">
         <h2>My Favorites</h2>
-        <p>{favorites.length} book(s) in your favorites</p>
+        <p>{favorites?.length ?? 0} book(s) in your favorites</p>
       </div>
 
-      {favorites.length === 0 ? (
+      {(favorites?.length ?? 0) === 0 ? (
         <div className="empty-favorites">
           <h3>No favorites yet</h3>
           <p>Start browsing books and add them to your favorites!</p>

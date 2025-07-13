@@ -71,11 +71,11 @@ const EnhancedBookList: React.FC<EnhancedBookListProps> = ({ filters, onBookEdit
         <div className="error-container">{error}</div>
       ) : (
         <>
-          {books.length === 0 ? (
+          {(books?.length ?? 0) === 0 ? (
             <p>No books found.</p>
           ) : (
             <ul>
-              {books.map((book) => {
+              {books?.map((book) => {
                 const canEditOrDelete = isAdmin || book.userId === currentUser?.userId;
                 return (
                   <li key={book.id}>

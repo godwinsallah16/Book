@@ -39,7 +39,7 @@ const BookList: React.FC<BookListProps> = ({ filters, onBookSelect, onBookEdit, 
     return <div className="error">{error}</div>;
   }
 
-  if (books.length === 0) {
+  if ((books?.length ?? 0) === 0) {
     return <div className="empty">No books found</div>;
   }
 
@@ -47,7 +47,7 @@ const BookList: React.FC<BookListProps> = ({ filters, onBookSelect, onBookEdit, 
     <div className="book-list">
       <h2>Books</h2>
       <div className="books-grid">
-        {books.map((book: Book) => (
+        {books?.map((book: Book) => (
           <div key={book.id} className="book-card">
             <div className="book-image">
               {book.imageUrl ? (

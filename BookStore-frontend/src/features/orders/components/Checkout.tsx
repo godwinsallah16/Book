@@ -43,7 +43,7 @@ const Checkout: React.FC = () => {
   };
 
   const handlePlaceOrder = async () => {
-    if (cartItems.length === 0) {
+    if ((cartItems?.length ?? 0) === 0) {
       setError('Your cart is empty');
       return;
     }
@@ -111,7 +111,7 @@ const Checkout: React.FC = () => {
     }));
   };
 
-  if (loading && cartItems.length === 0) {
+  if (loading && (cartItems?.length ?? 0) === 0) {
     return (
       <div className="checkout-container">
         <div className="loading">Loading...</div>
@@ -240,7 +240,7 @@ const Checkout: React.FC = () => {
           <button 
             className="place-order-button"
             onClick={handlePlaceOrder}
-            disabled={loading || cartItems.length === 0}
+            disabled={loading || (cartItems?.length ?? 0) === 0}
           >
             {loading ? 'Processing...' : `Place Order - $${total.toFixed(2)}`}
           </button>
