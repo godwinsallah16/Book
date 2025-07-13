@@ -7,20 +7,24 @@ import './EmailVerificationRequired.css';
 const EmailVerificationRequired: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  // Try to get email from location.state, fallback to current user
-  const userEmail = location.state?.userEmail || authService.getCurrentUser()?.email;
+  // Try to get email and verification status from location.state or current user
+  const currentUser = authService.getCurrentUser();
+  const userEmail = location.state?.userEmail || currentUser?.email;
+  const isVerified = currentUser?.emailConfirmed === true;
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [resendSuccess, setResendSuccess] = useState(false);
 
-  // If no userEmail, redirect to login (must be in useEffect)
+  // If no userEmail, redirect to login. If already verified, redirect to dashboard.
   React.useEffect(() => {
     if (!userEmail) {
       navigate('/login');
+    } else if (isVerified) {
+      navigate('/dashboard');
     }
-  }, [userEmail, navigate]);
-  if (!userEmail) return null;
+  }, [userEmail, isVerified, navigate]);
+  if (!userEmail || isVerified) return null;
 
   const handleResendVerification = async () => {
     setLoading(true);
