@@ -13,11 +13,13 @@ const EmailVerificationRequired: React.FC = () => {
   const [error, setError] = useState('');
   const [resendSuccess, setResendSuccess] = useState(false);
 
-  // If no userEmail, redirect to login
-  if (!userEmail) {
-    navigate('/login');
-    return null;
-  }
+  // If no userEmail, redirect to login (must be in useEffect)
+  React.useEffect(() => {
+    if (!userEmail) {
+      navigate('/login');
+    }
+  }, [userEmail, navigate]);
+  if (!userEmail) return null;
 
   const handleResendVerification = async () => {
     setLoading(true);
