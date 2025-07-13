@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { Button, Card } from '../../../shared/components/ui';
-
-const API_BASE_URL = 'https://book-jkx8.onrender.com/api/auth';
+import { publicApiClient, API_CONFIG } from '../../../utils';
 
 const VerifyEmailPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -19,7 +17,7 @@ const VerifyEmailPage: React.FC = () => {
       setMessage('Invalid verification link.');
       return;
     }
-    axios.post(`${API_BASE_URL}/verify-email`, { userId, token })
+    publicApiClient.post(API_CONFIG.ENDPOINTS.AUTH.VERIFY_EMAIL, { userId, token })
       .then(() => {
         setStatus('success');
         setMessage('Your email has been verified! You can now log in.');
