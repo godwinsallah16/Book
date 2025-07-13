@@ -100,7 +100,11 @@ namespace BookStore.API.Services
                         <h2>Hello {firstName}!</h2>
                         <p>Thank you for registering with BookStore. Please verify your email address by clicking the button below:</p>
                         <div style='text-align: center; margin: 30px 0;'>
-                            <a href='{verificationLink}' class='button'>Verify Email Address</a>
+                            <a href='{verificationLink}' style='text-decoration: none;' target='_blank'>
+                                <button style='display: inline-block; padding: 12px 30px; background-color: #007bff; color: white; border: none; border-radius: 5px; font-weight: bold; font-size: 16px; cursor: pointer;'>
+                                    Verify Email Address
+                                </button>
+                            </a>
                         </div>
                         <p>If you didn't create an account with us, please ignore this email.</p>
                         <p>This link will expire in 24 hours for security reasons.</p>
