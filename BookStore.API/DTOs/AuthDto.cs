@@ -49,6 +49,14 @@ namespace BookStore.API.DTOs
         public IList<string> Roles { get; set; } = new List<string>();
     }
 
+    public class AuthResultDto
+    {
+        public bool Success { get; set; }
+        public AuthResponseDto? Data { get; set; }
+        public List<string> Errors { get; set; } = new();
+        public string ErrorCode { get; set; } = string.Empty;
+    }
+
     public class ForgotPasswordDto
     {
         [Required]

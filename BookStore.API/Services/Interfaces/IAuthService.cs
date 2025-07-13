@@ -4,7 +4,7 @@ namespace BookStore.API.Services.Interfaces
 {
     public interface IAuthService
     {
-        Task<AuthResponseDto?> RegisterAsync(RegisterDto registerDto);
+        Task<AuthResultDto> RegisterAsync(RegisterDto registerDto);
         Task<AuthResponseDto?> LoginAsync(LoginDto loginDto);
         Task<string> GenerateJwtTokenAsync(string email, string userId);
         Task<bool> VerifyEmailAsync(string userId, string token);

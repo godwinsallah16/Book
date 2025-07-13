@@ -1,4 +1,4 @@
-import type { Book, CreateBookRequest, UpdateBookRequest, BookFilters } from '../types/book.types';
+import type { Book, CreateBookRequest, UpdateBookRequest, BookFilters } from '../types';
 import { apiClient } from '../utils/httpClient';
 import { API_CONFIG } from '../utils/constants';
 

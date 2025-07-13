@@ -1,5 +1,4 @@
-import { publicApiClient } from '../utils/httpClient';
-import { API_CONFIG } from '../utils/constants';
+import { publicApiClient, API_CONFIG } from '../utils';
 
 export interface LoginRequest {
   email: string;
@@ -21,6 +20,8 @@ export interface AuthResponse {
   firstName: string;
   lastName: string;
   expiration: string;
+  emailConfirmed: boolean;
+  roles: string[];
 }
 
 export interface VerifyEmailRequest {
@@ -73,9 +74,9 @@ export const authService = {
   },
 
   // Register user
-  async register(registerData: RegisterRequest): Promise<AuthResponse> {
+  async register(registerData: RegisterRequest): Promise<{ success: boolean; message: string; data?: AuthResponse }> {
     try {
-      const response = await publicApiClient.post<AuthResponse>(API_CONFIG.ENDPOINTS.AUTH.REGISTER, registerData);
+      const response = await publicApiClient.post(API_CONFIG.ENDPOINTS.AUTH.REGISTER, registerData);
       
       // DO NOT store token after registration - user must verify email first
       
@@ -83,17 +84,39 @@ export const authService = {
     } catch (error: unknown) {
       console.error('Registration error:', error);
       
-      // Handle validation errors with user-friendly messages
+      // Handle enhanced error responses
       if (error && typeof error === 'object' && 'response' in error) {
         const axiosError = error as { response?: { data?: unknown; status?: number } };
         
         if (axiosError.response?.status === 400) {
-          // Handle validation errors
           const errorData = axiosError.response.data;
           
-          // Check if it's a validation error
+          // Handle new enhanced error format
           if (errorData && typeof errorData === 'object') {
-            // Handle ModelState validation errors
+            if ('errorCode' in errorData && 'message' in errorData) {
+              // Enhanced error response format
+              const errorResponse = errorData as {
+                errorCode: string;
+                message: string;
+                errors?: string[];
+              };
+              
+              const { errorCode, message, errors } = errorResponse;
+              
+              // Provide specific error messages based on error code
+              switch (errorCode) {
+                case 'USER_EXISTS':
+                  throw new Error('A user with this email address already exists. Please use a different email or try logging in.');
+                case 'VALIDATION_ERROR':
+                  throw new Error(errors && errors.length > 0 ? errors.join('. ') : message);
+                case 'INTERNAL_ERROR':
+                  throw new Error('An internal error occurred. Please try again later.');
+                default:
+                  throw new Error(typeof message === 'string' ? message : 'Registration failed. Please check your information and try again.');
+              }
+            }
+            
+            // Handle legacy ModelState validation errors
             if ('errors' in errorData && errorData.errors) {
               const validationErrors = [];
               const errors = errorData.errors as Record<string, string[]>;
@@ -141,9 +164,15 @@ export const authService = {
   },
 
   // Get current user
-  getCurrentUser(): { userId: string; email: string; firstName: string; lastName: string } | null {
+  getCurrentUser(): { userId: string; email: string; firstName: string; lastName: string; emailConfirmed?: boolean } | null {
     const userStr = localStorage.getItem(API_CONFIG.STORAGE_KEYS.USER);
     return userStr ? JSON.parse(userStr) : null;
+  },
+
+  // Check if current user's email is verified
+  isEmailVerified(): boolean {
+    const user = this.getCurrentUser();
+    return user ? user.emailConfirmed === true : false;
   },
 
   // Get auth token

@@ -1,4 +1,4 @@
-import type { CartItem, AddToCartRequest, UpdateCartItemRequest, CartSummary } from '../types/cart.types';
+import type { CartItem, AddToCartRequest, UpdateCartItemRequest, CartSummary } from '../types';
 import { apiClient } from '../utils/httpClient';
 import { API_CONFIG } from '../utils/constants';
 

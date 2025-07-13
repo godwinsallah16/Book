@@ -1,4 +1,4 @@
-import type { Favorite, AddToFavoritesRequest } from '../types/favorites.types';
+import type { Favorite, AddToFavoritesRequest } from '../types';
 import { apiClient } from '../utils/httpClient';
 import { API_CONFIG } from '../utils/constants';
 

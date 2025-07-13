@@ -1,0 +1,147 @@
+/* Modal Component Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal-content {
+  background-color: var(--color-background);
+  border-radius: var(--border-radius-lg);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  animation: slideIn 0.2s ease-out;
+  outline: none;
+}
+
+/* Size variants */
+.modal-content--sm {
+  width: 100%;
+  max-width: 384px;
+}
+
+.modal-content--md {
+  width: 100%;
+  max-width: 512px;
+}
+
+.modal-content--lg {
+  width: 100%;
+  max-width: 768px;
+}
+
+.modal-content--xl {
+  width: 100%;
+  max-width: 1024px;
+}
+
+.modal-content--full {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  border-radius: 0;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 1.5rem 0 1.5rem;
+  flex-shrink: 0;
+}
+
+.modal-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  border-radius: var(--border-radius-md);
+  color: var(--color-gray-400);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  margin: -0.5rem -0.5rem -0.5rem 0;
+}
+
+.modal-close:hover {
+  color: var(--color-gray-600);
+  background-color: var(--color-gray-100);
+}
+
+.modal-close:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.modal-body {
+  padding: 1.5rem;
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* When there's no title, adjust padding */
+.modal-content:not(:has(.modal-header)) .modal-body {
+  padding-top: 1.5rem;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-1rem) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 640px) {
+  .modal-overlay {
+    padding: 0.5rem;
+  }
+  
+  .modal-content--sm,
+  .modal-content--md,
+  .modal-content--lg,
+  .modal-content--xl {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+  }
+  
+  .modal-header {
+    padding: 1rem 1rem 0 1rem;
+  }
+  
+  .modal-body {
+    padding: 1rem;
+  }
+}

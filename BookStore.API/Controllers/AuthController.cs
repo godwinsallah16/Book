@@ -29,7 +29,7 @@ namespace BookStore.API.Controllers
         /// <param name="registerDto">User registration details</param>
         /// <returns>Authentication response with JWT token</returns>
         [HttpPost("register")]
-        public async Task<ActionResult<AuthResponseDto>> Register([FromBody] RegisterDto registerDto)
+        public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {
             try
             {
@@ -38,31 +38,62 @@ namespace BookStore.API.Controllers
                 if (registerDto == null)
                 {
                     _logger.LogWarning("Registration failed: registerDto is null");
-                    return BadRequest("Registration data is required");
+                    return BadRequest(new { 
+                        success = false,
+                        errorCode = "INVALID_REQUEST",
+                        message = "Registration data is required",
+                        errors = new[] { "Registration data is required" }
+                    });
                 }
                 
                 if (!ModelState.IsValid)
                 {
+                    var errors = ModelState.Values
+                        .SelectMany(v => v.Errors)
+                        .Select(e => e.ErrorMessage)
+                        .ToList();
+                    
                     _logger.LogWarning("Registration failed due to model validation errors for {Email}: {Errors}", 
-                        registerDto.Email, 
-                        string.Join(", ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)));
-                    return BadRequest(ModelState);
+                        registerDto.Email, string.Join(", ", errors));
+                    
+                    return BadRequest(new { 
+                        success = false,
+                        errorCode = "VALIDATION_ERROR",
+                        message = "Validation failed. Please check your input and try again.",
+                        errors = errors
+                    });
                 }
 
                 var result = await _authService.RegisterAsync(registerDto);
-                if (result == null)
+                
+                if (!result.Success)
                 {
-                    _logger.LogWarning("Registration service returned null for {Email}", registerDto.Email);
-                    return BadRequest("Registration failed. User might already exist.");
+                    return BadRequest(new
+                    {
+                        success = false,
+                        errorCode = result.ErrorCode,
+                        message = GetUserFriendlyMessage(result.ErrorCode),
+                        errors = result.Errors
+                    });
                 }
 
                 _logger.LogInformation("User registered successfully: {Email}", registerDto.Email);
-                return Ok(result);
+                return Ok(new
+                {
+                    success = true,
+                    message = "Registration successful. Please check your email to verify your account.",
+                    data = result.Data
+                });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred during user registration");
-                return StatusCode(500, "An error occurred during registration");
+                return StatusCode(500, new { 
+                    success = false,
+                    errorCode = "INTERNAL_ERROR",
+                    message = "An internal server error occurred during registration. Please try again later.",
+                    errors = new[] { "An internal server error occurred." }
+                });
             }
         }
 
@@ -246,6 +277,17 @@ namespace BookStore.API.Controllers
                 _logger.LogError(ex, "Error occurred while clearing all users");
                 return StatusCode(500, "An error occurred while clearing users");
             }
+        }
+
+        private static string GetUserFriendlyMessage(string errorCode)
+        {
+            return errorCode switch
+            {
+                "USER_EXISTS" => "A user with this email address already exists. Please use a different email or try logging in.",
+                "VALIDATION_ERROR" => "Registration failed due to validation errors. Please check your input and try again.",
+                "INTERNAL_ERROR" => "An internal error occurred. Please try again later.",
+                _ => "Registration failed. Please check your information and try again."
+            };
         }
     }
 }

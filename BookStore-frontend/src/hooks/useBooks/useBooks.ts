@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { BookContext } from '../../context/BookContext';
+import { BookContext } from '../../context';
 
 export const useBooks = () => {
   const context = useContext(BookContext);

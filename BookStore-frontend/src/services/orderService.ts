@@ -6,8 +6,8 @@ import type {
   PaymentRequestDto,
   PaymentResponseDto,
   OrderSummaryDto
-} from '../types/order.types';
-import { OrderStatus } from '../types/order.types';
+} from '../types';
+import { OrderStatus } from '../types';
 
 export const orderService = {
   // Create new order

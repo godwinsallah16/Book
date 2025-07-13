@@ -1,5 +1,5 @@
 import React, { createContext, useReducer, useCallback } from 'react';
-import type { Book, BookFilters, CreateBookRequest, UpdateBookRequest } from '../../types/book.types';
+import type { Book, BookFilters, CreateBookRequest, UpdateBookRequest } from '../../types';
 import { bookService } from '../../services/bookService';
 import type { AxiosError } from 'axios';
 

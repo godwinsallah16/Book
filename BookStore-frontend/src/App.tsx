@@ -1,62 +1,81 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { BookProvider } from './context/BookContext';
-import { CartProvider } from './context/CartContext';
-import { BookForm, BookSearch, Login, Register, ForgotPassword, ResetPassword, VerifyEmail, EnhancedBookList, Navigation, Favorites, NotFound, Checkout, OrderConfirmation, Orders } from './components';
+import { BookProvider, CartProvider } from './context';
+import { 
+  LoginPage, 
+  RegisterPage, 
+  EmailVerificationRequired,
+  DashboardPage,
+  BookFormPage,
+  ForgotPassword,
+  ResetPassword,
+  VerifyEmail,
+  Checkout,
+  OrderConfirmation,
+  Orders
+} from './features';
+import { 
+  Navigation, 
+  NotFound
+} from './shared/components';
 import { authService } from './services/authService';
-import type { Book, BookFilters } from './types/book.types';
+import type { Book } from './types/book.types';
 import './App.css';
 
 function App() {
-  const [currentView, setCurrentView] = useState<'list' | 'add' | 'edit' | 'favorites'>('list');
+  const [currentView, setCurrentView] = useState<'list' | 'favorites'>('list');
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
-  const [searchFilters, setSearchFilters] = useState<BookFilters>({});
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<{ userId: string; email: string; firstName: string; lastName: string } | null>(null);
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [user, setUser] = useState<{ 
+    userId: string; 
+    email: string; 
+    firstName: string; 
+    lastName: string; 
+    emailConfirmed?: boolean 
+  } | null>(null);
 
   useEffect(() => {
     // Check if user is already authenticated
     const authenticated = authService.isAuthenticated();
     setIsAuthenticated(authenticated);
     if (authenticated) {
-      setUser(authService.getCurrentUser());
+      const currentUser = authService.getCurrentUser();
+      setUser(currentUser);
+      setIsEmailVerified(authService.isEmailVerified());
     }
   }, []);
 
   const handleViewChange = (view: string) => {
-    if (view === 'list' || view === 'add' || view === 'edit' || view === 'favorites') {
+    if (view === 'list' || view === 'favorites') {
       setCurrentView(view);
     }
   };
 
   const handleEditBook = (book: Book) => {
     setSelectedBook(book);
-    setCurrentView('edit');
-  };
-
-  const handleSearch = (filters: BookFilters) => {
-    setSearchFilters(filters);
   };
 
   const handleFormSuccess = () => {
-    setCurrentView('list');
     setSelectedBook(null);
   };
 
   const handleFormCancel = () => {
-    setCurrentView('list');
     setSelectedBook(null);
   };
 
   const handleLogin = () => {
     setIsAuthenticated(true);
-    setUser(authService.getCurrentUser());
+    const currentUser = authService.getCurrentUser();
+    setUser(currentUser);
+    setIsEmailVerified(authService.isEmailVerified());
   };
 
   const handleLogout = () => {
     authService.logout();
     setIsAuthenticated(false);
     setUser(null);
+    setIsEmailVerified(false);
   };
 
   // Layout component for authenticated users
@@ -67,8 +86,6 @@ function App() {
           <Navigation 
             user={user}
             onLogout={handleLogout}
-            currentView={currentView}
-            onViewChange={handleViewChange}
           />
           <main className="main-content">
             {children}
@@ -78,25 +95,18 @@ function App() {
     </CartProvider>
   );
 
-  // Books page component
-  const BooksPage = () => (
-    <>
-      <BookSearch onSearch={handleSearch} />
-      <EnhancedBookList 
-        onBookEdit={handleEditBook}
-        filters={searchFilters}
-      />
-    </>
-  );
-
-  // Add/Edit Book page component
-  const BookFormPage = () => (
-    <BookForm 
-      book={selectedBook || undefined}
-      onSuccess={handleFormSuccess}
-      onCancel={handleFormCancel}
-    />
-  );
+  // Protected Route Component that checks both authentication and email verification
+  const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+    if (!isAuthenticated) {
+      return <Navigate to="/login" replace />;
+    }
+    
+    if (!isEmailVerified) {
+      return <EmailVerificationRequired userEmail={user?.email} />;
+    }
+    
+    return <AuthenticatedLayout>{children}</AuthenticatedLayout>;
+  };
 
   return (
     <Router>
@@ -107,9 +117,9 @@ function App() {
             path="/login" 
             element={
               !isAuthenticated ? (
-                <Login onLogin={handleLogin} />
+                <LoginPage onLogin={handleLogin} />
               ) : (
-                <Navigate to="/books" replace />
+                <Navigate to="/dashboard" replace />
               )
             } 
           />
@@ -117,9 +127,9 @@ function App() {
             path="/register" 
             element={
               !isAuthenticated ? (
-                <Register />
+                <RegisterPage />
               ) : (
-                <Navigate to="/books" replace />
+                <Navigate to="/dashboard" replace />
               )
             } 
           />
@@ -127,90 +137,101 @@ function App() {
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
           
+          {/* Email Verification Required Route */}
+          <Route 
+            path="/email-verification-required" 
+            element={
+              isAuthenticated && !isEmailVerified ? (
+                <EmailVerificationRequired userEmail={user?.email} />
+              ) : (
+                <Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />
+              )
+            } 
+          />
+          
           {/* Protected Routes */}
+          <Route 
+            path="/dashboard" 
+            element={
+              <ProtectedRoute>
+                <DashboardPage 
+                  currentView={currentView}
+                  onBookEdit={handleEditBook}
+                  onViewChange={handleViewChange}
+                />
+              </ProtectedRoute>
+            } 
+          />
+          
           <Route 
             path="/books" 
             element={
-              isAuthenticated ? (
-                <AuthenticatedLayout>
-                  <BooksPage />
-                </AuthenticatedLayout>
-              ) : (
-                <Navigate to="/login" replace />
-              )
+              <Navigate to="/dashboard" replace />
             } 
           />
           
           <Route 
             path="/add-book" 
             element={
-              isAuthenticated ? (
-                <AuthenticatedLayout>
-                  <BookFormPage />
-                </AuthenticatedLayout>
-              ) : (
-                <Navigate to="/login" replace />
-              )
+              <ProtectedRoute>
+                <BookFormPage 
+                  onSuccess={handleFormSuccess}
+                  onCancel={handleFormCancel}
+                />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/edit-book" 
+            element={
+              <ProtectedRoute>
+                <BookFormPage 
+                  book={selectedBook || undefined}
+                  onSuccess={handleFormSuccess}
+                  onCancel={handleFormCancel}
+                />
+              </ProtectedRoute>
             } 
           />
           
           <Route 
             path="/favorites" 
             element={
-              isAuthenticated ? (
-                <AuthenticatedLayout>
-                  <Favorites />
-                </AuthenticatedLayout>
-              ) : (
-                <Navigate to="/login" replace />
-              )
+              <ProtectedRoute>
+                <DashboardPage 
+                  currentView="favorites"
+                  onBookEdit={handleEditBook}
+                  onViewChange={handleViewChange}
+                />
+              </ProtectedRoute>
             } 
           />
           
           <Route 
             path="/checkout" 
             element={
-              isAuthenticated ? (
-                <AuthenticatedLayout>
-                  <Checkout />
-                </AuthenticatedLayout>
-              ) : (
-                <Navigate to="/login" replace />
-              )
+              <ProtectedRoute>
+                <Checkout />
+              </ProtectedRoute>
             } 
           />
           
           <Route 
             path="/orders" 
             element={
-              isAuthenticated ? (
-                <AuthenticatedLayout>
-                  <Orders />
-                </AuthenticatedLayout>
-              ) : (
-                <Navigate to="/login" replace />
-              )
+              <ProtectedRoute>
+                <Orders />
+              </ProtectedRoute>
             } 
           />
           
           <Route 
             path="/order-confirmation/:orderId" 
             element={
-              isAuthenticated ? (
-                <AuthenticatedLayout>
-                  <OrderConfirmation />
-                </AuthenticatedLayout>
-              ) : (
-                <Navigate to="/login" replace />
-              )
-            } 
-          />
-          
-          {/* Legacy route - redirect to books */}
-          <Route 
-            path="/dashboard" 
-            element={
-              <Navigate to="/books" replace />
+              <ProtectedRoute>
+                <OrderConfirmation />
+              </ProtectedRoute>
             } 
           />
           
@@ -218,7 +239,7 @@ function App() {
           <Route 
             path="/" 
             element={
-              <Navigate to={isAuthenticated ? "/books" : "/login"} replace />
+              <Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />
             } 
           />
           
@@ -228,7 +249,7 @@ function App() {
             element={
               <NotFound 
                 message="The page you're looking for doesn't exist."
-                redirectTo={isAuthenticated ? "/books" : "/login"}
+                redirectTo={isAuthenticated ? "/dashboard" : "/login"}
               />
             } 
           />

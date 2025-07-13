@@ -36,7 +36,7 @@ namespace BookStore.API.Services
             _emailService = emailService;
         }
 
-        public async Task<AuthResponseDto?> RegisterAsync(RegisterDto registerDto)
+        public async Task<AuthResultDto> RegisterAsync(RegisterDto registerDto)
         {
             try
             {
@@ -45,7 +45,12 @@ namespace BookStore.API.Services
                 if (existingUser != null)
                 {
                     _logger.LogWarning("Registration attempt for existing email: {Email}", registerDto.Email);
-                    return null;
+                    return new AuthResultDto
+                    {
+                        Success = false,
+                        ErrorCode = "USER_EXISTS",
+                        Errors = new List<string> { "A user with this email address already exists." }
+                    };
                 }
 
                 // Create new user
@@ -64,7 +69,12 @@ namespace BookStore.API.Services
                 {
                     _logger.LogError("User registration failed for {Email}: {Errors}", 
                         registerDto.Email, string.Join(", ", result.Errors.Select(e => e.Description)));
-                    return null;
+                    return new AuthResultDto
+                    {
+                        Success = false,
+                        ErrorCode = "VALIDATION_ERROR",
+                        Errors = result.Errors.Select(e => e.Description).ToList()
+                    };
                 }
 
                 // Assign User role to new user
@@ -76,22 +86,31 @@ namespace BookStore.API.Services
                 // DO NOT generate JWT token - require email verification first
                 _logger.LogInformation("User registered successfully: {Email} - Email verification required", registerDto.Email);
 
-                return new AuthResponseDto
+                return new AuthResultDto
                 {
-                    Token = string.Empty, // No token until email verified
-                    UserId = user.Id,
-                    Email = user.Email!,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    Expiration = DateTime.MinValue, // No expiration since no token
-                    EmailConfirmed = user.EmailConfirmed,
-                    Roles = new List<string>() // No roles until verified
+                    Success = true,
+                    Data = new AuthResponseDto
+                    {
+                        Token = string.Empty, // No token until email verified
+                        UserId = user.Id,
+                        Email = user.Email!,
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        Expiration = DateTime.MinValue, // No expiration since no token
+                        EmailConfirmed = user.EmailConfirmed,
+                        Roles = new List<string>() // No roles until verified
+                    }
                 };
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred during user registration for {Email}", registerDto.Email);
-                throw;
+                return new AuthResultDto
+                {
+                    Success = false,
+                    ErrorCode = "INTERNAL_ERROR",
+                    Errors = new List<string> { "An internal error occurred. Please try again later." }
+                };
             }
         }
 
