@@ -64,6 +64,7 @@ export const authService = {
         email: response.data.email,
         firstName: response.data.firstName,
         lastName: response.data.lastName,
+        emailConfirmed: response.data.emailConfirmed,
         roles: response.data.roles,
       }));
       
