@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { authService } from '../../../../services/authService';
+import { authService, userService } from '../../../../services/';
 import { MESSAGES } from '../../../../utils/constants';
 import './VerifyEmail.css';
 
@@ -25,6 +25,17 @@ const VerifyEmail: React.FC = () => {
           userId,
           token
         });
+        // Fetch updated user profile and update localStorage
+        try {
+          const profile = await userService.getProfile();
+          localStorage.setItem('user', JSON.stringify(profile));
+        } catch {
+          // Fallback: just set emailConfirmed to true if profile fetch fails
+          const user = authService.getCurrentUser();
+          if (user) {
+            localStorage.setItem('user', JSON.stringify({ ...user, emailConfirmed: true }));
+          }
+        }
         setStatus('success');
         setMessage(MESSAGES.SUCCESS.EMAIL_VERIFIED);
       } catch (error) {
