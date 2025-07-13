@@ -7,7 +7,8 @@ import './EmailVerificationRequired.css';
 const EmailVerificationRequired: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const userEmail = location.state?.userEmail;
+  // Try to get email from location.state, fallback to current user
+  const userEmail = location.state?.userEmail || authService.getCurrentUser()?.email;
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
