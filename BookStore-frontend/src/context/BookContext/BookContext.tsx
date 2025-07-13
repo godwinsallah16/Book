@@ -99,8 +99,8 @@ export const BookProvider: React.FC<BookProviderProps> = ({ children }) => {
   const fetchBooks = useCallback(async (filters?: BookFilters) => {
     dispatch({ type: 'SET_LOADING', payload: true });
     try {
-      const books = await bookService.getBooks(filters);
-      dispatch({ type: 'SET_BOOKS', payload: books });
+      const paginated = await bookService.getBooks(filters);
+      dispatch({ type: 'SET_BOOKS', payload: paginated.data });
       if (filters) {
         dispatch({ type: 'SET_FILTERS', payload: filters });
       }
