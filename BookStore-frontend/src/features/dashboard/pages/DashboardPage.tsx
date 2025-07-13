@@ -76,7 +76,11 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
                   <BookForm
                     key={formKey}
                     onCancel={() => setShowBookForm(false)}
-                    onSuccess={() => { setShowBookForm(false); }}
+                    onSuccess={() => {
+                      setShowBookForm(false);
+                      // Trigger EnhancedBookList to reload books
+                      setSearchFilters({ ...searchFilters });
+                    }}
                   />
                 </div>
               </div>
