@@ -121,6 +121,15 @@ namespace BookStore.API.Controllers
                 _logger.LogInformation("User logged in successfully: {Email}", loginDto.Email);
                 return Ok(result);
             }
+            catch (UnauthorizedAccessException ex)
+            {
+                _logger.LogWarning(ex, "Login failed: email not verified for {Email}", loginDto.Email);
+                return StatusCode(403, new {
+                    success = false,
+                    errorCode = "EMAIL_NOT_VERIFIED",
+                    message = ex.Message
+                });
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred during user login");

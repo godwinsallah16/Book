@@ -9,7 +9,7 @@ import {
   BookFormPage,
   ForgotPassword,
   ResetPassword,
-  VerifyEmail,
+  VerifyEmailPage,
   Checkout,
   OrderConfirmation,
   Orders
@@ -135,7 +135,7 @@ function App() {
           />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/verify-email" element={<VerifyEmail />} />
+          <Route path="/verify-email" element={<VerifyEmailPage />} />
           
           {/* Email Verification Required Route */}
           <Route 
