@@ -26,12 +26,19 @@ namespace BookStore.API.Controllers
         /// <returns>List of books</returns>
 [HttpGet]
 [AllowAnonymous]
-public async Task<ActionResult<IEnumerable<BookDto>>> GetBooks([FromQuery] int page = 1, [FromQuery] int pageSize = 20)
+public async Task<ActionResult<object>> GetBooks([FromQuery] int page = 1, [FromQuery] int pageSize = 20)
 {
     try
     {
-        var books = await _bookService.GetBooksPaginatedAsync(page, pageSize);
-        return Ok(books);
+        var (books, totalCount) = await _bookService.GetBooksPaginatedWithCountAsync(page, pageSize);
+        var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+        return Ok(new {
+            data = books,
+            totalCount,
+            currentPage = page,
+            pageSize,
+            totalPages
+        });
     }
     catch (Exception ex)
     {

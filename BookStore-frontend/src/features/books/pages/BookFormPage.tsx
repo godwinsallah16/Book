@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { BookForm } from '../components';
 import type { Book } from '../../../types';
 import './BookFormPage.css';
@@ -10,6 +11,11 @@ interface BookFormPageProps {
 }
 
 const BookFormPage: React.FC<BookFormPageProps> = ({ book, onSuccess, onCancel }) => {
+  const navigate = useNavigate();
+  const handleSuccess = () => {
+    if (onSuccess) onSuccess();
+    navigate('/dashboard');
+  };
   return (
     <div className="book-form-page">
       <div className="book-form-header">
@@ -18,11 +24,10 @@ const BookFormPage: React.FC<BookFormPageProps> = ({ book, onSuccess, onCancel }
           {book ? 'Update book information' : 'Add a new book to the library'}
         </p>
       </div>
-      
       <div className="book-form-container">
         <BookForm 
           book={book}
-          onSuccess={onSuccess}
+          onSuccess={handleSuccess}
           onCancel={onCancel}
         />
       </div>

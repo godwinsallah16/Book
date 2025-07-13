@@ -20,12 +20,13 @@ namespace BookStore.API.Services
         }
 
 
-        public async Task<IEnumerable<BookDto>> GetBooksPaginatedAsync(int page, int pageSize)
+
+        public async Task<(IEnumerable<BookDto> Books, int TotalCount)> GetBooksPaginatedWithCountAsync(int page, int pageSize)
         {
             try
             {
-                var books = await _bookRepository.GetBooksPaginatedAsync(page, pageSize);
-                return _mapper.Map<IEnumerable<BookDto>>(books);
+                var (books, totalCount) = await _bookRepository.GetBooksPaginatedWithCountAsync(page, pageSize);
+                return (_mapper.Map<IEnumerable<BookDto>>(books), totalCount);
             }
             catch (Exception ex)
             {

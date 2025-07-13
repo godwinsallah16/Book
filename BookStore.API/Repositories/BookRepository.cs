@@ -17,16 +17,18 @@ namespace BookStore.API.Repositories
         }
 
 
-        public async Task<IEnumerable<Book>> GetBooksPaginatedAsync(int page, int pageSize)
+        public async Task<(IEnumerable<Book> Books, int TotalCount)> GetBooksPaginatedWithCountAsync(int page, int pageSize)
         {
             try
             {
-                return await _context.Books
-                    .Where(b => !b.IsDeleted)
+                var query = _context.Books.Where(b => !b.IsDeleted);
+                var totalCount = await query.CountAsync();
+                var books = await query
                     .OrderBy(b => b.Title)
                     .Skip((page - 1) * pageSize)
                     .Take(pageSize)
                     .ToListAsync();
+                return (books, totalCount);
             }
             catch (Exception ex)
             {
@@ -68,7 +70,10 @@ namespace BookStore.API.Repositories
             try
             {
                 if (string.IsNullOrWhiteSpace(searchTerm))
-                    return await GetBooksPaginatedAsync(1, 20); // Default page and size
+                {
+                    var (books, _) = await GetBooksPaginatedWithCountAsync(1, 20); // Default page and size
+                    return books;
+                }
 
                 var lowerSearchTerm = searchTerm.ToLower();
                 return await _context.Books
