@@ -51,7 +51,9 @@
 }
 
 .search-section {
-  margin-bottom: 30px;
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: center;
 }
 
 .books-section,

@@ -1,4 +1,5 @@
 import React from 'react';
+import './BookSearch.css';
 import type { BookFilters } from '../../../types/book.types';
 
 interface BookSearchProps {
@@ -23,26 +24,29 @@ const BookSearch: React.FC<BookSearchProps> = ({ onSearch }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+    <form onSubmit={handleSubmit} className="book-search-form">
       <input
         type="text"
         placeholder="Title or keyword"
         value={search}
         onChange={e => setSearch(e.target.value)}
+        className="book-search-input"
       />
       <input
         type="text"
         placeholder="Author"
         value={author}
         onChange={e => setAuthor(e.target.value)}
+        className="book-search-input"
       />
       <input
         type="text"
         placeholder="Category"
         value={category}
         onChange={e => setCategory(e.target.value)}
+        className="book-search-input"
       />
-      <button type="submit">Search</button>
+      <button type="submit" className="book-search-btn">Search</button>
     </form>
   );
 };

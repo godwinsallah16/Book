@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import BookForm from '../../books/components/BookForm/BookForm';
-import { authService } from '../../../services';
 import EnhancedBookList from '../components/EnhancedBookList';
 import BookSearch from '../components/BookSearch';
 import Favorites from '../components/Favorites';
@@ -20,8 +19,6 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
 }) => {
   const [searchFilters, setSearchFilters] = useState<BookFilters>({});
   const [showBookForm, setShowBookForm] = useState(false);
-  const [formKey, setFormKey] = useState(0); // To reset form
-  const currentUser = authService.getCurrentUser();
 
   const handleSearch = (filters: BookFilters) => {
     setSearchFilters(filters);
@@ -47,15 +44,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
             Favorites
           </button>
         </div>
-        {currentUser && currentView === 'list' && (
-          <button
-            className="add-book-btn"
-            onClick={() => { setShowBookForm(true); setFormKey(formKey + 1); }}
-            style={{ marginLeft: '1rem' }}
-          >
-            + Add Book
-          </button>
-        )}
+        {/* Add Book button is only in one place in the header, not duplicated elsewhere */}
       </div>
 
       <div className="dashboard-content">
@@ -74,7 +63,6 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
               <div className="modal-overlay">
                 <div className="modal-content">
                   <BookForm
-                    key={formKey}
                     onCancel={() => setShowBookForm(false)}
                     onSuccess={() => {
                       setShowBookForm(false);

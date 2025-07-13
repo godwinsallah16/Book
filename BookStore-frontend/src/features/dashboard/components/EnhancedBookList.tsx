@@ -1,5 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
+import './EnhancedBookList.css';
 import type { Book, BookFilters, PaginatedResponse } from '../../../types/book.types';
 import { authService } from '../../../services';
 import bookService from '../../../services/bookService';
@@ -82,8 +83,8 @@ const EnhancedBookList: React.FC<EnhancedBookListProps> = ({ filters, onBookEdit
                     <strong>{book.title}</strong> by {book.author}
                     {canEditOrDelete && (
                       <>
-                        <button onClick={() => onBookEdit(book)}>Edit</button>
-                        <button onClick={() => handleDelete(book.id)}>Delete</button>
+                        <button onClick={() => onBookEdit(book)} className="edit-btn">Edit</button>
+                        <button onClick={() => handleDelete(book.id)} className="delete-btn">Delete</button>
                       </>
                     )}
                   </li>
@@ -104,7 +105,7 @@ const EnhancedBookList: React.FC<EnhancedBookListProps> = ({ filters, onBookEdit
                 {p}
               </button>
             ))}
-            <button onClick={() => handlePageChange(page + 1)} disabled={page === totalPages}>
+            <button onClick={() => handlePageChange(page + 1)} disabled={page === totalPages || books.length === 0 || page >= totalPages}>
               Next
             </button>
           </div>
