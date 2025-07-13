@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Button, Card } from '../../../../shared/components/ui';
+import { Button, Card } from '../../../shared/components/ui';
 
 const API_BASE_URL = 'https://book-jkx8.onrender.com/api/auth';
 
