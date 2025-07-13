@@ -1,24 +1,25 @@
+
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { authService } from '../../../services';
 import './EmailVerificationRequired.css';
 
-interface EmailVerificationRequiredProps {
-  userEmail?: string;
-}
-
-const EmailVerificationRequired: React.FC<EmailVerificationRequiredProps> = ({ userEmail }) => {
+const EmailVerificationRequired: React.FC = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const userEmail = location.state?.userEmail;
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [resendSuccess, setResendSuccess] = useState(false);
 
-  const handleResendVerification = async () => {
-    if (!userEmail) {
-      setError('Email address is required to resend verification');
-      return;
-    }
+  // If no userEmail, redirect to login
+  if (!userEmail) {
+    navigate('/login');
+    return null;
+  }
 
+  const handleResendVerification = async () => {
     setLoading(true);
     setError('');
     setMessage('');
@@ -38,7 +39,7 @@ const EmailVerificationRequired: React.FC<EmailVerificationRequiredProps> = ({ u
 
   const handleLogout = () => {
     authService.logout();
-    window.location.href = '/login';
+    navigate('/login');
   };
 
   return (
@@ -46,36 +47,32 @@ const EmailVerificationRequired: React.FC<EmailVerificationRequiredProps> = ({ u
       <div className="email-verification-card">
         <div className="icon-container">
           <div className="email-icon">
-            <svg 
-              xmlns="http://www.w3.org/2000/svg" 
-              fill="none" 
-              viewBox="0 0 24 24" 
-              strokeWidth={1.5} 
-              stroke="currentColor" 
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
               className="email-svg"
             >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" 
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
               />
             </svg>
           </div>
         </div>
-
         <h1>Email Verification Required</h1>
-        
         <div className="verification-content">
           <p className="verification-message">
             To access the BookStore application, you need to verify your email address first.
           </p>
-          
           {userEmail && (
             <p className="user-email">
               We've sent a verification link to: <strong>{userEmail}</strong>
             </p>
           )}
-          
           <div className="verification-steps">
             <h3>What to do next:</h3>
             <ol>
@@ -85,19 +82,12 @@ const EmailVerificationRequired: React.FC<EmailVerificationRequiredProps> = ({ u
               <li>Return here and log in again</li>
             </ol>
           </div>
-
           {error && (
-            <div className="error-message">
-              {error}
-            </div>
+            <div className="error-message">{error}</div>
           )}
-
           {message && (
-            <div className="success-message">
-              {message}
-            </div>
+            <div className="success-message">{message}</div>
           )}
-
           <div className="verification-actions">
             {userEmail && !resendSuccess && (
               <button
@@ -108,28 +98,24 @@ const EmailVerificationRequired: React.FC<EmailVerificationRequiredProps> = ({ u
                 {loading ? 'Sending...' : 'Resend Verification Email'}
               </button>
             )}
-
             {resendSuccess && (
               <div className="resend-success">
                 ✅ Verification email sent! Check your inbox.
               </div>
             )}
-
             <div className="action-links">
-              <button 
+              <button
                 onClick={handleLogout}
                 className="logout-button"
               >
                 Logout and Login Again
               </button>
-              
               <Link to="/login" className="login-link">
                 Go to Login
               </Link>
             </div>
           </div>
         </div>
-
         <div className="help-section">
           <h4>Need Help?</h4>
           <p>

@@ -32,15 +32,14 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     setError('');
 
     try {
-      await authService.login(formData);
+      const user = await authService.login(formData);
+      if (!user.emailConfirmed) {
+        navigate('/email-verification-required', { state: { userEmail: user.email } });
+        return;
+      }
       onLogin();
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Login failed. Please try again.';
-      // Check for unverified user error
-      if (typeof errorMessage === 'string' && errorMessage.toLowerCase().includes('not verified')) {
-        navigate('/verify');
-        return;
-      }
       setError(errorMessage);
     } finally {
       setLoading(false);

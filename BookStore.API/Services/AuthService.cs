@@ -132,12 +132,7 @@ namespace BookStore.API.Services
                     return null;
                 }
 
-                // Check if email is confirmed - STRICT requirement
-                if (!user.EmailConfirmed)
-                {
-                    _logger.LogWarning("Login attempt for unverified email: {Email}", loginDto.Email);
-                    throw new UnauthorizedAccessException("Email not verified. Please check your email and verify your account before logging in.");
-                }
+                // Allow login for unverified users. EmailConfirmed will be returned in response.
 
                 var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
                 if (!result.Succeeded)

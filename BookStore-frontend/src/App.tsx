@@ -141,10 +141,10 @@ function App() {
           <Route 
             path="/email-verification-required" 
             element={
-              isAuthenticated ? (
+              isAuthenticated && !isEmailVerified ? (
                 <EmailVerificationRequired userEmail={user?.email} />
               ) : (
-                <Navigate to="/login" replace />
+                <Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />
               )
             } 
           />
