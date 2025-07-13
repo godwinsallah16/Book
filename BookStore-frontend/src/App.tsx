@@ -34,17 +34,38 @@ function App() {
     lastName: string; 
     emailConfirmed?: boolean 
   } | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is already authenticated
-    const authenticated = authService.isAuthenticated();
-    setIsAuthenticated(authenticated);
-    if (authenticated) {
-      const currentUser = authService.getCurrentUser();
-      setUser(currentUser);
-      setIsEmailVerified(authService.isEmailVerified());
-    }
+    // Initial auth check
+    const syncAuthState = () => {
+      const authenticated = authService.isAuthenticated();
+      setIsAuthenticated(authenticated);
+      if (authenticated) {
+        const currentUser = authService.getCurrentUser();
+        setUser(currentUser);
+        setIsEmailVerified(authService.isEmailVerified());
+      } else {
+        setUser(null);
+        setIsEmailVerified(false);
+      }
+    };
+    syncAuthState();
+    setLoading(false);
+
+    // Listen for localStorage changes (multi-tab sync)
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key === 'authToken' || event.key === 'user') {
+        syncAuthState();
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
   }, []);
+  // HashRouter fallback for direct navigation (GitHub Pages, Render)
+  // If you use Netlify, add a _redirects file with: /*    /index.html   200
+  // For Vercel, add vercel.json with: { "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }] }
+  // For Render, use render.yaml or web service settings to rewrite all routes to index.html
 
   const handleViewChange = (view: string) => {
     if (view === 'list' || view === 'favorites') {
@@ -107,6 +128,15 @@ function App() {
     
     return <AuthenticatedLayout>{children}</AuthenticatedLayout>;
   };
+
+  if (loading) {
+    return (
+      <div className="app-loading">
+        <div className="spinner"></div>
+        <p>Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <Router>
