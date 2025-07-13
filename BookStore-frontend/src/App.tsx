@@ -102,7 +102,7 @@ function App() {
     }
     
     if (!isEmailVerified) {
-      return <EmailVerificationRequired userEmail={user?.email} />;
+      return <EmailVerificationRequired />;
     }
     
     return <AuthenticatedLayout>{children}</AuthenticatedLayout>;
@@ -142,7 +142,7 @@ function App() {
             path="/email-verification-required" 
             element={
               isAuthenticated && !isEmailVerified ? (
-                <EmailVerificationRequired userEmail={user?.email} />
+                <EmailVerificationRequired />
               ) : (
                 <Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />
               )

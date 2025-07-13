@@ -188,6 +188,7 @@ namespace BookStore.API.Services
                 
                 if (result.Succeeded)
                 {
+                    user.EmailConfirmed = true;
                     user.UpdatedAt = DateTime.UtcNow;
                     await _userManager.UpdateAsync(user);
 
