@@ -76,6 +76,28 @@ export const authService = {
       throw error;
     }
   },
+  // Register user
+  async register(registerData: RegisterRequest): Promise<AuthResponse> {
+    try {
+      const response = await publicApiClient.post<AuthResponse>(API_CONFIG.ENDPOINTS.AUTH.REGISTER, registerData);
+      // Store tokens in localStorage
+      localStorage.setItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN, response.data.token);
+      localStorage.setItem('refreshToken', response.data.refreshToken);
+      localStorage.setItem('refreshTokenExpiration', response.data.refreshTokenExpiration);
+      localStorage.setItem(API_CONFIG.STORAGE_KEYS.USER, JSON.stringify({
+        userId: response.data.userId,
+        email: response.data.email,
+        firstName: response.data.firstName,
+        lastName: response.data.lastName,
+        emailConfirmed: response.data.emailConfirmed,
+        roles: response.data.roles
+      }));
+      return response.data;
+    } catch (error) {
+      console.error('Register error:', error);
+      throw error;
+    }
+  },
   // ...existing code...
 
   // Logout user
