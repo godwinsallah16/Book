@@ -123,7 +123,7 @@ export const authService = {
     if (!token) return false;
     try {
       // Attempt to fetch current user with token
-      const response = await publicApiClient.get<AuthResponse>(API_CONFIG.ENDPOINTS.AUTH.ME);
+      const response = await apiClient.get<AuthResponse>(API_CONFIG.ENDPOINTS.AUTH.ME);
       return !!response.data && !!response.data.userId;
     } catch {
       // If token is invalid or expired, treat as unauthenticated
