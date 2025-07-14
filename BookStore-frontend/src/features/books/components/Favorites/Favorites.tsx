@@ -11,6 +11,16 @@ export function Favorites() {
   const [error, setError] = useState<string | null>(null);
   const { addToCart } = useCart();
 
+  // Add to cart and refresh favorites
+  const handleAddToCart = async (bookId: number) => {
+    try {
+      await addToCart(bookId, 1); // Always add 1 item
+      await fetchFavorites(); // Refresh after adding to cart
+    } catch {
+      setError('Failed to add to cart');
+    }
+  };
+
   useEffect(() => {
     // Only fetch favorites if user is authenticated
     const token = localStorage.getItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN);
