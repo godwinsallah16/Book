@@ -2,6 +2,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BookStore.API.DTOs
 {
+    public class RefreshTokenRequestDto
+    {
+        public string UserId { get; set; } = string.Empty;
+        public string RefreshToken { get; set; } = string.Empty;
+    }
     public class RegisterDto
     {
         [Required]
@@ -40,6 +45,8 @@ namespace BookStore.API.DTOs
     public class AuthResponseDto
     {
         public string Token { get; set; } = string.Empty;
+        public string RefreshToken { get; set; } = string.Empty;
+        public DateTime RefreshTokenExpiration { get; set; }
         public string UserId { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string FirstName { get; set; } = string.Empty;

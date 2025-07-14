@@ -11,6 +11,26 @@ namespace BookStore.API.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
+        /// <summary>
+        /// Refresh access token using refresh token
+        /// </summary>
+        /// <param name="userId">User ID</param>
+        /// <param name="refreshToken">Refresh token</param>
+        /// <returns>New access and refresh tokens</returns>
+        [HttpPost("refresh-token")]
+        public async Task<ActionResult<AuthResponseDto>> RefreshToken([FromBody] RefreshTokenRequestDto request)
+        {
+            if (string.IsNullOrEmpty(request.UserId) || string.IsNullOrEmpty(request.RefreshToken))
+            {
+                return BadRequest(new { message = "UserId and RefreshToken are required" });
+            }
+            var result = await _authService.RefreshTokenAsync(request.UserId, request.RefreshToken);
+            if (result == null)
+            {
+                return Unauthorized(new { message = "Invalid or expired refresh token" });
+            }
+            return Ok(result);
+        }
         private readonly IAuthService _authService;
         private readonly ILogger<AuthController> _logger;
         private readonly UserManager<ApplicationUser> _userManager;

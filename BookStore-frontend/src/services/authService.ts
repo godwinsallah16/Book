@@ -15,6 +15,8 @@ export interface RegisterRequest {
 
 export interface AuthResponse {
   token: string;
+  refreshToken: string;
+  refreshTokenExpiration: string;
   userId: string;
   email: string;
   firstName: string;
@@ -56,106 +58,31 @@ export const authService = {
   async login(loginData: LoginRequest): Promise<AuthResponse> {
     try {
       const response = await publicApiClient.post<AuthResponse>(API_CONFIG.ENDPOINTS.AUTH.LOGIN, loginData);
-      
-      // Store token in localStorage
+      // Store tokens in localStorage
       localStorage.setItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN, response.data.token);
+      localStorage.setItem('refreshToken', response.data.refreshToken);
+      localStorage.setItem('refreshTokenExpiration', response.data.refreshTokenExpiration);
       localStorage.setItem(API_CONFIG.STORAGE_KEYS.USER, JSON.stringify({
         userId: response.data.userId,
         email: response.data.email,
         firstName: response.data.firstName,
         lastName: response.data.lastName,
         emailConfirmed: response.data.emailConfirmed,
-        roles: response.data.roles,
+        roles: response.data.roles
       }));
-      
       return response.data;
     } catch (error) {
       console.error('Login error:', error);
       throw error;
     }
   },
-
-  // Register user
-  async register(registerData: RegisterRequest): Promise<{ success: boolean; message: string; data?: AuthResponse }> {
-    try {
-      const response = await publicApiClient.post(API_CONFIG.ENDPOINTS.AUTH.REGISTER, registerData);
-      
-      // DO NOT store token after registration - user must verify email first
-      
-      return response.data;
-    } catch (error: unknown) {
-      console.error('Registration error:', error);
-      
-      // Handle enhanced error responses
-      if (error && typeof error === 'object' && 'response' in error) {
-        const axiosError = error as { response?: { data?: unknown; status?: number } };
-        
-        if (axiosError.response?.status === 400) {
-          const errorData = axiosError.response.data;
-          
-          // Handle new enhanced error format
-          if (errorData && typeof errorData === 'object') {
-            if ('errorCode' in errorData && 'message' in errorData) {
-              // Enhanced error response format
-              const errorResponse = errorData as {
-                errorCode: string;
-                message: string;
-                errors?: string[];
-              };
-              
-              const { errorCode, message, errors } = errorResponse;
-              
-              // Provide specific error messages based on error code
-              switch (errorCode) {
-                case 'USER_EXISTS':
-                  throw new Error('A user with this email address already exists. Please use a different email or try logging in.');
-                case 'VALIDATION_ERROR':
-                  throw new Error(errors && errors.length > 0 ? errors.join('. ') : message);
-                case 'INTERNAL_ERROR':
-                  throw new Error('An internal error occurred. Please try again later.');
-                default:
-                  throw new Error(typeof message === 'string' ? message : 'Registration failed. Please check your information and try again.');
-              }
-            }
-            
-            // Handle legacy ModelState validation errors
-            if ('errors' in errorData && errorData.errors) {
-              const validationErrors = [];
-              const errors = errorData.errors as Record<string, string[]>;
-              for (const field in errors) {
-                const fieldErrors = errors[field];
-                if (Array.isArray(fieldErrors)) {
-                  validationErrors.push(...fieldErrors);
-                }
-              }
-              if (validationErrors.length > 0) {
-                throw new Error(validationErrors.join('. '));
-              }
-            }
-            
-            // Handle single validation error messages
-            if ('title' in errorData && errorData.title && typeof errorData.title === 'string' && errorData.title.includes('validation')) {
-              throw new Error('Please check your input: Password must contain at least 8 characters including uppercase, lowercase, digit and special character.');
-            }
-            
-            // Handle string error messages
-            if (typeof errorData === 'string') {
-              throw new Error(errorData);
-            }
-          }
-          
-          // Default validation message for 400 errors
-          throw new Error('Please check your input: Password must contain at least 8 characters including uppercase, lowercase, digit and special character.');
-        }
-      }
-      
-      throw error;
-    }
-  },
+  // ...existing code...
 
   // Logout user
   logout(): void {
     localStorage.removeItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN);
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('refreshTokenExpiration');
     localStorage.removeItem(API_CONFIG.STORAGE_KEYS.USER);
   },
 
@@ -179,7 +106,38 @@ export const authService = {
 
   // Get auth token
   getToken(): string | null {
-    return localStorage.getItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN);
+    let token = localStorage.getItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN);
+    // Optionally, check expiration and refresh if needed
+    // For demo, always try to refresh if token is missing
+    if (!token) {
+      // Try to refresh
+      this.refreshToken().then(newToken => {
+        if (newToken) {
+          token = newToken;
+        }
+      });
+    }
+    return token;
+  },
+  // Refresh access token using refresh token
+  async refreshToken(): Promise<string | null> {
+    const user = this.getCurrentUser();
+    const refreshToken = localStorage.getItem('refreshToken');
+    if (!user || !refreshToken) return null;
+    try {
+      const response = await publicApiClient.post<AuthResponse>('/auth/refresh-token', {
+        userId: user.userId,
+        refreshToken,
+      });
+      localStorage.setItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN, response.data.token);
+      localStorage.setItem('refreshToken', response.data.refreshToken);
+      localStorage.setItem('refreshTokenExpiration', response.data.refreshTokenExpiration);
+      return response.data.token;
+    } catch (error) {
+      console.error('Refresh token error:', error);
+      this.logout();
+      return null;
+    }
   },
 
   // Verify email
@@ -231,6 +189,8 @@ export const authService = {
       throw error;
     }
   },
+
+  // ...existing code...
 
   // Fetch current user
   async fetchCurrentUser(): Promise<{ userId: string; email: string; firstName: string; lastName: string; emailConfirmed?: boolean; roles?: string[] } | null> {

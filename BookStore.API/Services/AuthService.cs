@@ -13,6 +13,8 @@ namespace BookStore.API.Services
 {
     public class AuthService : IAuthService
     {
+        // In-memory store for refresh tokens (for demo; use DB for production)
+        private static readonly Dictionary<string, (string RefreshToken, DateTime Expiration)> _refreshTokens = new();
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IConfiguration _configuration;
@@ -148,6 +150,11 @@ namespace BookStore.API.Services
                 var token = await GenerateJwtTokenAsync(user.Email!, user.Id);
                 var expiration = DateTime.UtcNow.AddHours(24);
 
+                // Generate refresh token
+                var refreshToken = await GenerateRefreshTokenAsync();
+                var refreshTokenExpiration = DateTime.UtcNow.AddDays(7);
+                _refreshTokens[user.Id] = (refreshToken, refreshTokenExpiration);
+
                 // Get user roles
                 var roles = await _userManager.GetRolesAsync(user);
 
@@ -162,7 +169,9 @@ namespace BookStore.API.Services
                     LastName = user.LastName,
                     Expiration = expiration,
                     EmailConfirmed = user.EmailConfirmed,
-                    Roles = roles
+                    Roles = roles,
+                    RefreshToken = refreshToken,
+                    RefreshTokenExpiration = refreshTokenExpiration
                 };
             }
             catch (Exception ex)
@@ -366,6 +375,57 @@ namespace BookStore.API.Services
                 _logger.LogError(ex, "Error occurred while generating JWT token for {Email}", email);
                 throw;
             }
+        }
+
+        public async Task<string> GenerateRefreshTokenAsync()
+        {
+            // Use a cryptographically secure random generator
+            var randomBytes = new byte[64];
+            using (var rng = System.Security.Cryptography.RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(randomBytes);
+            }
+            return Convert.ToBase64String(randomBytes);
+        }
+
+        public async Task<AuthResponseDto?> RefreshTokenAsync(string userId, string refreshToken)
+        {
+            if (!_refreshTokens.TryGetValue(userId, out var stored) || stored.RefreshToken != refreshToken || stored.Expiration < DateTime.UtcNow)
+            {
+                _logger.LogWarning("Invalid or expired refresh token for user: {UserId}", userId);
+                return null;
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null || !user.IsActive)
+            {
+                _logger.LogWarning("Refresh token attempt for invalid or inactive user: {UserId}", userId);
+                return null;
+            }
+
+            var token = await GenerateJwtTokenAsync(user.Email!, user.Id);
+            var expiration = DateTime.UtcNow.AddHours(24);
+
+            // Optionally, rotate refresh token
+            var newRefreshToken = await GenerateRefreshTokenAsync();
+            var newRefreshTokenExpiration = DateTime.UtcNow.AddDays(7);
+            _refreshTokens[user.Id] = (newRefreshToken, newRefreshTokenExpiration);
+
+            var roles = await _userManager.GetRolesAsync(user);
+
+            return new AuthResponseDto
+            {
+                Token = token,
+                UserId = user.Id,
+                Email = user.Email!,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Expiration = expiration,
+                EmailConfirmed = user.EmailConfirmed,
+                Roles = roles,
+                RefreshToken = newRefreshToken,
+                RefreshTokenExpiration = newRefreshTokenExpiration
+            };
         }
     }
 }
