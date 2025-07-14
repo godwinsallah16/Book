@@ -54,6 +54,14 @@ namespace BookStore.API.Services
         {
             try
             {
+                // Check if user exists
+                var userExists = await _context.Users.AnyAsync(u => u.Id == userId);
+                if (!userExists)
+                {
+                    _logger.LogWarning("Cannot add to cart: user {UserId} does not exist", userId);
+                    return null;
+                }
+
                 // Check if book exists and is available
                 var book = await _context.Books.FindAsync(bookId);
                 if (book == null || book.IsDeleted || book.StockQuantity < quantity)

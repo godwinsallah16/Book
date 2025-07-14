@@ -231,6 +231,28 @@ export const authService = {
       throw error;
     }
   },
+
+  // Fetch current user
+  async fetchCurrentUser(): Promise<{ userId: string; email: string; firstName: string; lastName: string; emailConfirmed?: boolean; roles?: string[] } | null> {
+    try {
+      const response = await publicApiClient.get<AuthResponse>(API_CONFIG.ENDPOINTS.AUTH.ME);
+      if (response.data) {
+        localStorage.setItem(API_CONFIG.STORAGE_KEYS.USER, JSON.stringify({
+          userId: response.data.userId,
+          email: response.data.email,
+          firstName: response.data.firstName,
+          lastName: response.data.lastName,
+          emailConfirmed: response.data.emailConfirmed,
+          roles: response.data.roles,
+        }));
+        return response.data;
+      }
+      return null;
+    } catch (error) {
+      console.error('Fetch current user error:', error);
+      return null;
+    }
+  },
 };
 
 export default authService;

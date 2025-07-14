@@ -28,6 +28,7 @@ export const API_CONFIG = {
       RESET_PASSWORD: '/auth/reset-password',
       RESEND_VERIFICATION: '/auth/resend-verification',
       CHANGE_PASSWORD: '/auth/change-password',
+      ME: '/auth/me',
     },
     BOOKS: {
       BASE: '/books',

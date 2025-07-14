@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { authService } from '../../../services';
 import BookForm from '../../books/components/BookForm/BookForm';
 import EnhancedBookList from '../components/EnhancedBookList';
 import BookSearch from '../components/BookSearch';
@@ -17,6 +20,18 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
   onBookEdit, 
   onViewChange 
 }) => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Always fetch latest user status from backend
+    const fetchUser = async () => {
+      const updatedUser = await authService.fetchCurrentUser();
+      if (updatedUser && !updatedUser.emailConfirmed) {
+        navigate('/email-verification-required', { state: { userEmail: updatedUser.email } });
+      }
+    };
+    fetchUser();
+  }, [navigate]);
   const [searchFilters, setSearchFilters] = useState<BookFilters>({});
   const [showBookForm, setShowBookForm] = useState(false);
 

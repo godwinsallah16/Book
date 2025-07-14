@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using BookStore.API.DTOs;
 using BookStore.API.Services.Interfaces;
 using BookStore.API.Models;
+using System.Security.Claims;
 
 namespace BookStore.API.Controllers
 {
@@ -277,6 +278,49 @@ namespace BookStore.API.Controllers
             {
                 _logger.LogError(ex, "Error occurred while clearing all users");
                 return StatusCode(500, "An error occurred while clearing users");
+            }
+        }
+
+        /// <summary>
+        /// Get current authenticated user info
+        /// </summary>
+        /// <returns>Current user info</returns>
+        [HttpGet("me")]
+        public async Task<ActionResult<AuthResponseDto>> Me()
+        {
+            try
+            {
+                var userId = User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized(new { message = "User not authenticated" });
+                }
+
+                var user = await _userManager.FindByIdAsync(userId);
+                if (user == null)
+                {
+                    return NotFound(new { message = "User not found" });
+                }
+
+                var roles = await _userManager.GetRolesAsync(user);
+                var response = new AuthResponseDto
+                {
+                    UserId = user.Id,
+                    Email = user.Email ?? string.Empty,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    EmailConfirmed = user.EmailConfirmed,
+                    Roles = roles,
+                    Expiration = DateTime.UtcNow.AddHours(1), // Not used here, but required by DTO
+                    Token = string.Empty // Not used here
+                };
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while fetching current user info");
+                return StatusCode(500, new { message = "An error occurred while fetching user info" });
             }
         }
 

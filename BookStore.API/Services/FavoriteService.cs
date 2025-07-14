@@ -52,6 +52,14 @@ namespace BookStore.API.Services
         {
             try
             {
+                // Check if user exists
+                var userExists = await _context.Users.AnyAsync(u => u.Id == userId);
+                if (!userExists)
+                {
+                    _logger.LogWarning("Cannot add favorite: user {UserId} does not exist", userId);
+                    return false;
+                }
+
                 // Check if book exists
                 var book = await _context.Books.FindAsync(bookId);
                 if (book == null || book.IsDeleted)

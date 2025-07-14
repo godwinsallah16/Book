@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { authService } from '../../../../services';
 import type { LoginRequest } from '../../../../services/authService';
 import { Button, Input, Card } from '../../../../shared/components/ui';
@@ -16,7 +16,6 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -32,12 +31,8 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     setError('');
 
     try {
-      const user = await authService.login(formData);
-      if (!user.emailConfirmed) {
-        navigate('/email-verification-required', { state: { userEmail: user.email } });
-        return;
-      }
-      onLogin();
+      await authService.login(formData);
+      onLogin(); // Always redirect to dashboard after login
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Login failed. Please try again.';
       setError(errorMessage);
