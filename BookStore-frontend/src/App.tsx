@@ -84,11 +84,12 @@ function App() {
     setSelectedBook(null);
   };
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     setIsAuthenticated(true);
-    const currentUser = authService.getCurrentUser();
+    // Fetch latest user info from backend
+    const currentUser = await authService.fetchCurrentUser();
     setUser(currentUser);
-    setIsEmailVerified(authService.isEmailVerified());
+    setIsEmailVerified(currentUser?.emailConfirmed === true);
   };
 
   const handleLogout = () => {
