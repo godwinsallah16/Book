@@ -26,11 +26,28 @@ namespace BookStore.API.Controllers
         /// <returns>List of books</returns>
 [HttpGet]
 [AllowAnonymous]
-public async Task<ActionResult<object>> GetBooks([FromQuery] int page = 1, [FromQuery] int pageSize = 20)
+public async Task<ActionResult<object>> GetBooks(
+    [FromQuery] int page = 1,
+    [FromQuery] int pageSize = 20,
+    [FromQuery] string? search = null,
+    [FromQuery] string? category = null,
+    [FromQuery] string? author = null,
+    [FromQuery] decimal? minPrice = null,
+    [FromQuery] decimal? maxPrice = null,
+    [FromQuery] bool? inStock = null)
 {
     try
     {
-        var (books, totalCount) = await _bookService.GetBooksPaginatedWithCountAsync(page, pageSize);
+        var filters = new BookStore.API.DTOs.BookFiltersDto
+        {
+            Search = search,
+            Category = category,
+            Author = author,
+            MinPrice = minPrice,
+            MaxPrice = maxPrice,
+            InStock = inStock
+        };
+        var (books, totalCount) = await _bookService.GetBooksPaginatedWithCountAsync(page, pageSize, filters);
         var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
         return Ok(new {
             data = books,

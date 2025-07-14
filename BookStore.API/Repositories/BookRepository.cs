@@ -17,11 +17,48 @@ namespace BookStore.API.Repositories
         }
 
 
-        public async Task<(IEnumerable<Book> Books, int TotalCount)> GetBooksPaginatedWithCountAsync(int page, int pageSize)
+        public async Task<(IEnumerable<Book> Books, int TotalCount)> GetBooksPaginatedWithCountAsync(int page, int pageSize, BookStore.API.DTOs.BookFiltersDto? filters = null)
         {
             try
             {
                 var query = _context.Books.Where(b => !b.IsDeleted);
+                if (filters != null)
+                {
+                    if (!string.IsNullOrWhiteSpace(filters.Search))
+                    {
+                        var lowerSearch = filters.Search.ToLower();
+                        query = query.Where(b =>
+                            b.Title.ToLower().Contains(lowerSearch) ||
+                            b.Author.ToLower().Contains(lowerSearch) ||
+                            b.ISBN.ToLower().Contains(lowerSearch) ||
+                            b.Description.ToLower().Contains(lowerSearch) ||
+                            b.Category.ToLower().Contains(lowerSearch)
+                        );
+                    }
+                    if (!string.IsNullOrWhiteSpace(filters.Category))
+                    {
+                        query = query.Where(b => b.Category.ToLower() == filters.Category.ToLower());
+                    }
+                    if (!string.IsNullOrWhiteSpace(filters.Author))
+                    {
+                        query = query.Where(b => b.Author.ToLower() == filters.Author.ToLower());
+                    }
+                    if (filters.MinPrice.HasValue)
+                    {
+                        query = query.Where(b => b.Price >= filters.MinPrice.Value);
+                    }
+                    if (filters.MaxPrice.HasValue)
+                    {
+                        query = query.Where(b => b.Price <= filters.MaxPrice.Value);
+                    }
+                    if (filters.InStock.HasValue)
+                    {
+                        if (filters.InStock.Value)
+                            query = query.Where(b => b.StockQuantity > 0);
+                        else
+                            query = query.Where(b => b.StockQuantity == 0);
+                    }
+                }
                 var totalCount = await query.CountAsync();
                 var books = await query
                     .OrderBy(b => b.Title)

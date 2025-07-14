@@ -1,15 +1,37 @@
 /* BookSearch Component Styles */
+
 .search-form {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-lg);
 }
 
+
 .search-row {
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--spacing-md);
   align-items: end;
+}
+
+.search-row:first-child {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  gap: var(--spacing-md);
+}
+
+.search-row:first-child .Input,
+.search-row:first-child input[type="text"],
+.search-row:first-child input[type="search"] {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.search-row:first-child button,
+.search-row:first-child .Button {
+  margin-left: var(--spacing-md);
+  flex-shrink: 0;
 }
 
 .search-row:nth-child(2),

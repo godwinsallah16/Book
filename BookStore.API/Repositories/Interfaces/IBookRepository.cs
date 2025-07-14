@@ -4,7 +4,7 @@ namespace BookStore.API.Repositories.Interfaces
 {
     public interface IBookRepository
     {
-        Task<(IEnumerable<Book> Books, int TotalCount)> GetBooksPaginatedWithCountAsync(int page, int pageSize);
+        Task<(IEnumerable<Book> Books, int TotalCount)> GetBooksPaginatedWithCountAsync(int page, int pageSize, BookStore.API.DTOs.BookFiltersDto? filters = null);
         Task<Book?> GetBookByIdAsync(int id);
         Task<Book?> GetBookByIdIncludingDeletedAsync(int id);
         Task<IEnumerable<Book>> SearchBooksAsync(string searchTerm);

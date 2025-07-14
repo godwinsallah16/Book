@@ -89,20 +89,14 @@ export function EnhancedBookList({ filters, onBookSelect, onBookEdit, onBookDele
       alert('Please log in to add items to your favorites');
       return;
     }
-    
     setBookLoading(book.id, 'favorite', true);
     try {
       if (favorites.has(book.id)) {
         await favoritesService.removeFromFavorites(book.id);
-        setFavorites(prev => {
-          const newFavorites = new Set(prev);
-          newFavorites.delete(book.id);
-          return newFavorites;
-        });
       } else {
         await favoritesService.addToFavorites({ bookId: book.id });
-        setFavorites(prev => new Set([...prev, book.id]));
       }
+      await loadFavorites(); // Always refresh favorites after change
     } catch (error) {
       console.error('Failed to toggle favorite:', error);
       alert('Failed to update favorites');

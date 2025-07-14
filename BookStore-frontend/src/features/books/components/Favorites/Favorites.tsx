@@ -36,25 +36,19 @@ export function Favorites() {
     }
   };
 
+
   const handleRemoveFromFavorites = async (bookId: number) => {
     try {
       await favoritesService.removeFromFavorites(bookId);
-      setFavorites(prev => prev.filter(fav => fav.bookId !== bookId));
+      await fetchFavorites(); // Refresh after removal
     } catch (err) {
       console.error('Error removing from favorites:', err);
       setError('Failed to remove from favorites');
     }
   };
 
-  const handleAddToCart = async (bookId: number) => {
-    try {
-      await addToCart(bookId, 1);
-      // Show success message or update UI
-    } catch (err) {
-      console.error('Error adding to cart:', err);
-      setError('Failed to add to cart');
-    }
-  };
+
+  // Optionally, if you want to refresh after adding to favorites from this page, add a similar refresh in EnhancedBookList or here if needed.
 
   if (isLoading) {
     return (

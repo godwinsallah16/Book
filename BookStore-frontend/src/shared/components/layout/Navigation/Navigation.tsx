@@ -71,12 +71,13 @@ export function Navigation({ user, onLogout, cartItemCount = 0 }: NavigationProp
             {user ? (
               <>
                 {/* Cart Icon */}
-                <button
+                <Link
+                  to="/cart"
                   className="nav-action-btn"
                   aria-label="Shopping cart"
                 >
                   🛒 {cartItemCount > 0 && <span className="cart-badge">{cartItemCount}</span>}
-                </button>
+                </Link>
 
                 {/* User Menu */}
                 <div className="user-menu">
