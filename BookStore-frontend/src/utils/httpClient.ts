@@ -37,8 +37,15 @@ export const createApiClient = (options: {
     (error: AxiosError) => {
       // Handle common HTTP errors
       if (error.response?.status === API_CONFIG.STATUS_CODES.UNAUTHORIZED) {
-        // Only log a warning, do not clear auth data automatically
+        // Log detailed error info for debugging
         console.warn('User session expired (401)');
+        console.error('401 Unauthorized error details:', {
+          url: error.config?.url,
+          method: error.config?.method,
+          headers: error.config?.headers,
+          responseData: error.response?.data,
+          responseHeaders: error.response?.headers,
+        });
       }
       return Promise.reject(error);
     }
