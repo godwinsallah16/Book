@@ -19,6 +19,7 @@ import {
   NotFound
 } from './shared/components';
 import { authService } from './services/authService';
+import { ShoppingCart } from './features/cart/components';
 import type { Book } from './types/book.types';
 import './App.css';
 
@@ -142,6 +143,15 @@ function App() {
     <Router>
       <div className="App">
         <Routes>
+          {/* Cart Page Route */}
+          <Route 
+            path="/cart" 
+            element={
+              <ProtectedRoute>
+                <ShoppingCart isOpen={true} onClose={() => {}} />
+              </ProtectedRoute>
+            } 
+          />
           {/* Public Routes */}
           <Route 
             path="/login" 

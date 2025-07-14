@@ -108,7 +108,7 @@ export const bookService = {
   // Add book to favorites
   addFavorite: async (bookId: number): Promise<void> => {
     try {
-      await apiClient.post(`/favorites/${bookId}`);
+      await apiClient.post('/favorites', { bookId });
     } catch (error) {
       console.error('Error adding favorite:', error);
       throw error;

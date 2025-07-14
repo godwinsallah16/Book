@@ -77,6 +77,29 @@
 }
 
 /* Responsive Design */
+@media (min-width: 992px) {
+  .search-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: var(--spacing-md);
+    align-items: end;
+  }
+  .search-row:first-child {
+    grid-template-columns: 1fr 1fr 1fr auto;
+  }
+  .search-row .Input,
+  .search-row input[type="text"],
+  .search-row input[type="search"],
+  .search-row select {
+    min-width: 0;
+    width: 100%;
+  }
+  .search-row button,
+  .search-row .Button {
+    margin-left: var(--spacing-md);
+    flex-shrink: 0;
+  }
+}
 @media (max-width: 768px) {
   .search-row {
     grid-template-columns: 1fr;

@@ -151,41 +151,44 @@ export function Navigation({ user, onLogout, cartItemCount = 0 }: NavigationProp
               </div>
             )}
 
-            {/* Mobile Menu Toggle */}
-            <button
-              onClick={toggleMobileMenu}
-              className="mobile-menu-toggle"
-              aria-label="Toggle mobile menu"
-            >
-              <span className="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
-              </span>
-            </button>
+          {/* Mobile Menu Toggle */}
+          <button
+            onClick={toggleMobileMenu}
+            className="mobile-menu-toggle"
+            aria-label="Toggle mobile menu"
+          >
+            <span className="hamburger">
+              <span></span>
+              <span></span>
+              <span></span>
+            </span>
+          </button>
           </div>
         </div>
 
-        {/* Mobile Menu */}
-        {isMobileMenuOpen && (
-          <div className="mobile-menu">
-            {user && (
-              <div className="mobile-nav-links">
-                {navItems.map((item) => (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    className={`mobile-nav-link ${isActive(item.path) ? 'mobile-nav-link--active' : ''}`}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <span className="mobile-nav-link__icon">{item.icon}</span>
-                    <span className="mobile-nav-link__label">{item.label}</span>
-                  </Link>
-                ))}
-              </div>
-            )}
+        {/* Collapsible Mobile Side Nav */}
+        <div className={`mobile-side-nav${isMobileMenuOpen ? ' mobile-side-nav--open' : ''}`} style={{ transform: isMobileMenuOpen ? 'translateX(0)' : 'translateX(-100%)', transition: 'transform 0.3s' }}>
+          <button className="mobile-side-nav-close" aria-label="Close side nav" onClick={toggleMobileMenu}>&times;</button>
+          <div className="side-nav-links">
+            {navItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`side-nav-link${isActive(item.path) ? ' side-nav-link--active' : ''}`}
+                onClick={toggleMobileMenu}
+              >
+                <span className="mobile-nav-link__icon">{item.icon}</span>
+                <span className="mobile-nav-link__label">{item.label}</span>
+              </Link>
+            ))}
           </div>
-        )}
+          {/* You can add filter controls here as needed */}
+          <div className="side-nav-filters">
+            {/* Place filter components/links here for mobile */}
+          </div>
+        </div>
+        {/* Overlay for mobile nav when open */}
+        {isMobileMenuOpen && <div className="mobile-side-nav-overlay" onClick={toggleMobileMenu} />}
       </nav>
     </>
   );

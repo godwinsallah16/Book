@@ -1,3 +1,81 @@
+/* Collapsible Mobile Side Nav Animation */
+.mobile-side-nav {
+  transform: translateX(-100%);
+  transition: transform 0.3s;
+}
+.mobile-side-nav.mobile-side-nav--open {
+  transform: translateX(0);
+}
+.mobile-side-nav-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.2);
+  z-index: 1199;
+}
+.mobile-side-nav-close {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #374151;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  cursor: pointer;
+  z-index: 1201;
+}
+/* Mobile Side Nav for Phones */
+@media (max-width: 640px) {
+  .mobile-side-nav {
+    position: fixed;
+    left: 0;
+    top: 4rem;
+    width: 70vw;
+    max-width: 320px;
+    height: calc(100vh - 4rem);
+    background: var(--color-background, #fff);
+    box-shadow: 2px 0 8px rgba(0,0,0,0.08);
+    z-index: 1200;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem 1rem 1rem 1rem;
+    gap: 2rem;
+    border-right: 1px solid var(--color-border, #e5e7eb);
+    transition: transform 0.3s ease;
+  }
+  .mobile-side-nav .side-nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .mobile-side-nav .side-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.1rem;
+    color: var(--color-text, #374151);
+    text-decoration: none;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    transition: background 0.2s, color 0.2s;
+  }
+  .mobile-side-nav .side-nav-link--active {
+    background: var(--color-primary, #6366f1);
+    color: #fff;
+  }
+  .mobile-side-nav .side-nav-link:hover {
+    background: var(--color-gray-100, #f3f4f6);
+    color: var(--color-primary, #6366f1);
+  }
+  .mobile-side-nav .side-nav-filters {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
 /* Navigation Component Styles */
 .navigation {
   position: sticky;
