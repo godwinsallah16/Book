@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import CartSidebarWrapper from './features/cart/components/CartSidebarWrapper';
-import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { BookProvider, CartProvider } from './context';
 import { 
   LoginPage, 
@@ -61,7 +61,7 @@ function App() {
     window.addEventListener('storage', handleStorage);
     return () => window.removeEventListener('storage', handleStorage);
   }, []);
-  // HashRouter fallback for direct navigation (GitHub Pages, Render)
+  // BrowserRouter is now used for proper routing
   // If you use Netlify, add a _redirects file with: /*    /index.html   200
   // For Vercel, add vercel.json with: { "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }] }
   // For Render, use render.yaml or web service settings to rewrite all routes to index.html
