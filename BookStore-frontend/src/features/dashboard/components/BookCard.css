@@ -24,7 +24,7 @@
 .book-card-image {
   position: relative;
   width: 100%;
-  height: 180px; /* slightly reduced height for better image fit */
+  height: 270px; /* increased height by 1.5x for better image fit */
   min-height: 150px;
   max-height: 200px;
   overflow: hidden;
