@@ -13,6 +13,7 @@ export interface RegisterRequest {
   lastName: string;
 }
 
+
 export interface AuthResponse {
   token: string;
   refreshToken: string;
@@ -24,6 +25,12 @@ export interface AuthResponse {
   expiration: string;
   emailConfirmed: boolean;
   roles: string[];
+}
+
+export interface RegisterResponse {
+  success: boolean;
+  message: string;
+  data?: AuthResponse;
 }
 
 export interface VerifyEmailRequest {
@@ -77,21 +84,23 @@ export const authService = {
     }
   },
   // Register user
-  async register(registerData: RegisterRequest): Promise<AuthResponse> {
+  async register(registerData: RegisterRequest): Promise<RegisterResponse> {
     try {
-      const response = await publicApiClient.post<AuthResponse>(API_CONFIG.ENDPOINTS.AUTH.REGISTER, registerData);
-      // Store tokens in localStorage
-      localStorage.setItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN, response.data.token);
-      localStorage.setItem('refreshToken', response.data.refreshToken);
-      localStorage.setItem('refreshTokenExpiration', response.data.refreshTokenExpiration);
-      localStorage.setItem(API_CONFIG.STORAGE_KEYS.USER, JSON.stringify({
-        userId: response.data.userId,
-        email: response.data.email,
-        firstName: response.data.firstName,
-        lastName: response.data.lastName,
-        emailConfirmed: response.data.emailConfirmed,
-        roles: response.data.roles
-      }));
+      const response = await publicApiClient.post<RegisterResponse>(API_CONFIG.ENDPOINTS.AUTH.REGISTER, registerData);
+      // If registration returns auth data, store tokens
+      if (response.data && response.data.data) {
+        localStorage.setItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN, response.data.data.token);
+        localStorage.setItem('refreshToken', response.data.data.refreshToken);
+        localStorage.setItem('refreshTokenExpiration', response.data.data.refreshTokenExpiration);
+        localStorage.setItem(API_CONFIG.STORAGE_KEYS.USER, JSON.stringify({
+          userId: response.data.data.userId,
+          email: response.data.data.email,
+          firstName: response.data.data.firstName,
+          lastName: response.data.data.lastName,
+          emailConfirmed: response.data.data.emailConfirmed,
+          roles: response.data.data.roles
+        }));
+      }
       return response.data;
     } catch (error) {
       console.error('Register error:', error);
