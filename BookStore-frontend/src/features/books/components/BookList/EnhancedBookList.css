@@ -182,12 +182,13 @@
 
 .book-info {
   padding: 1.5rem 1.5rem 0.5rem 1.5rem;
-  flex: 1 1 50%;
+  flex: 0 0 50%;
+  height: 50%;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  height: 50%;
   box-sizing: border-box;
+  overflow-y: auto;
 }
 
 .book-title {
