@@ -155,10 +155,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     // Only fetch cart if user is authenticated
-    const token = localStorage.getItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN);
-    if (token && authService.isAuthenticated()) {
-      fetchCart();
-    }
+    const checkAuthAndFetch = async () => {
+      const token = localStorage.getItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN);
+      const authenticated = await authService.isAuthenticated();
+      if (token && authenticated) {
+        fetchCart();
+      }
+    };
+    checkAuthAndFetch();
   }, []);
 
   return (

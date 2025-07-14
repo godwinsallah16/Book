@@ -23,13 +23,17 @@ export function Favorites() {
 
   useEffect(() => {
     // Only fetch favorites if user is authenticated
-    const token = localStorage.getItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN);
-    if (token && authService.isAuthenticated()) {
-      fetchFavorites();
-    } else {
-      setIsLoading(false);
-      setError('Please log in to view your favorites');
-    }
+    const checkAuthAndFetch = async () => {
+      const token = localStorage.getItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN);
+      const authenticated = await authService.isAuthenticated();
+      if (token && authenticated) {
+        fetchFavorites();
+      } else {
+        setIsLoading(false);
+        setError('Please log in to view your favorites');
+      }
+    };
+    checkAuthAndFetch();
   }, []);
 
   const fetchFavorites = async () => {

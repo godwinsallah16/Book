@@ -39,8 +39,8 @@ function App() {
 
   useEffect(() => {
     // Initial auth check
-    const syncAuthState = () => {
-      const authenticated = authService.isAuthenticated();
+    const syncAuthState = async () => {
+      const authenticated = await authService.isAuthenticated();
       setIsAuthenticated(authenticated);
       if (authenticated) {
         const currentUser = authService.getCurrentUser();
@@ -50,15 +50,13 @@ function App() {
         setUser(null);
         setIsEmailVerified(false);
       }
+      setLoading(false);
     };
     syncAuthState();
-    setLoading(false);
 
     // Listen for localStorage changes (multi-tab sync)
-    const handleStorage = (event: StorageEvent) => {
-      if (event.key === 'authToken' || event.key === 'user') {
-        syncAuthState();
-      }
+    const handleStorage = () => {
+      syncAuthState();
     };
     window.addEventListener('storage', handleStorage);
     return () => window.removeEventListener('storage', handleStorage);

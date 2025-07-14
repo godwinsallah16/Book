@@ -117,10 +117,18 @@ export const authService = {
     localStorage.removeItem(API_CONFIG.STORAGE_KEYS.USER);
   },
 
-  // Check if user is authenticated
-  isAuthenticated(): boolean {
+  // Check if user is authenticated by verifying token with backend
+  async isAuthenticated(): Promise<boolean> {
     const token = localStorage.getItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN);
-    return token !== null;
+    if (!token) return false;
+    try {
+      // Attempt to fetch current user with token
+      const response = await publicApiClient.get<AuthResponse>(API_CONFIG.ENDPOINTS.AUTH.ME);
+      return !!response.data && !!response.data.userId;
+    } catch {
+      // If token is invalid or expired, treat as unauthenticated
+      return false;
+    }
   },
 
   // Get current user

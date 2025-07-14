@@ -62,10 +62,10 @@ export function EnhancedBookList({ filters, onBookSelect, onBookEdit, onBookDele
 
   const handleAddToCart = async (book: Book) => {
     if (book.stockQuantity <= 0) return;
-    
     // Check if user is authenticated
     const token = localStorage.getItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN);
-    if (!token || !authService.isAuthenticated()) {
+    const authenticated = await authService.isAuthenticated();
+    if (!token || !authenticated) {
       alert('Please log in to add items to your cart');
       return;
     }
@@ -85,7 +85,8 @@ export function EnhancedBookList({ filters, onBookSelect, onBookEdit, onBookDele
   const handleToggleFavorite = async (book: Book) => {
     // Check if user is authenticated
     const token = localStorage.getItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN);
-    if (!token || !authService.isAuthenticated()) {
+    const authenticated = await authService.isAuthenticated();
+    if (!token || !authenticated) {
       alert('Please log in to add items to your favorites');
       return;
     }
