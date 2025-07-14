@@ -201,79 +201,72 @@ export function EnhancedBookList({ filters, onBookSelect, onBookEdit, onBookDele
                 )}
               </button>
             </div>
-            
             <div className="book-info">
               <h3 className="book-title">{book.title}</h3>
               <p className="book-author">by {book.author}</p>
               <p className="book-category">{book.category}</p>
               <p className="book-price">${book.price.toFixed(2)}</p>
-              <p className={`book-stock ${book.stockQuantity === 0 ? 'out-of-stock' : ''}`}>
-                {book.stockQuantity > 0 ? `${book.stockQuantity} in stock` : 'Out of stock'}
-              </p>
-              {book.description && (
-                <p className="book-description">{book.description}</p>
-              )}
-            </div>
-
-            <div className="book-actions">
-              <button
-                className="btn btn-primary add-to-cart"
-                onClick={() => handleAddToCart(book)}
-                disabled={book.stockQuantity <= 0 || loadingStates[book.id]?.cart}
-                title={book.stockQuantity <= 0 ? 'Out of stock' : 'Add to cart'}
-              >
-                {loadingStates[book.id]?.cart ? (
-                  <div className="btn-spinner"></div>
-                ) : (
-                  <>
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
+              <p className={`book-stock ${book.stockQuantity === 0 ? 'out-of-stock' : ''}`}>{book.stockQuantity > 0 ? `${book.stockQuantity} in stock` : 'Out of stock'}</p>
+              {book.description && <p className="book-description">{book.description}</p>}
+              <div className="book-actions">
+                <button
+                  className="btn btn-primary add-to-cart"
+                  onClick={() => handleAddToCart(book)}
+                  disabled={book.stockQuantity <= 0 || loadingStates[book.id]?.cart}
+                  title={book.stockQuantity <= 0 ? 'Out of stock' : 'Add to cart'}
+                >
+                  {loadingStates[book.id]?.cart ? (
+                    <div className="btn-spinner"></div>
+                  ) : (
+                    <>
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.7 15.3C4.3 15.7 4.6 16.5 5.1 16.5H17M17 13V16.5M9 19.5C9.8 19.5 10.5 20.2 10.5 21S9.8 22.5 9 22.5 7.5 21.8 7.5 21 8.2 19.5 9 19.5ZM20 19.5C20.8 19.5 21.5 20.2 21.5 21S20.8 22.5 20 22.5 18.5 21.8 18.5 21 19.2 19.5 20 19.5Z"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      Add to Cart
+                    </>
+                  )}
+                </button>
+                <div className="book-admin-actions">
+                  {onBookSelect && (
+                    <button
+                      onClick={() => onBookSelect(book)}
+                      className="btn btn-secondary"
+                      title="View details"
                     >
-                      <path
-                        d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.7 15.3C4.3 15.7 4.6 16.5 5.1 16.5H17M17 13V16.5M9 19.5C9.8 19.5 10.5 20.2 10.5 21S9.8 22.5 9 22.5 7.5 21.8 7.5 21 8.2 19.5 9 19.5ZM20 19.5C20.8 19.5 21.5 20.2 21.5 21S20.8 22.5 20 22.5 18.5 21.8 18.5 21 19.2 19.5 20 19.5Z"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                    Add to Cart
-                  </>
-                )}
-              </button>
-
-              <div className="book-admin-actions">
-                {onBookSelect && (
-                  <button
-                    onClick={() => onBookSelect(book)}
-                    className="btn btn-secondary"
-                    title="View details"
-                  >
-                    View
-                  </button>
-                )}
-                {onBookEdit && canUserEditBook(book) && (
-                  <button
-                    onClick={() => onBookEdit(book)}
-                    className="btn btn-secondary"
-                    title="Edit book"
-                  >
-                    Edit
-                  </button>
-                )}
-                {onBookDelete && canUserEditBook(book) && (
-                  <button
-                    onClick={() => handleDelete(book)}
-                    className="btn btn-danger"
-                    title="Delete book"
-                  >
-                    Delete
-                  </button>
-                )}
+                      View
+                    </button>
+                  )}
+                  {onBookEdit && canUserEditBook(book) && (
+                    <button
+                      onClick={() => onBookEdit(book)}
+                      className="btn btn-secondary"
+                      title="Edit book"
+                    >
+                      Edit
+                    </button>
+                  )}
+                  {onBookDelete && canUserEditBook(book) && (
+                    <button
+                      onClick={() => handleDelete(book)}
+                      className="btn btn-danger"
+                      title="Delete book"
+                    >
+                      Delete
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           </div>
