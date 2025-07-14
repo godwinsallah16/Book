@@ -1,5 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
+import { useCart } from '../../../hooks/useCart/useCart';
 import './EnhancedBookList.css';
 import BookCard from './BookCard';
 import type { Book, BookFilters, PaginatedResponse } from '../../../types/book.types';
@@ -79,9 +80,13 @@ const EnhancedBookList: React.FC<EnhancedBookListProps> = ({ filters, onBookEdit
     fetchFavorites();
   }, []);
 
-  const handleAddToCart = (book: Book) => {
-    // TODO: Implement add to cart logic
-    alert(`Added "${book.title}" to cart!`);
+  const { addToCart } = useCart();
+  const handleAddToCart = async (book: Book) => {
+    try {
+      await addToCart(book.id, 1);
+    } catch {
+      alert('Failed to add to cart');
+    }
   };
 
   const handleToggleFavorite = async (book: Book) => {

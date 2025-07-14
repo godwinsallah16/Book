@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import CartSidebarWrapper from './features/cart/components/CartSidebarWrapper';
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { BookProvider, CartProvider } from './context';
 import { 
@@ -19,7 +20,6 @@ import {
   NotFound
 } from './shared/components';
 import { authService } from './services/authService';
-import { ShoppingCart } from './features/cart/components';
 import type { Book } from './types/book.types';
 import './App.css';
 
@@ -109,6 +109,7 @@ function App() {
             user={user}
             onLogout={handleLogout}
           />
+          <CartSidebarWrapper />
           <main className="main-content">
             {children}
           </main>
@@ -141,160 +142,134 @@ function App() {
 
   return (
     <Router>
-      <div className="App">
-        <Routes>
-          {/* Cart Page Route */}
-          <Route 
-            path="/cart" 
-            element={
-              <ProtectedRoute>
-                <ShoppingCart isOpen={true} onClose={() => {}} />
-              </ProtectedRoute>
-            } 
-          />
-          {/* Public Routes */}
-          <Route 
-            path="/login" 
-            element={
-              !isAuthenticated ? (
-                <LoginPage onLogin={handleLogin} />
-              ) : (
-                <Navigate to="/dashboard" replace />
-              )
-            } 
-          />
-          <Route 
-            path="/register" 
-            element={
-              !isAuthenticated ? (
-                <RegisterPage />
-              ) : (
-                <Navigate to="/dashboard" replace />
-              )
-            } 
-          />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/verify-email" element={<VerifyEmailPage />} />
-          
-          {/* Email Verification Required Route */}
-          <Route 
-            path="/email-verification-required" 
-            element={
-              isAuthenticated && !isEmailVerified ? (
-                <EmailVerificationRequired />
-              ) : (
-                <Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />
-              )
-            } 
-          />
-          
-          {/* Protected Routes */}
-          <Route 
-            path="/dashboard" 
-            element={
-              <ProtectedRoute>
-                <DashboardPage 
-                  currentView={currentView}
-                  onBookEdit={handleEditBook}
-                  onViewChange={handleViewChange}
-                />
-              </ProtectedRoute>
-            } 
-          />
-          
-          <Route 
-            path="/books" 
-            element={
+      <Routes>
+        {/* Public Routes */}
+        <Route 
+          path="/login" 
+          element={
+            !isAuthenticated ? (
+              <LoginPage onLogin={handleLogin} />
+            ) : (
               <Navigate to="/dashboard" replace />
-            } 
-          />
-          
-          <Route 
-            path="/add-book" 
-            element={
-              <ProtectedRoute>
-                <BookFormPage 
-                  onSuccess={handleFormSuccess}
-                  onCancel={handleFormCancel}
-                />
-              </ProtectedRoute>
-            } 
-          />
-          
-          <Route 
-            path="/edit-book" 
-            element={
-              <ProtectedRoute>
-                <BookFormPage 
-                  book={selectedBook || undefined}
-                  onSuccess={handleFormSuccess}
-                  onCancel={handleFormCancel}
-                />
-              </ProtectedRoute>
-            } 
-          />
-          
-          <Route 
-            path="/favorites" 
-            element={
-              <ProtectedRoute>
-                <DashboardPage 
-                  currentView="favorites"
-                  onBookEdit={handleEditBook}
-                  onViewChange={handleViewChange}
-                />
-              </ProtectedRoute>
-            } 
-          />
-          
-          <Route 
-            path="/checkout" 
-            element={
-              <ProtectedRoute>
-                <Checkout />
-              </ProtectedRoute>
-            } 
-          />
-          
-          <Route 
-            path="/orders" 
-            element={
-              <ProtectedRoute>
-                <Orders />
-              </ProtectedRoute>
-            } 
-          />
-          
-          <Route 
-            path="/order-confirmation/:orderId" 
-            element={
-              <ProtectedRoute>
-                <OrderConfirmation />
-              </ProtectedRoute>
-            } 
-          />
-          
-          {/* Default Route */}
-          <Route 
-            path="/" 
-            element={
+            )
+          } 
+        />
+        <Route 
+          path="/register" 
+          element={
+            !isAuthenticated ? (
+              <RegisterPage />
+            ) : (
+              <Navigate to="/dashboard" replace />
+            )
+          } 
+        />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/verify-email" element={<VerifyEmailPage />} />
+        {/* Email Verification Required Route */}
+        <Route 
+          path="/email-verification-required" 
+          element={
+            isAuthenticated && !isEmailVerified ? (
+              <EmailVerificationRequired />
+            ) : (
               <Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />
-            } 
-          />
-          
-          {/* 404 Route - must be last */}
-          <Route 
-            path="*" 
-            element={
-              <NotFound 
-                message="The page you're looking for doesn't exist."
-                redirectTo={isAuthenticated ? "/dashboard" : "/login"}
+            )
+          } 
+        />
+        {/* Protected Routes */}
+        <Route 
+          path="/dashboard" 
+          element={
+            <ProtectedRoute>
+              <DashboardPage 
+                currentView={currentView}
+                onBookEdit={handleEditBook}
+                onViewChange={handleViewChange}
               />
-            } 
-          />
-        </Routes>
-      </div>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/books" 
+          element={<Navigate to="/dashboard" replace />} 
+        />
+        <Route 
+          path="/add-book" 
+          element={
+            <ProtectedRoute>
+              <BookFormPage 
+                onSuccess={handleFormSuccess}
+                onCancel={handleFormCancel}
+              />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/edit-book" 
+          element={
+            <ProtectedRoute>
+              <BookFormPage 
+                book={selectedBook || undefined}
+                onSuccess={handleFormSuccess}
+                onCancel={handleFormCancel}
+              />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/favorites" 
+          element={
+            <ProtectedRoute>
+              <DashboardPage 
+                currentView="favorites"
+                onBookEdit={handleEditBook}
+                onViewChange={handleViewChange}
+              />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/checkout" 
+          element={
+            <ProtectedRoute>
+              <Checkout />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/orders" 
+          element={
+            <ProtectedRoute>
+              <Orders />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/order-confirmation/:orderId" 
+          element={
+            <ProtectedRoute>
+              <OrderConfirmation />
+            </ProtectedRoute>
+          } 
+        />
+        {/* Default Route */}
+        <Route 
+          path="/" 
+          element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />} 
+        />
+        {/* 404 Route - must be last */}
+        <Route 
+          path="*" 
+          element={
+            <NotFound 
+              message="The page you're looking for doesn't exist."
+              redirectTo={isAuthenticated ? "/dashboard" : "/login"}
+            />
+          } 
+        />
+      </Routes>
     </Router>
   );
 }
