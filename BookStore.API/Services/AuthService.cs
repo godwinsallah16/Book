@@ -337,7 +337,16 @@ namespace BookStore.API.Services
                 }
 
                 var jwtSettings = _configuration.GetSection("JwtSettings");
-                var key = Encoding.ASCII.GetBytes(jwtSettings["Secret"]!);
+                var secret = jwtSettings["Secret"];
+                if (string.IsNullOrEmpty(secret))
+                {
+                    _logger.LogError("JWT Secret is null or empty! Check your environment variables and configuration.");
+                }
+                else
+                {
+                    _logger.LogInformation("JWT Secret loaded. Length: {Length}", secret.Length);
+                }
+                var key = Encoding.ASCII.GetBytes(secret!);
 
                 var claims = new List<Claim>
                 {
