@@ -264,7 +264,7 @@ try
     {
         using var scope = app.Services.CreateScope();
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-        
+
         try
         {
             var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -273,7 +273,7 @@ try
 
             // Wait for database to be ready
             await WaitForDatabase(context, (Microsoft.Extensions.Logging.ILogger)logger);
-            
+
             // Apply migrations
             if (context.Database.IsRelational())
             {
@@ -284,6 +284,17 @@ try
             else
             {
                 await context.Database.EnsureCreatedAsync();
+            }
+
+            // Ensure required roles exist
+            string[] roles = new[] { "USER", "ADMIN" };
+            foreach (var role in roles)
+            {
+                if (!await roleManager.RoleExistsAsync(role))
+                {
+                    logger.LogInformation($"Creating role: {role}");
+                    await roleManager.CreateAsync(new IdentityRole(role));
+                }
             }
 
             // Seed initial data
