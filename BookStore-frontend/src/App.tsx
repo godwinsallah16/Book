@@ -101,6 +101,10 @@ function App() {
   };
 
   // Layout component for authenticated users
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const openCart = () => setIsCartOpen(true);
+  const closeCart = () => setIsCartOpen(false);
+
   const AuthenticatedLayout = ({ children }: { children: React.ReactNode }) => (
     <CartProvider>
       <BookProvider>
@@ -108,8 +112,9 @@ function App() {
           <Navigation 
             user={user}
             onLogout={handleLogout}
+            onCartClick={openCart}
           />
-          <CartSidebarWrapper />
+          <CartSidebarWrapper isCartOpen={isCartOpen} closeCart={closeCart} />
           <main className="main-content">
             {children}
           </main>

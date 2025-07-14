@@ -36,7 +36,7 @@ namespace BookStore.API.Data
                 entity.Property(b => b.Description).HasMaxLength(1000);
                 entity.Property(b => b.ImageUrl).HasMaxLength(500);
                 entity.Property(b => b.CreatedAt).IsRequired();
-                entity.Property(b => b.IsDeleted).HasDefaultValue(false);
+                entity.Property(b => b.IsDeleted);
 
                 // Index for better performance
                 entity.HasIndex(b => b.Category);
@@ -173,7 +173,8 @@ namespace BookStore.API.Data
                     StockQuantity = 40,
                     Description = "A classic romance novel exploring societal expectations and true love in 19th century England.",
                     ImageUrl = "https://covers.openlibrary.org/b/id/8231852-L.jpg",
-                    CreatedAt = seedDate
+                    CreatedAt = seedDate,
+                    IsDeleted = false
                 },
                 new Book
                 {
@@ -188,9 +189,9 @@ namespace BookStore.API.Data
                     StockQuantity = 35,
                     Description = "Two teenagers with cancer fall in love while navigating life's harsh realities.",
                     ImageUrl = "https://covers.openlibrary.org/b/id/8231863-L.jpg",
-                    CreatedAt = seedDate
+                    CreatedAt = seedDate,
+                    IsDeleted = false
                 },
-
                 // Fiction - Thriller
                 new Book
                 {
@@ -205,7 +206,8 @@ namespace BookStore.API.Data
                     StockQuantity = 30,
                     Description = "A journalist and hacker investigate a decades-old disappearance in Sweden.",
                     ImageUrl = "https://covers.openlibrary.org/b/id/240726-L.jpg",
-                    CreatedAt = seedDate
+                    CreatedAt = seedDate,
+                    IsDeleted = false
                 },
                 new Book
                 {
@@ -220,9 +222,9 @@ namespace BookStore.API.Data
                     StockQuantity = 25,
                     Description = "A psychological thriller about a marriage gone terribly wrong.",
                     ImageUrl = "https://covers.openlibrary.org/b/id/8235119-L.jpg",
-                    CreatedAt = seedDate
+                    CreatedAt = seedDate,
+                    IsDeleted = false
                 },
-
                 // Fiction - Fantasy
                 new Book
                 {
@@ -237,7 +239,8 @@ namespace BookStore.API.Data
                     StockQuantity = 50,
                     Description = "The first book in the magical series about a young wizard.",
                     ImageUrl = "https://covers.openlibrary.org/b/id/7984916-L.jpg",
-                    CreatedAt = seedDate
+                    CreatedAt = seedDate,
+                    IsDeleted = false
                 },
                 new Book
                 {
@@ -252,106 +255,9 @@ namespace BookStore.API.Data
                     StockQuantity = 20,
                     Description = "A magical competition between two illusionists in a mysterious circus.",
                     ImageUrl = "https://covers.openlibrary.org/b/id/8235120-L.jpg",
-                    CreatedAt = seedDate
+                    CreatedAt = seedDate,
+                    IsDeleted = false
                 },
-
-                // Fiction - Sci-Fi
-                new Book
-                {
-                    Id = 7,
-                    Title = "Dune",
-                    Author = "Frank Herbert",
-                    ISBN = "9780441013593",
-                    PublicationYear = 1965,
-                    Publisher = "Chilton Books",
-                    Category = "Fiction - Sci-Fi",
-                    Price = 16.99m,
-                    StockQuantity = 30,
-                    Description = "Epic science fiction set on the desert planet Arrakis.",
-                    ImageUrl = "https://covers.openlibrary.org/b/id/10521258-L.jpg",
-                    CreatedAt = seedDate
-                },
-                new Book
-                {
-                    Id = 8,
-                    Title = "The Hunger Games",
-                    Author = "Suzanne Collins",
-                    ISBN = "978-0439023481",
-                    PublicationYear = 2008,
-                    Publisher = "Scholastic",
-                    Category = "Fiction - Sci-Fi",
-                    Price = 12.99m,
-                    StockQuantity = 25,
-                    Description = "A dystopian novel where teenagers fight to the death in a televised event.",
-                    ImageUrl = "https://covers.openlibrary.org/b/id/8235121-L.jpg",
-                    CreatedAt = seedDate
-                },
-
-                // Fiction - Historical
-                new Book
-                {
-                    Id = 9,
-                    Title = "The Book Thief",
-                    Author = "Markus Zusak",
-                    ISBN = "978-0375842207",
-                    PublicationYear = 2005,
-                    Publisher = "Knopf Books",
-                    Category = "Fiction - Historical",
-                    Price = 11.99m,
-                    StockQuantity = 25,
-                    Description = "A young girl steals books in Nazi Germany.",
-                    ImageUrl = "https://covers.openlibrary.org/b/id/8235117-L.jpg",
-                    CreatedAt = seedDate
-                },
-                new Book
-                {
-                    Id = 10,
-                    Title = "All the Light We Cannot See",
-                    Author = "Anthony Doerr",
-                    ISBN = "978-1476746586",
-                    PublicationYear = 2014,
-                    Publisher = "Scribner",
-                    Category = "Fiction - Historical",
-                    Price = 14.99m,
-                    StockQuantity = 20,
-                    Description = "A blind French girl and a German boy's paths collide in WWII.",
-                    ImageUrl = "https://covers.openlibrary.org/b/id/8235122-L.jpg",
-                    CreatedAt = seedDate
-                },
-
-                // Fiction - Horror
-                new Book
-                {
-                    Id = 11,
-                    Title = "It",
-                    Author = "Stephen King",
-                    ISBN = "978-1501142970",
-                    PublicationYear = 1986,
-                    Publisher = "Viking",
-                    Category = "Fiction - Horror",
-                    Price = 13.99m,
-                    StockQuantity = 20,
-                    Description = "A shape-shifting terror preys on children in a small town.",
-                    ImageUrl = "https://covers.openlibrary.org/b/id/8235118-L.jpg",
-                    CreatedAt = seedDate
-                },
-                new Book
-                {
-                    Id = 12,
-                    Title = "The Shining",
-                    Author = "Stephen King",
-                    ISBN = "978-0307743657",
-                    PublicationYear = 1977,
-                    Publisher = "Doubleday",
-                    Category = "Fiction - Horror",
-                    Price = 12.99m,
-                    StockQuantity = 18,
-                    Description = "A family faces supernatural forces in an isolated hotel.",
-                    ImageUrl = "https://covers.openlibrary.org/b/id/8235123-L.jpg",
-                    CreatedAt = seedDate
-                },
-
-                // Non-Fiction - Biography
                 new Book
                 {
                     Id = 13,
@@ -365,7 +271,8 @@ namespace BookStore.API.Data
                     StockQuantity = 15,
                     Description = "The authorized biography of Apple's co-founder.",
                     ImageUrl = "https://covers.openlibrary.org/b/id/7265441-L.jpg",
-                    CreatedAt = seedDate
+                    CreatedAt = seedDate,
+                    IsDeleted = false
                 },
                 new Book
                 {
@@ -380,10 +287,9 @@ namespace BookStore.API.Data
                     StockQuantity = 20,
                     Description = "Memoir of the former First Lady of the United States.",
                     ImageUrl = "https://covers.openlibrary.org/b/id/8235124-L.jpg",
-                    CreatedAt = seedDate
+                    CreatedAt = seedDate,
+                    IsDeleted = false
                 },
-
-                // Non-Fiction - Self-Help
                 new Book
                 {
                     Id = 15,
@@ -397,10 +303,9 @@ namespace BookStore.API.Data
                     StockQuantity = 25,
                     Description = "A guide to building good habits and breaking bad ones.",
                     ImageUrl = "https://covers.openlibrary.org/b/id/9259256-L.jpg",
-                    CreatedAt = seedDate
+                    CreatedAt = seedDate,
+                    IsDeleted = false
                 },
-
-                // Non-Fiction - History
                 new Book
                 {
                     Id = 16,
@@ -414,7 +319,8 @@ namespace BookStore.API.Data
                     StockQuantity = 20,
                     Description = "Exploration of human history from evolution to modern society.",
                     ImageUrl = "https://covers.openlibrary.org/b/id/8231857-L.jpg",
-                    CreatedAt = seedDate
+                    CreatedAt = seedDate,
+                    IsDeleted = false
                 },
                 new Book
                 {
@@ -429,10 +335,9 @@ namespace BookStore.API.Data
                     StockQuantity = 15,
                     Description = "The Osage murders and birth of the FBI.",
                     ImageUrl = "https://covers.openlibrary.org/b/id/8235125-L.jpg",
-                    CreatedAt = seedDate
+                    CreatedAt = seedDate,
+                    IsDeleted = false
                 },
-
-                // Non-Fiction - Politics
                 new Book
                 {
                     Id = 18,
@@ -446,10 +351,9 @@ namespace BookStore.API.Data
                     StockQuantity = 18,
                     Description = "Thoughts on reclaiming the American dream.",
                     ImageUrl = "https://covers.openlibrary.org/b/id/8231858-L.jpg",
-                    CreatedAt = seedDate
+                    CreatedAt = seedDate,
+                    IsDeleted = false
                 },
-
-                // Non-Fiction - True Crime
                 new Book
                 {
                     Id = 19,
@@ -463,10 +367,9 @@ namespace BookStore.API.Data
                     StockQuantity = 12,
                     Description = "True crime classic about the Clutter family murders.",
                     ImageUrl = "https://covers.openlibrary.org/b/id/8231859-L.jpg",
-                    CreatedAt = seedDate
+                    CreatedAt = seedDate,
+                    IsDeleted = false
                 },
-
-                // Non-Fiction - Religion
                 new Book
                 {
                     Id = 20,
@@ -480,7 +383,8 @@ namespace BookStore.API.Data
                     StockQuantity = 14,
                     Description = "Spiritual guide to finding purpose through faith.",
                     ImageUrl = "https://covers.openlibrary.org/b/id/8231860-L.jpg",
-                    CreatedAt = seedDate
+                    CreatedAt = seedDate,
+                    IsDeleted = false
                 },
 
                 // Children & Teens - Picture Books
@@ -497,7 +401,8 @@ namespace BookStore.API.Data
                     StockQuantity = 30,
                     Description = "A caterpillar eats his way through various foods.",
                     ImageUrl = "https://covers.openlibrary.org/b/id/8231861-L.jpg",
-                    CreatedAt = seedDate
+                    CreatedAt = seedDate,
+                    IsDeleted = false
                 },
 
                 // Children & Teens - Middle Grade
@@ -514,7 +419,8 @@ namespace BookStore.API.Data
                     StockQuantity = 22,
                     Description = "A modern demigod discovers his divine heritage.",
                     ImageUrl = "https://covers.openlibrary.org/b/id/8231862-L.jpg",
-                    CreatedAt = seedDate
+                    CreatedAt = seedDate,
+                    IsDeleted = false
                 },
                 new Book
                 {
@@ -529,7 +435,8 @@ namespace BookStore.API.Data
                     StockQuantity = 18,
                     Description = "A boy with facial differences attends mainstream school.",
                     ImageUrl = "https://covers.openlibrary.org/b/id/8235126-L.jpg",
-                    CreatedAt = seedDate
+                    CreatedAt = seedDate,
+                    IsDeleted = false
                 },
 
                 // Children & Teens - Young Adult
@@ -546,7 +453,8 @@ namespace BookStore.API.Data
                     StockQuantity = 20,
                     Description = "A teen witnesses police shooting her childhood friend.",
                     ImageUrl = "https://covers.openlibrary.org/b/id/8235127-L.jpg",
-                    CreatedAt = seedDate
+                    CreatedAt = seedDate,
+                    IsDeleted = false
                 },
                 new Book
                 {
@@ -561,7 +469,8 @@ namespace BookStore.API.Data
                     StockQuantity = 16,
                     Description = "Dystopian Chicago where society is divided into factions.",
                     ImageUrl = "https://covers.openlibrary.org/b/id/8235128-L.jpg",
-                    CreatedAt = seedDate
+                    CreatedAt = seedDate,
+                    IsDeleted = false
                 },
 
                 // Academic & Textbooks - Science
@@ -578,7 +487,8 @@ namespace BookStore.API.Data
                     StockQuantity = 10,
                     Description = "Introduction to cosmology for non-specialists.",
                     ImageUrl = "https://covers.openlibrary.org/b/id/8231864-L.jpg",
-                    CreatedAt = seedDate
+                    CreatedAt = seedDate,
+                    IsDeleted = false
                 },
 
                 // Academic & Textbooks - Engineering
@@ -595,7 +505,8 @@ namespace BookStore.API.Data
                     StockQuantity = 8,
                     Description = "Fundamentals of structural engineering made accessible.",
                     ImageUrl = "https://covers.openlibrary.org/b/id/8231865-L.jpg",
-                    CreatedAt = seedDate
+                    CreatedAt = seedDate,
+                    IsDeleted = false
                 },
 
                 // Academic & Textbooks - Medicine
@@ -612,7 +523,8 @@ namespace BookStore.API.Data
                     StockQuantity = 7,
                     Description = "Biography of cancer spanning centuries of research.",
                     ImageUrl = "https://covers.openlibrary.org/b/id/8231866-L.jpg",
-                    CreatedAt = seedDate
+                    CreatedAt = seedDate,
+                    IsDeleted = false
                 },
 
                 // Academic & Textbooks - Law
@@ -629,7 +541,8 @@ namespace BookStore.API.Data
                     StockQuantity = 9,
                     Description = "Exploration of racial injustice and moral growth.",
                     ImageUrl = "https://covers.openlibrary.org/b/id/8228692-L.jpg",
-                    CreatedAt = seedDate
+                    CreatedAt = seedDate,
+                    IsDeleted = false
                 },
 
                 // Academic & Textbooks - Test Prep
@@ -646,7 +559,8 @@ namespace BookStore.API.Data
                     StockQuantity = 12,
                     Description = "Comprehensive SAT preparation guide with practice tests.",
                     ImageUrl = "https://covers.openlibrary.org/b/id/8231867-L.jpg",
-                    CreatedAt = seedDate
+                    CreatedAt = seedDate,
+                    IsDeleted = false
                 },
 
                 // Comics & Graphic Novels - Manga
@@ -663,7 +577,8 @@ namespace BookStore.API.Data
                     StockQuantity = 20,
                     Description = "A young ninja dreams of becoming his village's leader.",
                     ImageUrl = "https://covers.openlibrary.org/b/id/8231868-L.jpg",
-                    CreatedAt = seedDate
+                    CreatedAt = seedDate,
+                    IsDeleted = false
                 },
 
                 // Comics & Graphic Novels - Superhero
@@ -680,7 +595,8 @@ namespace BookStore.API.Data
                     StockQuantity = 15,
                     Description = "Batman's early crime-fighting days in Gotham City.",
                     ImageUrl = "https://covers.openlibrary.org/b/id/8231869-L.jpg",
-                    CreatedAt = seedDate
+                    CreatedAt = seedDate,
+                    IsDeleted = false
                 },
 
                 // Comics & Graphic Novels - Indie
@@ -697,7 +613,8 @@ namespace BookStore.API.Data
                     StockQuantity = 10,
                     Description = "Graphic memoir of growing up during Iranian Revolution.",
                     ImageUrl = "https://covers.openlibrary.org/b/id/8231870-L.jpg",
-                    CreatedAt = seedDate
+                    CreatedAt = seedDate,
+                    IsDeleted = false
                 },
 
                 // Comics & Graphic Novels - Webtoons
@@ -714,7 +631,8 @@ namespace BookStore.API.Data
                     StockQuantity = 8,
                     Description = "Modern retelling of Hades and Persephone myth.",
                     ImageUrl = "https://covers.openlibrary.org/b/id/8231871-L.jpg",
-                    CreatedAt = seedDate
+                    CreatedAt = seedDate,
+                    IsDeleted = false
                 },
 
                 // Lifestyle & Hobbies - Cooking
@@ -731,7 +649,8 @@ namespace BookStore.API.Data
                     StockQuantity = 10,
                     Description = "Mastering the elements of good cooking.",
                     ImageUrl = "https://covers.openlibrary.org/b/id/8231872-L.jpg",
-                    CreatedAt = seedDate
+                    CreatedAt = seedDate,
+                    IsDeleted = false
                 },
 
                 // Lifestyle & Hobbies - Travel
@@ -748,7 +667,8 @@ namespace BookStore.API.Data
                     StockQuantity = 7,
                     Description = "Ranking of the world's top travel experiences.",
                     ImageUrl = "https://covers.openlibrary.org/b/id/8231873-L.jpg",
-                    CreatedAt = seedDate
+                    CreatedAt = seedDate,
+                    IsDeleted = false
                 }
             );
         }

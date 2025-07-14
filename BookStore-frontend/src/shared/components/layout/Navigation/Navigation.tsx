@@ -6,9 +6,10 @@ export interface NavigationProps {
   user: { email: string; firstName: string; lastName: string } | null;
   onLogout: () => void;
   cartItemCount?: number;
+  onCartClick?: () => void;
 }
 
-export function Navigation({ user, onLogout, cartItemCount = 0 }: NavigationProps) {
+export function Navigation({ user, onLogout, cartItemCount = 0, onCartClick }: NavigationProps) {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
@@ -70,14 +71,15 @@ export function Navigation({ user, onLogout, cartItemCount = 0 }: NavigationProp
           <div className="nav-actions">
             {user ? (
               <>
-                {/* Cart Icon */}
-                <Link
-                  to="/cart"
-                  className="nav-action-btn"
-                  aria-label="Shopping cart"
-                >
-                  🛒 {cartItemCount > 0 && <span className="cart-badge">{cartItemCount}</span>}
-                </Link>
+            {/* Cart Icon */}
+            <button
+              className="nav-action-btn"
+              aria-label="Shopping cart"
+              onClick={onCartClick}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', position: 'relative' }}
+            >
+              🛒 {cartItemCount > 0 && <span className="cart-badge">{cartItemCount}</span>}
+            </button>
 
                 {/* User Menu */}
                 <div className="user-menu">
