@@ -1,4 +1,4 @@
-import { publicApiClient, API_CONFIG } from '../utils';
+import { publicApiClient, apiClient, API_CONFIG } from '../utils';
 
 export interface LoginRequest {
   email: string;
@@ -234,7 +234,7 @@ export const authService = {
   // Fetch current user
   async fetchCurrentUser(): Promise<{ userId: string; email: string; firstName: string; lastName: string; emailConfirmed?: boolean; roles?: string[] } | null> {
     try {
-      const response = await publicApiClient.get<AuthResponse>(API_CONFIG.ENDPOINTS.AUTH.ME);
+      const response = await apiClient.get<AuthResponse>(API_CONFIG.ENDPOINTS.AUTH.ME);
       if (response.data) {
         localStorage.setItem(API_CONFIG.STORAGE_KEYS.USER, JSON.stringify({
           userId: response.data.userId,
