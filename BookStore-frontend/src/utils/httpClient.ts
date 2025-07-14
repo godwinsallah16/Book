@@ -37,14 +37,9 @@ export const createApiClient = (options: {
     (error: AxiosError) => {
       // Handle common HTTP errors
       if (error.response?.status === API_CONFIG.STATUS_CODES.UNAUTHORIZED) {
-        // Clear auth data on 401
-        localStorage.removeItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN);
-        localStorage.removeItem(API_CONFIG.STORAGE_KEYS.USER);
-        
-        // Redirect to login or dispatch logout action
-        console.warn('User session expired');
+        // Only log a warning, do not clear auth data automatically
+        console.warn('User session expired (401)');
       }
-      
       return Promise.reject(error);
     }
   );
