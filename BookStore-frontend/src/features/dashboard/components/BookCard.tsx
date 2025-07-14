@@ -12,17 +12,18 @@ interface BookCardProps {
   canEditOrDelete?: boolean;
 }
 
-const BookCard: React.FC<BookCardProps> = ({
-  book,
-  onEdit,
-  onDelete,
-  onAddToCart,
-  onToggleFavorite,
-  isFavorite = false,
-  canEditOrDelete = false,
-}) => {
+const BookCard: React.FC<BookCardProps> = (props) => {
+  const {
+    book,
+    onEdit,
+    onDelete,
+    onAddToCart,
+    onToggleFavorite,
+    isFavorite = false,
+    canEditOrDelete = false,
+  } = props;
   return (
-    <div className="book-card">
+    <div className="book-card vertical">
       <div className="book-card-image">
         <img src={book.imageUrl || '/default-book.png'} alt={book.title} />
         <div className="book-card-icons">
