@@ -167,7 +167,11 @@ try
     {
         options.AddPolicy("AllowFrontend",
             policy => policy
-                .WithOrigins("https://bookstore-frontend-074u.onrender.com")
+                .WithOrigins(
+                    "https://bookstore-frontend-074u.onrender.com",
+                    "https://godwinsallah16.github.io",
+                    "https://godwinsallah16.github.io/Book"
+                )
                 .AllowAnyHeader()
                 .AllowAnyMethod());
     });
