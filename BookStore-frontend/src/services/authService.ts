@@ -67,6 +67,7 @@ export const authService = {
       const response = await publicApiClient.post<AuthResponse>(API_CONFIG.ENDPOINTS.AUTH.LOGIN, loginData);
       // Store tokens in localStorage
       // Store tokens in localStorage for persistence
+      console.log('[authService] login: Setting auth token with key', API_CONFIG.STORAGE_KEYS.AUTH_TOKEN, 'and value', response.data.token);
       localStorage.setItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN, response.data.token);
       localStorage.setItem('refreshToken', response.data.refreshToken);
       localStorage.setItem('refreshTokenExpiration', response.data.refreshTokenExpiration);
@@ -90,7 +91,8 @@ export const authService = {
       const response = await publicApiClient.post<RegisterResponse>(API_CONFIG.ENDPOINTS.AUTH.REGISTER, registerData);
       // If registration returns auth data, store tokens
       if (response.data && response.data.data) {
-        localStorage.setItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN, response.data.data.token);
+      console.log('[authService] register: Setting auth token with key', API_CONFIG.STORAGE_KEYS.AUTH_TOKEN, 'and value', response.data.data.token);
+      localStorage.setItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN, response.data.data.token);
         localStorage.setItem('refreshToken', response.data.data.refreshToken);
         localStorage.setItem('refreshTokenExpiration', response.data.data.refreshTokenExpiration);
         localStorage.setItem(API_CONFIG.STORAGE_KEYS.USER, JSON.stringify({
@@ -111,6 +113,7 @@ export const authService = {
   // Logout user
   logout(): void {
     console.warn('[authService] logout called. Removing all auth tokens and user info from localStorage.');
+    console.log('[authService] logout: Removing auth token with key', API_CONFIG.STORAGE_KEYS.AUTH_TOKEN);
     localStorage.removeItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN);
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('refreshTokenExpiration');
@@ -120,6 +123,7 @@ export const authService = {
   // Check if user is authenticated by verifying token with backend
   async isAuthenticated(): Promise<boolean> {
     const token = localStorage.getItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN);
+    console.log('[authService] isAuthenticated: Read auth token with key', API_CONFIG.STORAGE_KEYS.AUTH_TOKEN, 'value:', token);
     if (!token) {
       console.log('[authService] isAuthenticated: No token found in localStorage.');
       return false;
@@ -176,6 +180,7 @@ export const authService = {
   // Get auth token
   getToken(): string | null {
     const token = localStorage.getItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN);
+    console.log('[authService] getToken: Read auth token with key', API_CONFIG.STORAGE_KEYS.AUTH_TOKEN, 'value:', token);
     if (!token) return null;
     if (this.isJwtExpired(token)) {
       // Do not logout here, just return null
@@ -196,6 +201,7 @@ export const authService = {
         userId: user.userId,
         refreshToken,
       });
+      console.log('[authService] refreshToken: Setting auth token with key', API_CONFIG.STORAGE_KEYS.AUTH_TOKEN, 'and value', response.data.token);
       localStorage.setItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN, response.data.token);
       localStorage.setItem('refreshToken', response.data.refreshToken);
       localStorage.setItem('refreshTokenExpiration', response.data.refreshTokenExpiration);
