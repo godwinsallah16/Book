@@ -65,7 +65,10 @@ export const authService = {
   async login(loginData: LoginRequest): Promise<AuthResponse> {
     try {
       const response = await publicApiClient.post<AuthResponse>(API_CONFIG.ENDPOINTS.AUTH.LOGIN, loginData);
+      // Debug: log response
+      console.log('Login response:', response);
       // Store tokens in localStorage
+      console.log('Storing token:', response.data.token);
       localStorage.setItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN, response.data.token);
       localStorage.setItem('refreshToken', response.data.refreshToken);
       localStorage.setItem('refreshTokenExpiration', response.data.refreshTokenExpiration);
@@ -77,6 +80,7 @@ export const authService = {
         emailConfirmed: response.data.emailConfirmed,
         roles: response.data.roles
       }));
+      console.log('authToken after set:', localStorage.getItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN));
       return response.data;
     } catch (error) {
       console.error('Login error:', error);
