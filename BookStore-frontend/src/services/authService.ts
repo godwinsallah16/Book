@@ -66,11 +66,11 @@ export const authService = {
     try {
       const response = await publicApiClient.post<AuthResponse>(API_CONFIG.ENDPOINTS.AUTH.LOGIN, loginData);
       // Store tokens in localStorage
-      // Store tokens in sessionStorage only
-      sessionStorage.setItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN, response.data.token);
-      sessionStorage.setItem('refreshToken', response.data.refreshToken);
-      sessionStorage.setItem('refreshTokenExpiration', response.data.refreshTokenExpiration);
-      sessionStorage.setItem(API_CONFIG.STORAGE_KEYS.USER, JSON.stringify({
+      // Store tokens in localStorage for persistence
+      localStorage.setItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN, response.data.token);
+      localStorage.setItem('refreshToken', response.data.refreshToken);
+      localStorage.setItem('refreshTokenExpiration', response.data.refreshTokenExpiration);
+      localStorage.setItem(API_CONFIG.STORAGE_KEYS.USER, JSON.stringify({
         userId: response.data?.userId ?? '',
         email: response.data?.email ?? '',
         firstName: response.data?.firstName ?? '',
@@ -90,10 +90,10 @@ export const authService = {
       const response = await publicApiClient.post<RegisterResponse>(API_CONFIG.ENDPOINTS.AUTH.REGISTER, registerData);
       // If registration returns auth data, store tokens
       if (response.data && response.data.data) {
-        sessionStorage.setItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN, response.data.data.token);
-        sessionStorage.setItem('refreshToken', response.data.data.refreshToken);
-        sessionStorage.setItem('refreshTokenExpiration', response.data.data.refreshTokenExpiration);
-        sessionStorage.setItem(API_CONFIG.STORAGE_KEYS.USER, JSON.stringify({
+        localStorage.setItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN, response.data.data.token);
+        localStorage.setItem('refreshToken', response.data.data.refreshToken);
+        localStorage.setItem('refreshTokenExpiration', response.data.data.refreshTokenExpiration);
+        localStorage.setItem(API_CONFIG.STORAGE_KEYS.USER, JSON.stringify({
           userId: response.data?.data?.userId ?? '',
           email: response.data?.data?.email ?? '',
           firstName: response.data?.data?.firstName ?? '',
@@ -110,15 +110,15 @@ export const authService = {
   },
   // Logout user
   logout(): void {
-    sessionStorage.removeItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN);
-    sessionStorage.removeItem('refreshToken');
-    sessionStorage.removeItem('refreshTokenExpiration');
-    sessionStorage.removeItem(API_CONFIG.STORAGE_KEYS.USER);
+    localStorage.removeItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN);
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('refreshTokenExpiration');
+    localStorage.removeItem(API_CONFIG.STORAGE_KEYS.USER);
   },
 
   // Check if user is authenticated by verifying token with backend
   async isAuthenticated(): Promise<boolean> {
-    const token = sessionStorage.getItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN);
+    const token = localStorage.getItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN);
     if (!token) return false;
     if (this.isJwtExpired(token)) {
       const newToken = await this.refreshToken();
@@ -130,12 +130,12 @@ export const authService = {
     try {
       const response = await apiClient.get<AuthResponse>(API_CONFIG.ENDPOINTS.AUTH.ME);
       if (response.data && response.data.userId) {
-        if (response.data.refreshToken) {
-          sessionStorage.setItem('refreshToken', response.data.refreshToken);
-        }
-        if (response.data.refreshTokenExpiration) {
-          sessionStorage.setItem('refreshTokenExpiration', response.data.refreshTokenExpiration);
-        }
+      if (response.data.refreshToken) {
+        localStorage.setItem('refreshToken', response.data.refreshToken);
+      }
+      if (response.data.refreshTokenExpiration) {
+        localStorage.setItem('refreshTokenExpiration', response.data.refreshTokenExpiration);
+      }
         return true;
       }
       return false;
@@ -146,7 +146,7 @@ export const authService = {
 
   // Get current user
   getCurrentUser(): { userId: string; email: string; firstName: string; lastName: string; emailConfirmed?: boolean; roles?: string[] } | null {
-    const userStr = sessionStorage.getItem(API_CONFIG.STORAGE_KEYS.USER);
+    const userStr = localStorage.getItem(API_CONFIG.STORAGE_KEYS.USER);
     return userStr ? JSON.parse(userStr) : null;
   },
 
@@ -169,16 +169,16 @@ export const authService = {
   // Refresh access token using refresh token
   async refreshToken(): Promise<string | null> {
     const user = this.getCurrentUser();
-    const refreshToken = sessionStorage.getItem('refreshToken');
+    const refreshToken = localStorage.getItem('refreshToken');
     if (!user || !refreshToken) return null;
     try {
       const response = await publicApiClient.post<AuthResponse>('/auth/refresh-token', {
         userId: user.userId,
         refreshToken,
       });
-      sessionStorage.setItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN, response.data.token);
-      sessionStorage.setItem('refreshToken', response.data.refreshToken);
-      sessionStorage.setItem('refreshTokenExpiration', response.data.refreshTokenExpiration);
+      localStorage.setItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN, response.data.token);
+      localStorage.setItem('refreshToken', response.data.refreshToken);
+      localStorage.setItem('refreshTokenExpiration', response.data.refreshTokenExpiration);
       return response.data.token;
     } catch (error) {
       console.error('Refresh token error:', error);
@@ -244,7 +244,7 @@ export const authService = {
     try {
       const response = await apiClient.get<AuthResponse>(API_CONFIG.ENDPOINTS.AUTH.ME);
       if (response.data) {
-        sessionStorage.setItem(API_CONFIG.STORAGE_KEYS.USER, JSON.stringify({
+        localStorage.setItem(API_CONFIG.STORAGE_KEYS.USER, JSON.stringify({
           userId: response.data?.userId ?? '',
           email: response.data?.email ?? '',
           firstName: response.data?.firstName ?? '',
