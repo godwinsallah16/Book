@@ -324,10 +324,8 @@ namespace BookStore.API.Controllers
 
                 var roles = await _userManager.GetRolesAsync(user);
 
-                // Extract token, refreshToken, and refreshTokenExpiration from headers if available
+                // Extract token from Authorization header
                 string token = string.Empty;
-                string refreshToken = string.Empty;
-                string refreshTokenExpiration = string.Empty;
                 if (Request.Headers.ContainsKey("Authorization"))
                 {
                     var authHeader = Request.Headers["Authorization"].ToString();
@@ -336,19 +334,22 @@ namespace BookStore.API.Controllers
                         token = authHeader.Substring("Bearer ".Length).Trim();
                     }
                 }
-                if (Request.Headers.ContainsKey("X-Refresh-Token"))
-                {
-                    refreshToken = Request.Headers["X-Refresh-Token"].ToString();
-                }
-                if (Request.Headers.ContainsKey("X-Refresh-Token-Expiration"))
-                {
-                    refreshTokenExpiration = Request.Headers["X-Refresh-Token-Expiration"].ToString();
-                }
 
+                // Fetch refresh token and expiration from AuthService (in-memory or DB)
+                string refreshToken = string.Empty;
                 DateTime refreshTokenExp = DateTime.MinValue;
-                if (!string.IsNullOrEmpty(refreshTokenExpiration))
+                if (_authService is BookStore.API.Services.AuthService concreteAuthService)
                 {
-                    DateTime.TryParse(refreshTokenExpiration, out refreshTokenExp);
+                    var tokensField = typeof(BookStore.API.Services.AuthService).GetField("_refreshTokens", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+                    if (tokensField != null)
+                    {
+                        var tokens = tokensField.GetValue(null) as System.Collections.Generic.Dictionary<string, (string RefreshToken, DateTime Expiration)>;
+                        if (tokens != null && tokens.TryGetValue(user.Id, out var tuple))
+                        {
+                            refreshToken = tuple.RefreshToken;
+                            refreshTokenExp = tuple.Expiration;
+                        }
+                    }
                 }
 
                 var response = new AuthResponseDto
