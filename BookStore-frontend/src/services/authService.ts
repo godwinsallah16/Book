@@ -66,6 +66,7 @@ export const authService = {
     try {
       const response = await publicApiClient.post<AuthResponse>(API_CONFIG.ENDPOINTS.AUTH.LOGIN, loginData);
       // Store tokens in localStorage
+      // Store tokens in sessionStorage only
       sessionStorage.setItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN, response.data.token);
       sessionStorage.setItem('refreshToken', response.data.refreshToken);
       sessionStorage.setItem('refreshTokenExpiration', response.data.refreshTokenExpiration);
@@ -160,7 +161,7 @@ export const authService = {
     const token = sessionStorage.getItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN);
     if (!token) return null;
     if (this.isJwtExpired(token)) {
-      // Try to refresh the token synchronously (not recommended for getToken, use isAuthenticated for refresh logic)
+      // Do not logout here, just return null
       return null;
     }
     return token;
