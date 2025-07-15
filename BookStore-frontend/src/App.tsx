@@ -85,11 +85,19 @@ function App() {
   };
 
   const handleLogin = async () => {
-    setIsAuthenticated(true);
-    // Fetch latest user info from backend
-    const currentUser = await authService.fetchCurrentUser();
-    setUser(currentUser);
-    setIsEmailVerified(currentUser?.emailConfirmed === true);
+    // Wait a tick to ensure localStorage is updated
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    // Re-check authentication after login
+    const authenticated = await authService.isAuthenticated();
+    setIsAuthenticated(authenticated);
+    if (authenticated) {
+      const currentUser = authService.getCurrentUser();
+      setUser(currentUser);
+      setIsEmailVerified(currentUser?.emailConfirmed === true);
+    } else {
+      setUser(null);
+      setIsEmailVerified(false);
+    }
   };
 
   const handleLogout = () => {
