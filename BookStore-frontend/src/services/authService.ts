@@ -213,11 +213,10 @@ export const authService = {
       if (typeof error === 'object' && error !== null && 'response' in error) {
         const errResp = (error as { response?: { status?: number } }).response;
         if (errResp?.status === 401 || errResp?.status === 403) {
-          console.warn('[authService] refreshToken: Received 401/403. Logging out.');
-          this.logout();
+          console.warn('[authService] refreshToken: Received 401/403. Not logging out automatically.');
         }
       }
-      // Do not log out for other errors, just return null
+      // Do not log out for any errors, just return null
       return null;
     }
   },
