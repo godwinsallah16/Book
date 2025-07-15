@@ -24,7 +24,7 @@ export interface AuthResponse {
   lastName: string;
   expiration: string;
   emailConfirmed: boolean;
-  roles: string[];
+  roles?: string[];
 }
 
 export interface RegisterResponse {
@@ -66,16 +66,16 @@ export const authService = {
     try {
       const response = await publicApiClient.post<AuthResponse>(API_CONFIG.ENDPOINTS.AUTH.LOGIN, loginData);
       // Store tokens in localStorage
-      localStorage.setItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN, response.data.token);
-      localStorage.setItem('refreshToken', response.data.refreshToken);
-      localStorage.setItem('refreshTokenExpiration', response.data.refreshTokenExpiration);
-      localStorage.setItem(API_CONFIG.STORAGE_KEYS.USER, JSON.stringify({
-        userId: response.data.userId,
-        email: response.data.email,
-        firstName: response.data.firstName,
-        lastName: response.data.lastName,
-        emailConfirmed: response.data.emailConfirmed,
-        roles: response.data.roles
+      sessionStorage.setItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN, response.data.token);
+      sessionStorage.setItem('refreshToken', response.data.refreshToken);
+      sessionStorage.setItem('refreshTokenExpiration', response.data.refreshTokenExpiration);
+      sessionStorage.setItem(API_CONFIG.STORAGE_KEYS.USER, JSON.stringify({
+        userId: response.data?.userId ?? '',
+        email: response.data?.email ?? '',
+        firstName: response.data?.firstName ?? '',
+        lastName: response.data?.lastName ?? '',
+        emailConfirmed: response.data?.emailConfirmed ?? false,
+        roles: response.data?.roles ?? []
       }));
       return response.data;
     } catch (error) {
@@ -89,16 +89,16 @@ export const authService = {
       const response = await publicApiClient.post<RegisterResponse>(API_CONFIG.ENDPOINTS.AUTH.REGISTER, registerData);
       // If registration returns auth data, store tokens
       if (response.data && response.data.data) {
-        localStorage.setItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN, response.data.data.token);
-        localStorage.setItem('refreshToken', response.data.data.refreshToken);
-        localStorage.setItem('refreshTokenExpiration', response.data.data.refreshTokenExpiration);
-        localStorage.setItem(API_CONFIG.STORAGE_KEYS.USER, JSON.stringify({
-          userId: response.data.data.userId,
-          email: response.data.data.email,
-          firstName: response.data.data.firstName,
-          lastName: response.data.data.lastName,
-          emailConfirmed: response.data.data.emailConfirmed,
-          roles: response.data.data.roles
+        sessionStorage.setItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN, response.data.data.token);
+        sessionStorage.setItem('refreshToken', response.data.data.refreshToken);
+        sessionStorage.setItem('refreshTokenExpiration', response.data.data.refreshTokenExpiration);
+        sessionStorage.setItem(API_CONFIG.STORAGE_KEYS.USER, JSON.stringify({
+          userId: response.data?.data?.userId ?? '',
+          email: response.data?.data?.email ?? '',
+          firstName: response.data?.data?.firstName ?? '',
+          lastName: response.data?.data?.lastName ?? '',
+          emailConfirmed: response.data?.data?.emailConfirmed ?? false,
+          roles: response.data?.data?.roles ?? []
         }));
       }
       return response.data;
@@ -107,33 +107,45 @@ export const authService = {
       throw error;
     }
   },
-  // ...existing code...
-
   // Logout user
   logout(): void {
-    localStorage.removeItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN);
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('refreshTokenExpiration');
-    localStorage.removeItem(API_CONFIG.STORAGE_KEYS.USER);
+    sessionStorage.removeItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN);
+    sessionStorage.removeItem('refreshToken');
+    sessionStorage.removeItem('refreshTokenExpiration');
+    sessionStorage.removeItem(API_CONFIG.STORAGE_KEYS.USER);
   },
 
   // Check if user is authenticated by verifying token with backend
   async isAuthenticated(): Promise<boolean> {
-    const token = localStorage.getItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN);
+    const token = sessionStorage.getItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN);
     if (!token) return false;
+    if (this.isJwtExpired(token)) {
+      const newToken = await this.refreshToken();
+      if (!newToken) {
+        this.logout();
+        return false;
+      }
+    }
     try {
-      // Attempt to fetch current user with token
       const response = await apiClient.get<AuthResponse>(API_CONFIG.ENDPOINTS.AUTH.ME);
-      return !!response.data && !!response.data.userId;
+      if (response.data && response.data.userId) {
+        if (response.data.refreshToken) {
+          sessionStorage.setItem('refreshToken', response.data.refreshToken);
+        }
+        if (response.data.refreshTokenExpiration) {
+          sessionStorage.setItem('refreshTokenExpiration', response.data.refreshTokenExpiration);
+        }
+        return true;
+      }
+      return false;
     } catch {
-      // If token is invalid or expired, treat as unauthenticated
       return false;
     }
   },
 
   // Get current user
   getCurrentUser(): { userId: string; email: string; firstName: string; lastName: string; emailConfirmed?: boolean; roles?: string[] } | null {
-    const userStr = localStorage.getItem(API_CONFIG.STORAGE_KEYS.USER);
+    const userStr = sessionStorage.getItem(API_CONFIG.STORAGE_KEYS.USER);
     return userStr ? JSON.parse(userStr) : null;
   },
 
@@ -145,32 +157,27 @@ export const authService = {
 
   // Get auth token
   getToken(): string | null {
-    let token = localStorage.getItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN);
-    // Optionally, check expiration and refresh if needed
-    // For demo, always try to refresh if token is missing
-    if (!token) {
-      // Try to refresh
-      this.refreshToken().then(newToken => {
-        if (newToken) {
-          token = newToken;
-        }
-      });
+    const token = sessionStorage.getItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN);
+    if (!token) return null;
+    if (this.isJwtExpired(token)) {
+      // Try to refresh the token synchronously (not recommended for getToken, use isAuthenticated for refresh logic)
+      return null;
     }
     return token;
   },
   // Refresh access token using refresh token
   async refreshToken(): Promise<string | null> {
     const user = this.getCurrentUser();
-    const refreshToken = localStorage.getItem('refreshToken');
+    const refreshToken = sessionStorage.getItem('refreshToken');
     if (!user || !refreshToken) return null;
     try {
       const response = await publicApiClient.post<AuthResponse>('/auth/refresh-token', {
         userId: user.userId,
         refreshToken,
       });
-      localStorage.setItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN, response.data.token);
-      localStorage.setItem('refreshToken', response.data.refreshToken);
-      localStorage.setItem('refreshTokenExpiration', response.data.refreshTokenExpiration);
+      sessionStorage.setItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN, response.data.token);
+      sessionStorage.setItem('refreshToken', response.data.refreshToken);
+      sessionStorage.setItem('refreshTokenExpiration', response.data.refreshTokenExpiration);
       return response.data.token;
     } catch (error) {
       console.error('Refresh token error:', error);
@@ -236,13 +243,13 @@ export const authService = {
     try {
       const response = await apiClient.get<AuthResponse>(API_CONFIG.ENDPOINTS.AUTH.ME);
       if (response.data) {
-        localStorage.setItem(API_CONFIG.STORAGE_KEYS.USER, JSON.stringify({
-          userId: response.data.userId,
-          email: response.data.email,
-          firstName: response.data.firstName,
-          lastName: response.data.lastName,
-          emailConfirmed: response.data.emailConfirmed,
-          roles: response.data.roles,
+        sessionStorage.setItem(API_CONFIG.STORAGE_KEYS.USER, JSON.stringify({
+          userId: response.data?.userId ?? '',
+          email: response.data?.email ?? '',
+          firstName: response.data?.firstName ?? '',
+          lastName: response.data?.lastName ?? '',
+          emailConfirmed: response.data?.emailConfirmed ?? false,
+          roles: response.data?.roles ?? []
         }));
         return response.data;
       }
@@ -250,6 +257,19 @@ export const authService = {
     } catch (error) {
       console.error('Fetch current user error:', error);
       return null;
+    }
+  },
+
+  // Check if JWT token is expired
+  isJwtExpired(token: string): boolean {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const exp = payload.exp;
+      if (!exp) return true;
+      const now = Math.floor(Date.now() / 1000);
+      return exp < now;
+    } catch {
+      return true;
     }
   },
 };
