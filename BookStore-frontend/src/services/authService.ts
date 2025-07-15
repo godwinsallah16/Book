@@ -135,7 +135,8 @@ export const authService = {
     }
     try {
       const response = await apiClient.get<AuthResponse>(API_CONFIG.ENDPOINTS.AUTH.ME);
-      if (response.data && response.data.userId) {
+      // Only treat as authenticated if status is 200 and userId is present
+      if (response.status === 200 && response.data && response.data.userId) {
         if (response.data.refreshToken) {
           localStorage.setItem('refreshToken', response.data.refreshToken);
         }
@@ -144,9 +145,17 @@ export const authService = {
         }
         return true;
       }
-      console.warn('[authService] isAuthenticated: /auth/me response did not contain userId.');
+      console.warn('[authService] isAuthenticated: /auth/me response did not contain userId or status was not 200. Ignoring.');
       return false;
     } catch (error) {
+      // If error response is 204, ignore and do not update state
+      if (typeof error === 'object' && error !== null && 'response' in error) {
+        const errResp = (error as { response?: { status?: number } }).response;
+        if (errResp?.status === 204) {
+          console.warn('[authService] isAuthenticated: /auth/me returned 204 No Content. Ignoring.');
+          return false;
+        }
+      }
       console.error('[authService] isAuthenticated: /auth/me error:', error);
       return false;
     }
