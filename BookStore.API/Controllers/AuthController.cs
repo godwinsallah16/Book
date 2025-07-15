@@ -323,6 +323,18 @@ namespace BookStore.API.Controllers
                 }
 
                 var roles = await _userManager.GetRolesAsync(user);
+
+                // Extract token from Authorization header
+                string token = string.Empty;
+                if (Request.Headers.ContainsKey("Authorization"))
+                {
+                    var authHeader = Request.Headers["Authorization"].ToString();
+                    if (authHeader.StartsWith("Bearer "))
+                    {
+                        token = authHeader.Substring("Bearer ".Length).Trim();
+                    }
+                }
+
                 var response = new AuthResponseDto
                 {
                     UserId = user.Id,
@@ -332,7 +344,7 @@ namespace BookStore.API.Controllers
                     EmailConfirmed = user.EmailConfirmed,
                     Roles = roles,
                     Expiration = DateTime.UtcNow.AddHours(1), // Not used here, but required by DTO
-                    Token = string.Empty // Not used here
+                    Token = token
                 };
 
                 return Ok(response);
