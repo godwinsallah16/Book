@@ -13,7 +13,6 @@ export interface RegisterRequest {
   lastName: string;
 }
 
-
 export interface AuthResponse {
   token: string;
   refreshToken: string;
@@ -58,15 +57,13 @@ export interface ChangePasswordRequest {
   confirmNewPassword: string;
 }
 
-// ...existing interfaces...
-
 export const authService = {
   // Login user
   async login(loginData: LoginRequest): Promise<AuthResponse> {
     try {
       const response = await publicApiClient.post<AuthResponse>(API_CONFIG.ENDPOINTS.AUTH.LOGIN, loginData);
+      
       // Store tokens in localStorage
-      // Store tokens in localStorage for persistence
       console.log('[authService] login: Setting auth token with key', API_CONFIG.STORAGE_KEYS.AUTH_TOKEN, 'and value', response.data.token);
       localStorage.setItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN, response.data.token);
       localStorage.setItem('refreshToken', response.data.refreshToken);
@@ -79,20 +76,27 @@ export const authService = {
         emailConfirmed: response.data?.emailConfirmed ?? false,
         roles: response.data?.roles ?? []
       }));
+      
+      // Add a small delay to ensure localStorage is properly set
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      console.log('[authService] login: Login successful, tokens stored');
       return response.data;
     } catch (error) {
       console.error('Login error:', error);
       throw error;
     }
   },
+
   // Register user
   async register(registerData: RegisterRequest): Promise<RegisterResponse> {
     try {
       const response = await publicApiClient.post<RegisterResponse>(API_CONFIG.ENDPOINTS.AUTH.REGISTER, registerData);
+      
       // If registration returns auth data, store tokens
       if (response.data && response.data.data) {
-      console.log('[authService] register: Setting auth token with key', API_CONFIG.STORAGE_KEYS.AUTH_TOKEN, 'and value', response.data.data.token);
-      localStorage.setItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN, response.data.data.token);
+        console.log('[authService] register: Setting auth token with key', API_CONFIG.STORAGE_KEYS.AUTH_TOKEN, 'and value', response.data.data.token);
+        localStorage.setItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN, response.data.data.token);
         localStorage.setItem('refreshToken', response.data.data.refreshToken);
         localStorage.setItem('refreshTokenExpiration', response.data.data.refreshTokenExpiration);
         localStorage.setItem(API_CONFIG.STORAGE_KEYS.USER, JSON.stringify({
@@ -103,13 +107,18 @@ export const authService = {
           emailConfirmed: response.data?.data?.emailConfirmed ?? false,
           roles: response.data?.data?.roles ?? []
         }));
+        
+        // Add a small delay to ensure localStorage is properly set
+        await new Promise(resolve => setTimeout(resolve, 100));
       }
+      
       return response.data;
     } catch (error) {
       console.error('Register error:', error);
       throw error;
     }
   },
+
   // Logout user
   logout(): void {
     console.warn('[authService] logout called. Removing all auth tokens and user info from localStorage.');
@@ -120,47 +129,90 @@ export const authService = {
     localStorage.removeItem(API_CONFIG.STORAGE_KEYS.USER);
   },
 
+  // Simple check if user has valid tokens (without API call)
+  hasValidTokens(): boolean {
+    const token = localStorage.getItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN);
+    const user = this.getCurrentUser();
+    
+    if (!token || !user) {
+      return false;
+    }
+    
+    // Check if token is expired
+    if (this.isJwtExpired(token)) {
+      return false;
+    }
+    
+    return true;
+  },
+
   // Check if user is authenticated by verifying token with backend
   async isAuthenticated(): Promise<boolean> {
     const token = localStorage.getItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN);
     console.log('[authService] isAuthenticated: Read auth token with key', API_CONFIG.STORAGE_KEYS.AUTH_TOKEN, 'value:', token);
+    
     if (!token) {
       console.log('[authService] isAuthenticated: No token found in localStorage.');
       return false;
     }
+
+    // Check if token is expired
     if (this.isJwtExpired(token)) {
       console.log('[authService] isAuthenticated: Token is expired, attempting refresh.');
       const newToken = await this.refreshToken();
       if (!newToken) {
-        console.warn('[authService] isAuthenticated: Token expired and refresh failed. User remains logged in, but API calls will fail.');
+        console.warn('[authService] isAuthenticated: Token expired and refresh failed.');
         return false;
       }
       console.log('[authService] isAuthenticated: Token refreshed successfully.');
     }
+
     try {
       const response = await apiClient.get<AuthResponse>(API_CONFIG.ENDPOINTS.AUTH.ME);
+      
       // Only treat as authenticated if status is 200 and userId is present
       if (response.status === 200 && response.data && response.data.userId) {
+        // Update stored user data if received
+        localStorage.setItem(API_CONFIG.STORAGE_KEYS.USER, JSON.stringify({
+          userId: response.data?.userId ?? '',
+          email: response.data?.email ?? '',
+          firstName: response.data?.firstName ?? '',
+          lastName: response.data?.lastName ?? '',
+          emailConfirmed: response.data?.emailConfirmed ?? false,
+          roles: response.data?.roles ?? []
+        }));
+        
+        // Update refresh token if provided
         if (response.data.refreshToken) {
           localStorage.setItem('refreshToken', response.data.refreshToken);
         }
         if (response.data.refreshTokenExpiration) {
           localStorage.setItem('refreshTokenExpiration', response.data.refreshTokenExpiration);
         }
+        
         return true;
       }
-      console.warn('[authService] isAuthenticated: /auth/me response did not contain userId or status was not 200. Ignoring.');
+      
+      console.warn('[authService] isAuthenticated: /auth/me response did not contain userId or status was not 200.');
       return false;
     } catch (error) {
-      // If error response is 204, ignore and do not update state
+      console.error('[authService] isAuthenticated: /auth/me error:', error);
+      
+      // Handle specific error cases
       if (typeof error === 'object' && error !== null && 'response' in error) {
         const errResp = (error as { response?: { status?: number } }).response;
         if (errResp?.status === 204) {
-          console.warn('[authService] isAuthenticated: /auth/me returned 204 No Content. Ignoring.');
+          console.warn('[authService] isAuthenticated: /auth/me returned 204 No Content.');
+          return false;
+        }
+        // Don't immediately logout on 401/403 - might be temporary
+        if (errResp?.status === 401 || errResp?.status === 403) {
+          console.warn('[authService] isAuthenticated: Received 401/403 from /auth/me');
           return false;
         }
       }
-      console.error('[authService] isAuthenticated: /auth/me error:', error);
+      
+      // For network errors or other issues, don't clear auth state
       return false;
     }
   },
@@ -188,6 +240,7 @@ export const authService = {
     }
     return token;
   },
+
   // Refresh access token using refresh token
   async refreshToken(): Promise<string | null> {
     const user = this.getCurrentUser();
@@ -271,8 +324,6 @@ export const authService = {
     }
   },
 
-  // ...existing code...
-
   // Fetch current user
   async fetchCurrentUser(): Promise<{ userId: string; email: string; firstName: string; lastName: string; emailConfirmed?: boolean; roles?: string[] } | null> {
     try {
@@ -295,15 +346,20 @@ export const authService = {
     }
   },
 
-  // Check if JWT token is expired
+  // Check if JWT token is expired (with 30 second buffer)
   isJwtExpired(token: string): boolean {
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
       const exp = payload.exp;
       if (!exp) return true;
+      
       const now = Math.floor(Date.now() / 1000);
-      return exp < now;
-    } catch {
+      const bufferTime = 30; // 30 second buffer
+      
+      console.log('[authService] isJwtExpired: Token exp:', exp, 'Current time:', now, 'Expired:', exp < (now + bufferTime));
+      return exp < (now + bufferTime);
+    } catch (error) {
+      console.error('[authService] isJwtExpired: Error parsing token:', error);
       return true;
     }
   },
