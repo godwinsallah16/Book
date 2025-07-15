@@ -120,11 +120,12 @@ export const authService = {
   async isAuthenticated(): Promise<boolean> {
     const token = localStorage.getItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN);
     if (!token) return false;
+    // If token is expired, try to refresh, but do not log out user automatically
     if (this.isJwtExpired(token)) {
       const newToken = await this.refreshToken();
       if (!newToken) {
-        // Only logout if refresh token is truly invalid, not for transient errors
-        this.logout();
+        // Token expired and could not refresh, but do not log out user
+        // User stays logged in, but API calls will fail until refresh or manual logout
         return false;
       }
     }
@@ -185,7 +186,14 @@ export const authService = {
       return response.data.token;
     } catch (error) {
       console.error('Refresh token error:', error);
-      this.logout();
+      // Type guard for AxiosError
+      if (typeof error === 'object' && error !== null && 'response' in error) {
+        const errResp = (error as { response?: { status?: number } }).response;
+        if (errResp?.status === 401 || errResp?.status === 403) {
+          this.logout();
+        }
+      }
+      // Do not log out for other errors, just return null
       return null;
     }
   },
