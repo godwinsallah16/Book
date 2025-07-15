@@ -19,9 +19,6 @@ const VerifyEmailPage: React.FC = () => {
     }
     publicApiClient.post(API_CONFIG.ENDPOINTS.AUTH.VERIFY_EMAIL, { userId, token })
       .then(() => {
-        // Clear any cached user info so next login is fresh
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('user');
         setStatus('success');
         setMessage('Your email has been verified! You can now log in.');
         setTimeout(() => navigate('/login'), 2000);
