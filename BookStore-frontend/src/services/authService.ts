@@ -110,6 +110,7 @@ export const authService = {
   },
   // Logout user
   logout(): void {
+    console.warn('[authService] logout called. Removing all auth tokens and user info from localStorage.');
     localStorage.removeItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN);
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('refreshTokenExpiration');
@@ -119,15 +120,18 @@ export const authService = {
   // Check if user is authenticated by verifying token with backend
   async isAuthenticated(): Promise<boolean> {
     const token = localStorage.getItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN);
-    if (!token) return false;
-    // If token is expired, try to refresh, but do not log out user automatically
+    if (!token) {
+      console.log('[authService] isAuthenticated: No token found in localStorage.');
+      return false;
+    }
     if (this.isJwtExpired(token)) {
+      console.log('[authService] isAuthenticated: Token is expired, attempting refresh.');
       const newToken = await this.refreshToken();
       if (!newToken) {
-        // Token expired and could not refresh, but do not log out user
-        // User stays logged in, but API calls will fail until refresh or manual logout
+        console.warn('[authService] isAuthenticated: Token expired and refresh failed. User remains logged in, but API calls will fail.');
         return false;
       }
+      console.log('[authService] isAuthenticated: Token refreshed successfully.');
     }
     try {
       const response = await apiClient.get<AuthResponse>(API_CONFIG.ENDPOINTS.AUTH.ME);
@@ -140,10 +144,10 @@ export const authService = {
         }
         return true;
       }
+      console.warn('[authService] isAuthenticated: /auth/me response did not contain userId.');
       return false;
     } catch (error) {
-      // Do not logout on /auth/me error, just return false
-      console.error('isAuthenticated error:', error);
+      console.error('[authService] isAuthenticated: /auth/me error:', error);
       return false;
     }
   },
@@ -174,7 +178,10 @@ export const authService = {
   async refreshToken(): Promise<string | null> {
     const user = this.getCurrentUser();
     const refreshToken = localStorage.getItem('refreshToken');
-    if (!user || !refreshToken) return null;
+    if (!user || !refreshToken) {
+      console.warn('[authService] refreshToken: No user or refreshToken found.');
+      return null;
+    }
     try {
       const response = await publicApiClient.post<AuthResponse>('/auth/refresh-token', {
         userId: user.userId,
@@ -183,13 +190,15 @@ export const authService = {
       localStorage.setItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN, response.data.token);
       localStorage.setItem('refreshToken', response.data.refreshToken);
       localStorage.setItem('refreshTokenExpiration', response.data.refreshTokenExpiration);
+      console.log('[authService] refreshToken: Token refreshed successfully.');
       return response.data.token;
     } catch (error) {
-      console.error('Refresh token error:', error);
+      console.error('[authService] refreshToken error:', error);
       // Type guard for AxiosError
       if (typeof error === 'object' && error !== null && 'response' in error) {
         const errResp = (error as { response?: { status?: number } }).response;
         if (errResp?.status === 401 || errResp?.status === 403) {
+          console.warn('[authService] refreshToken: Received 401/403. Logging out.');
           this.logout();
         }
       }
