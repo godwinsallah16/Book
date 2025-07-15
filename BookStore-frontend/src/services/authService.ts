@@ -158,7 +158,7 @@ export const authService = {
 
   // Get auth token
   getToken(): string | null {
-    const token = sessionStorage.getItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN);
+    const token = localStorage.getItem(API_CONFIG.STORAGE_KEYS.AUTH_TOKEN);
     if (!token) return null;
     if (this.isJwtExpired(token)) {
       // Do not logout here, just return null
