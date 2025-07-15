@@ -324,8 +324,10 @@ namespace BookStore.API.Controllers
 
                 var roles = await _userManager.GetRolesAsync(user);
 
-                // Extract token from Authorization header
+                // Extract token, refreshToken, and refreshTokenExpiration from headers if available
                 string token = string.Empty;
+                string refreshToken = string.Empty;
+                string refreshTokenExpiration = string.Empty;
                 if (Request.Headers.ContainsKey("Authorization"))
                 {
                     var authHeader = Request.Headers["Authorization"].ToString();
@@ -333,6 +335,20 @@ namespace BookStore.API.Controllers
                     {
                         token = authHeader.Substring("Bearer ".Length).Trim();
                     }
+                }
+                if (Request.Headers.ContainsKey("X-Refresh-Token"))
+                {
+                    refreshToken = Request.Headers["X-Refresh-Token"].ToString();
+                }
+                if (Request.Headers.ContainsKey("X-Refresh-Token-Expiration"))
+                {
+                    refreshTokenExpiration = Request.Headers["X-Refresh-Token-Expiration"].ToString();
+                }
+
+                DateTime refreshTokenExp = DateTime.MinValue;
+                if (!string.IsNullOrEmpty(refreshTokenExpiration))
+                {
+                    DateTime.TryParse(refreshTokenExpiration, out refreshTokenExp);
                 }
 
                 var response = new AuthResponseDto
@@ -344,7 +360,9 @@ namespace BookStore.API.Controllers
                     EmailConfirmed = user.EmailConfirmed,
                     Roles = roles,
                     Expiration = DateTime.UtcNow.AddHours(1), // Not used here, but required by DTO
-                    Token = token
+                    Token = token,
+                    RefreshToken = refreshToken,
+                    RefreshTokenExpiration = refreshTokenExp
                 };
 
                 return Ok(response);
