@@ -123,6 +123,7 @@ export const authService = {
     if (this.isJwtExpired(token)) {
       const newToken = await this.refreshToken();
       if (!newToken) {
+        // Only logout if refresh token is truly invalid, not for transient errors
         this.logout();
         return false;
       }
@@ -130,16 +131,18 @@ export const authService = {
     try {
       const response = await apiClient.get<AuthResponse>(API_CONFIG.ENDPOINTS.AUTH.ME);
       if (response.data && response.data.userId) {
-      if (response.data.refreshToken) {
-        localStorage.setItem('refreshToken', response.data.refreshToken);
-      }
-      if (response.data.refreshTokenExpiration) {
-        localStorage.setItem('refreshTokenExpiration', response.data.refreshTokenExpiration);
-      }
+        if (response.data.refreshToken) {
+          localStorage.setItem('refreshToken', response.data.refreshToken);
+        }
+        if (response.data.refreshTokenExpiration) {
+          localStorage.setItem('refreshTokenExpiration', response.data.refreshTokenExpiration);
+        }
         return true;
       }
       return false;
-    } catch {
+    } catch (error) {
+      // Do not logout on /auth/me error, just return false
+      console.error('isAuthenticated error:', error);
       return false;
     }
   },
