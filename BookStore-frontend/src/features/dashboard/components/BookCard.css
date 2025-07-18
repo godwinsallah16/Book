@@ -52,11 +52,14 @@
 .book-card-icons {
   position: absolute;
   top: 16px;
-  left: 16px;
-  right: 16px;
+  left: 0;
+  right: 0;
   display: flex;
+  flex-direction: row;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
+  width: 100%;
+  padding: 0 16px;
   z-index: 10;
   opacity: 0;
   transition: opacity 0.3s ease;
@@ -85,31 +88,51 @@
   font-size: 1.4rem;
   transition: all 0.2s ease;
   color: #6b7280;
-  flex-shrink: 0;
 }
 
+
+
+
+
 .favorite-btn.active {
-  background: rgba(255, 255, 255, 0.98);
+  /* No background by default, only color */
+  transform: scale(1.1);
   color: #ef4444 !important;
 }
 .favorite-btn.active span {
   color: #ef4444 !important;
 }
 
+/* On card hover, if favorite is active, background is red */
+.book-card:hover .favorite-btn.active {
+  background: #ef4444 !important;
+  color: #fff !important;
+}
+.book-card:hover .favorite-btn.active span {
+  color: #fff !important;
+}
+
+/* On favorite button hover, keep the background as white-ish, not red */
+.favorite-btn.active:hover {
+  background: rgba(255, 255, 255, 0.98) !important;
+  color: #ef4444 !important;
+}
+.favorite-btn.active:hover span {
+  color: #ef4444 !important;
+}
+
+/* On hover, if favorite is active, background is red */
+.book-card:hover .favorite-btn.active {
+  background: #ef4444 !important;
+  color: #fff !important;
+}
+.book-card:hover .favorite-btn.active span {
+  color: #fff !important;
+}
+
 .favorite-btn:hover {
   background: rgba(255, 255, 255, 0.98);
   transform: scale(1.1);
-  color: #ef4444;
-}
-
-/* Make favorite button red when card is hovered and favorite is active */
-.book-card:hover .favorite-btn.active {
-  color: #ef4444;
-  background: rgba(255, 255, 255, 0.98);
-  transform: scale(1.1);
-}
-
-.book-card:hover .favorite-btn.active span {
   color: #ef4444;
 }
 
