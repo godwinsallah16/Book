@@ -51,15 +51,15 @@
 
 .book-card-icons {
   position: absolute;
-  top: 16px;
+  top: 0;
   left: 0;
   right: 0;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   width: 100%;
-  padding: 0 16px;
+  padding: 16px;
   z-index: 10;
   opacity: 0;
   transition: opacity 0.3s ease;
@@ -69,6 +69,16 @@
 .book-card-icons .favorite-btn,
 .book-card-icons .cart-btn {
   flex: 0 0 auto;
+  margin-top: 0;
+  align-self: flex-start;
+}
+.book-card-icons .cart-btn {
+  order: 1;
+  margin-left: 0;
+}
+.book-card-icons .favorite-btn {
+  order: 2;
+  margin-right: 0;
 }
 .book-card-icons .cart-btn {
   order: 1;
