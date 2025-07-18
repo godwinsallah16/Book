@@ -27,12 +27,16 @@ const BookCard: React.FC<BookCardProps> = (props) => {
       <div className="book-card-image">
         <img src={book.imageUrl || '/default-book.png'} alt={book.title} />
         <div className="book-card-icons">
-          <button className={`favorite-btn${isFavorite ? ' active' : ''}`} onClick={() => onToggleFavorite?.(book)} title="Favorite">
-            <span role="img" aria-label="favorite">❤️</span>
-          </button>
-          <button className="cart-btn" onClick={() => onAddToCart?.(book)} title="Add to Cart">
-            <span role="img" aria-label="cart">🛒</span>
-          </button>
+          <div style={{ width: '100%' }}>
+            <button className={`favorite-btn${isFavorite ? ' active' : ''}`} onClick={() => onToggleFavorite?.(book)} title="Favorite">
+              <span role="img" aria-label="favorite">❤️</span>
+            </button>
+          </div>
+          <div style={{ width: '100%' }}>
+            <button className="cart-btn" onClick={() => onAddToCart?.(book)} title="Add to Cart">
+              <span role="img" aria-label="cart">🛒</span>
+            </button>
+          </div>
         </div>
       </div>
       <div className="book-card-details">
