@@ -70,7 +70,10 @@ public class BookStoreIntegrationTests : IClassFixture<WebApplicationFactory<Pro
 
         // Assert
         response.EnsureSuccessStatusCode();
-        var books = JsonSerializer.Deserialize<BookDto[]>(content, new JsonSerializerOptions
+        // The API returns an anonymous type with data property containing books
+        using var jsonDoc = JsonDocument.Parse(content);
+        Assert.True(jsonDoc.RootElement.TryGetProperty("data", out var dataElement));
+        var books = JsonSerializer.Deserialize<BookDto[]>(dataElement.GetRawText(), new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true
         });

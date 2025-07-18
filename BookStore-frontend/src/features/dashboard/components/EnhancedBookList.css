@@ -1,62 +1,234 @@
 .book-list-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-  justify-content: flex-start;
-  margin: 1.5rem 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 24px;
+  margin: 2rem 0;
+  padding: 0 8px;
 }
+
+/* Ensure consistent card heights */
+.book-list-grid .book-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.book-list-grid .book-card .book-card-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.book-list-grid .book-card .book-card-details .desc {
+  flex: 1;
+}
+
+/* Loading and error states */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  font-size: 1.1rem;
+  color: #6b7280;
+}
+
+.error-container {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin: 20px 0;
+  color: #dc2626;
+  font-weight: 500;
+  text-align: center;
+}
+
+.no-books-container {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6b7280;
+  font-size: 1.1rem;
+}
+
+/* Enhanced pagination */
+.pagination {
+  display: flex;
+  gap: 8px;
+  margin-top: 32px;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 0;
+}
+
+.pagination button {
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  color: #374151;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pagination button:hover:not(:disabled) {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+  transform: translateY(-1px);
+}
+
+.pagination button:disabled {
+  background: #f9fafb;
+  color: #d1d5db;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.pagination button.active {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+}
+
+.pagination button.active:hover {
+  background: #5a67d8;
+  border-color: #5a67d8;
+}
+
+/* Page info */
+.pagination-info {
+  margin: 0 16px;
+  font-size: 0.9rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+/* Responsive design */
+@media (max-width: 1200px) {
+  .book-list-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .book-list-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    padding: 0 4px;
+  }
+  
+  .pagination {
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  
+  .pagination button {
+    padding: 8px 12px;
+    min-width: 40px;
+    height: 40px;
+    font-size: 0.9rem;
+  }
+  
+  .pagination-info {
+    order: -1;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .book-list-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .pagination button {
+    padding: 6px 10px;
+    min-width: 36px;
+    height: 36px;
+    font-size: 0.85rem;
+  }
+}
+
+/* Section headers */
+h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+/* Empty state styling */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6b7280;
+}
+
+.empty-state h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #374151;
+}
+
+.empty-state p {
+  font-size: 1rem;
+  margin-bottom: 20px;
+}
+
+/* List view alternative (if needed) */
 ul {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
+
 li {
-  padding: 12px 0;
-  border-bottom: 1px solid #f1f1f1;
+  padding: 16px 0;
+  border-bottom: 1px solid #f3f4f6;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
+
 .edit-btn, .delete-btn {
-  margin-left: 8px;
-  padding: 6px 14px;
-  border-radius: 6px;
+  margin-left: 12px;
+  padding: 8px 16px;
+  border-radius: 8px;
   border: none;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
 }
+
 .edit-btn {
-  background: #f6e05e;
-  color: #333;
+  background: #fbbf24;
+  color: #92400e;
 }
+
 .edit-btn:hover {
-  background: #ecc94b;
+  background: #f59e0b;
+  transform: translateY(-1px);
 }
+
 .delete-btn {
-  background: #f56565;
+  background: #ef4444;
   color: #fff;
 }
+
 .delete-btn:hover {
-  background: #c53030;
-}
-.pagination {
-  display: flex;
-  gap: 8px;
-  margin-top: 18px;
-  justify-content: flex-end;
-}
-.pagination button {
-  padding: 6px 14px;
-  border-radius: 6px;
-  border: 1px solid #d1d5db;
-  background: #fff;
-  color: #333;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.pagination button:disabled {
-  background: #f1f1f1;
-  color: #aaa;
-  cursor: not-allowed;
+  background: #dc2626;
+  transform: translateY(-1px);
 }

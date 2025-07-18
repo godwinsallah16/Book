@@ -1,31 +1,212 @@
-/* BookSearch form styling */
+/* Enhanced BookSearch form styling */
 .book-search-form {
   display: flex;
-  gap: 1rem;
+  gap: 1.2rem;
   align-items: center;
   flex-wrap: wrap;
-  background: #f9f9fb;
-  padding: 16px 24px;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  padding: 24px 32px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 2rem;
 }
+
+.book-search-form::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
+  background-size: 200% 100%;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% { background-position: 200% 0; }
+  50% { background-position: -200% 0; }
+}
+
 .book-search-input {
-  padding: 8px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
+  padding: 12px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
   font-size: 1rem;
-  min-width: 180px;
+  font-weight: 500;
+  min-width: 200px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  color: #2d3748;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
+
+.book-search-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1), 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 1);
+}
+
+.book-search-input::placeholder {
+  color: #a0aec0;
+  font-weight: 400;
+}
+
+.book-search-input:hover {
+  border-color: #cbd5e0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Enhanced select styling */
+.book-search-input[aria-label="Category"] {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 40px;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
 .book-search-btn {
-  background: #667eea;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: #fff;
   border: none;
-  border-radius: 6px;
-  padding: 8px 20px;
+  border-radius: 10px;
+  padding: 12px 28px;
   font-weight: 600;
+  font-size: 1rem;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  position: relative;
+  overflow: hidden;
+  min-width: 120px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
+
+.book-search-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
 .book-search-btn:hover {
-  background: #5a67d8;
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  transform: translateY(-2px);
+}
+
+.book-search-btn:hover::before {
+  left: 100%;
+}
+
+.book-search-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+/* Search icon enhancement */
+.book-search-btn::after {
+  content: '🔍';
+  margin-left: 8px;
+  font-size: 0.9rem;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .book-search-form {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 20px;
+    margin-bottom: 1.5rem;
+  }
+  
+  .book-search-input {
+    width: 100%;
+    min-width: unset;
+  }
+  
+  .book-search-btn {
+    width: 100%;
+    padding: 14px 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .book-search-form {
+    padding: 16px;
+    border-radius: 12px;
+  }
+  
+  .book-search-input {
+    padding: 10px 14px;
+    font-size: 0.95rem;
+  }
+  
+  .book-search-btn {
+    padding: 12px 24px;
+    font-size: 0.95rem;
+  }
+}
+
+/* Loading state */
+.book-search-form.loading .book-search-btn {
+  background: #a0aec0;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.book-search-form.loading .book-search-btn::after {
+  content: '⏳';
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Focus-within enhancement for accessibility */
+.book-search-form:focus-within {
+  box-shadow: 0 4px 24px rgba(102, 126, 234, 0.12);
+  transform: translateY(-1px);
+}
+
+/* Enhanced visual hierarchy */
+.book-search-form {
+  background: 
+    linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%),
+    linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+/* Subtle animation on mount */
+.book-search-form {
+  animation: slideInUp 0.5s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

@@ -15,7 +15,7 @@ public class BookServiceTests
     }
 
     [Fact]
-    public async Task GetAllBooksAsync_ReturnsAllBooks()
+    public async Task GetBooksPaginatedWithCountAsync_ReturnsBooks()
     {
         // Arrange
         var books = new List<BookDto>
@@ -23,13 +23,15 @@ public class BookServiceTests
             new BookDto { Id = 1, Title = "Test Book 1", Author = "Author 1", Price = 10.99m },
             new BookDto { Id = 2, Title = "Test Book 2", Author = "Author 2", Price = 15.99m }
         };
-        _mockBookService.Setup(s => s.GetAllBooksAsync()).ReturnsAsync(books);
+        _mockBookService.Setup(s => s.GetBooksPaginatedWithCountAsync(1, 10, null))
+            .ReturnsAsync((books, books.Count));
 
         // Act
-        var result = await _mockBookService.Object.GetAllBooksAsync();
+        var (result, totalCount) = await _mockBookService.Object.GetBooksPaginatedWithCountAsync(1, 10, null);
 
         // Assert
         Assert.Equal(2, result.Count());
+        Assert.Equal(2, totalCount);
         Assert.Contains(result, b => b.Title == "Test Book 1");
         Assert.Contains(result, b => b.Title == "Test Book 2");
     }

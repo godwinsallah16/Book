@@ -17,6 +17,18 @@ namespace BookStore.API.Repositories
         }
 
 
+        private static readonly Dictionary<string, List<string>> CategorySubgenres = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase)
+        {
+            { "Fiction", new List<string> { "Romance", "Thriller", "Fantasy", "Sci-Fi", "Historical", "Horror" } },
+            { "Non-Fiction", new List<string> { "Biography", "Self-Help", "History", "Politics", "True Crime", "Religion" } },
+            { "Children & Teens", new List<string> { "Picture Books", "Middle Grade", "Young Adult" } },
+            { "Academic & Textbooks", new List<string> { "Science", "Engineering", "Medicine", "Law", "Test Prep" } },
+            { "Comics & Graphic Novels", new List<string> { "Manga", "Superhero", "Indie", "Webtoons" } },
+            { "Lifestyle & Hobbies", new List<string> { "Cooking", "Travel", "Art", "Fashion", "DIY", "Gardening" } },
+            { "Technology & Business", new List<string> { "Programming", "AI", "Business", "Personal Finance" } },
+            { "Poetry & Literature", new List<string>() }
+        };
+
         public async Task<(IEnumerable<Book> Books, int TotalCount)> GetBooksPaginatedWithCountAsync(int page, int pageSize, BookStore.API.DTOs.BookFiltersDto? filters = null)
         {
             try
@@ -37,7 +49,19 @@ namespace BookStore.API.Repositories
                     }
                     if (!string.IsNullOrWhiteSpace(filters.Category))
                     {
-                        query = query.Where(b => b.Category.ToLower() == filters.Category.ToLower());
+                        var category = filters.Category.ToLower();
+                        if (CategorySubgenres.ContainsKey(filters.Category))
+                        {
+                            var subgenres = CategorySubgenres[filters.Category];
+                            var categoriesToMatch = new List<string> { filters.Category };
+                            categoriesToMatch.AddRange(subgenres);
+
+                            query = query.Where(b => categoriesToMatch.Any(c => b.Category.ToLower() == c.ToLower()));
+                        }
+                        else
+                        {
+                            query = query.Where(b => b.Category.ToLower() == category);
+                        }
                     }
                     if (!string.IsNullOrWhiteSpace(filters.Author))
                     {
@@ -134,10 +158,24 @@ namespace BookStore.API.Repositories
         {
             try
             {
-                return await _context.Books
-                    .Where(b => !b.IsDeleted && b.Category.ToLower() == category.ToLower())
-                    .OrderBy(b => b.Title)
-                    .ToListAsync();
+                if (CategorySubgenres.ContainsKey(category))
+                {
+                    var subgenres = CategorySubgenres[category];
+                    var categoriesToMatch = new List<string> { category };
+                    categoriesToMatch.AddRange(subgenres);
+
+                    return await _context.Books
+                        .Where(b => !b.IsDeleted && categoriesToMatch.Any(c => b.Category.ToLower() == c.ToLower()))
+                        .OrderBy(b => b.Title)
+                        .ToListAsync();
+                }
+                else
+                {
+                    return await _context.Books
+                        .Where(b => !b.IsDeleted && b.Category.ToLower() == category.ToLower())
+                        .OrderBy(b => b.Title)
+                        .ToListAsync();
+                }
             }
             catch (Exception ex)
             {

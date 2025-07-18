@@ -1,138 +1,49 @@
-using AutoMapper;
 using BookStore.API.DTOs;
-using BookStore.API.Models;
 using BookStore.API.Services.Interfaces;
-using BookStore.API.Data;
-using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace BookStore.API.Services
 {
     public class FavoriteService : IFavoriteService
     {
-        private readonly ApplicationDbContext _context;
-        private readonly IMapper _mapper;
-        private readonly ILogger<FavoriteService> _logger;
+        private readonly IUserFavoriteService _userFavoriteService;
 
-        public FavoriteService(ApplicationDbContext context, IMapper mapper, ILogger<FavoriteService> logger)
+        public FavoriteService(IUserFavoriteService userFavoriteService)
         {
-            _context = context;
-            _mapper = mapper;
-            _logger = logger;
+            _userFavoriteService = userFavoriteService;
         }
 
         public async Task<IEnumerable<FavoriteDto>> GetUserFavoritesAsync(string userId)
         {
-            try
+            var bookDtos = await _userFavoriteService.GetFavoriteBooksAsync(userId);
+            var favoriteDtos = new List<FavoriteDto>();
+            foreach (var bookDto in bookDtos)
             {
-                var favorites = await _context.UserFavorites
-                    .Include(f => f.Book)
-                    .ThenInclude(b => b.User)
-                    .Where(f => f.UserId == userId)
-                    .OrderByDescending(f => f.CreatedAt)
-                    .ToListAsync();
-
-                var favoriteDtos = favorites.Select(f => new FavoriteDto
+                favoriteDtos.Add(new FavoriteDto
                 {
-                    Id = f.Id,
-                    BookId = f.BookId,
-                    CreatedAt = f.CreatedAt,
-                    Book = _mapper.Map<BookDto>(f.Book)
+                    Id = 0, // Id unknown here
+                    BookId = bookDto.Id,
+                    CreatedAt = System.DateTime.MinValue, // Unknown created date
+                    Book = bookDto
                 });
-
-                return favoriteDtos;
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while fetching favorites for user {UserId}", userId);
-                throw;
-            }
+            return favoriteDtos;
         }
 
         public async Task<bool> AddToFavoritesAsync(string userId, int bookId)
         {
-            try
-            {
-                // Check if user exists
-                var userExists = await _context.Users.AnyAsync(u => u.Id == userId);
-                if (!userExists)
-                {
-                    _logger.LogWarning("Cannot add favorite: user {UserId} does not exist", userId);
-                    return false;
-                }
-
-                // Check if book exists
-                var book = await _context.Books.FindAsync(bookId);
-                if (book == null || book.IsDeleted)
-                {
-                    return false;
-                }
-
-                // Check if already in favorites
-                var existingFavorite = await _context.UserFavorites
-                    .FirstOrDefaultAsync(f => f.UserId == userId && f.BookId == bookId);
-
-                if (existingFavorite != null)
-                {
-                    return true; // Already in favorites
-                }
-
-                var favorite = new UserFavorite
-                {
-                    UserId = userId,
-                    BookId = bookId,
-                    CreatedAt = DateTime.UtcNow
-                };
-
-                _context.UserFavorites.Add(favorite);
-                await _context.SaveChangesAsync();
-
-                _logger.LogInformation("Book {BookId} added to favorites for user {UserId}", bookId, userId);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while adding book {BookId} to favorites for user {UserId}", bookId, userId);
-                return false;
-            }
+            return await _userFavoriteService.AddFavoriteAsync(userId, bookId);
         }
 
         public async Task<bool> RemoveFromFavoritesAsync(string userId, int bookId)
         {
-            try
-            {
-                var favorite = await _context.UserFavorites
-                    .FirstOrDefaultAsync(f => f.UserId == userId && f.BookId == bookId);
-
-                if (favorite == null)
-                {
-                    return false;
-                }
-
-                _context.UserFavorites.Remove(favorite);
-                await _context.SaveChangesAsync();
-
-                _logger.LogInformation("Book {BookId} removed from favorites for user {UserId}", bookId, userId);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while removing book {BookId} from favorites for user {UserId}", bookId, userId);
-                return false;
-            }
+            return await _userFavoriteService.RemoveFavoriteAsync(userId, bookId);
         }
 
         public async Task<bool> IsBookFavoriteAsync(string userId, int bookId)
         {
-            try
-            {
-                return await _context.UserFavorites
-                    .AnyAsync(f => f.UserId == userId && f.BookId == bookId);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while checking if book {BookId} is favorite for user {UserId}", bookId, userId);
-                return false;
-            }
+            return await _userFavoriteService.IsFavoriteAsync(userId, bookId);
         }
     }
 }

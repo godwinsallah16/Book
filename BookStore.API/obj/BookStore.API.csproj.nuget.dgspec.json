@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\godwi\\OneDrive\\Documents\\WORK\\INNORIK\\book-store\\Bookstore.API\\BookStore.API.csproj": {}
+    "C:\\Users\\godwi\\OneDrive\\Documents\\WORK\\INNORIK\\book-store\\BookStore.API\\BookStore.API.csproj": {}
   },
   "projects": {
-    "C:\\Users\\godwi\\OneDrive\\Documents\\WORK\\INNORIK\\book-store\\Bookstore.API\\BookStore.API.csproj": {
+    "C:\\Users\\godwi\\OneDrive\\Documents\\WORK\\INNORIK\\book-store\\BookStore.API\\BookStore.API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\godwi\\OneDrive\\Documents\\WORK\\INNORIK\\book-store\\Bookstore.API\\BookStore.API.csproj",
+        "projectUniqueName": "C:\\Users\\godwi\\OneDrive\\Documents\\WORK\\INNORIK\\book-store\\BookStore.API\\BookStore.API.csproj",
         "projectName": "BookStore.API",
-        "projectPath": "C:\\Users\\godwi\\OneDrive\\Documents\\WORK\\INNORIK\\book-store\\Bookstore.API\\BookStore.API.csproj",
+        "projectPath": "C:\\Users\\godwi\\OneDrive\\Documents\\WORK\\INNORIK\\book-store\\BookStore.API\\BookStore.API.csproj",
         "packagesPath": "C:\\Users\\godwi\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\godwi\\OneDrive\\Documents\\WORK\\INNORIK\\book-store\\Bookstore.API\\obj\\",
+        "outputPath": "C:\\Users\\godwi\\OneDrive\\Documents\\WORK\\INNORIK\\book-store\\BookStore.API\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

@@ -30,14 +30,20 @@ public class BooksControllerTests
             new BookDto { Id = 1, Title = "Test Book 1", Author = "Author 1", Price = 10.99m },
             new BookDto { Id = 2, Title = "Test Book 2", Author = "Author 2", Price = 15.99m }
         };
-        _mockBookService.Setup(s => s.GetAllBooksAsync()).ReturnsAsync(books);
+        _mockBookService.Setup(s => s.GetBooksPaginatedWithCountAsync(1, 20, It.IsAny<BookFiltersDto>()))
+            .ReturnsAsync((books, books.Count));
 
         // Act
         var result = await _controller.GetBooks();
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result.Result);
-        var returnedBooks = Assert.IsAssignableFrom<IEnumerable<BookDto>>(okResult.Value);
+        // The controller returns an anonymous type with data property containing books
+        var anonymousResult = okResult.Value;
+        var dataProperty = anonymousResult.GetType().GetProperty("data");
+        Assert.NotNull(dataProperty);
+        var returnedBooks = dataProperty.GetValue(anonymousResult) as IEnumerable<BookDto>;
+        Assert.NotNull(returnedBooks);
         Assert.Equal(2, returnedBooks.Count());
     }
 

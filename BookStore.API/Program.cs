@@ -256,7 +256,8 @@ try
     app.MapControllers();
 
     // Add health check and API test endpoints
-    app.MapGet("/health", () => "OK");
+    // Remove app.MapGet("/health") to avoid route conflict with HealthController
+    // app.MapGet("/health", () => "OK");
     app.MapGet("/", () => "BookStore API is running! Visit /swagger for API documentation.");
 
     // Database initialization for cloud deployment
