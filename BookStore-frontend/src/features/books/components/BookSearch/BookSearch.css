@@ -6,7 +6,6 @@
   gap: var(--spacing-lg);
 }
 
-
 .search-row {
   display: grid;
   grid-template-columns: 1fr;
@@ -80,12 +79,12 @@
 @media (min-width: 992px) {
   .search-row {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr auto;
+    grid-template-columns: repeat(4, 1fr);
     gap: var(--spacing-md);
     align-items: end;
   }
   .search-row:first-child {
-    grid-template-columns: 1fr 1fr 1fr auto;
+    grid-template-columns: repeat(4, 1fr);
   }
   .search-row .Input,
   .search-row input[type="text"],
@@ -111,8 +110,8 @@
   }
 }
 
-@media (min-width: 768px) {
+@media (min-width: 768px) and (max-width: 991px) {
   .search-row:first-child {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
   }
 }
