@@ -1,6 +1,7 @@
 /* Enhanced BookSearch form styling */
 .book-search-form {
   display: flex;
+  flex-direction: row;
   gap: 1.2rem;
   align-items: center;
   flex-wrap: wrap;
@@ -70,9 +71,9 @@
   background-size: 16px;
   padding-right: 40px;
   cursor: pointer;
-  appearance: none;
-  -webkit-appearance: none;
   -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .book-search-btn {
