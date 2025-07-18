@@ -64,8 +64,15 @@
   opacity: 0;
   transition: opacity 0.3s ease;
   pointer-events: none;
+  gap: 0;
 }
 
+.book-card-icons .favorite-btn {
+  align-self: flex-start;
+}
+.book-card-icons .cart-btn {
+  align-self: flex-end;
+}
 .book-card-icons > * {
   pointer-events: auto;
 }
