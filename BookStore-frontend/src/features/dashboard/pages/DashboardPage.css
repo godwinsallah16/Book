@@ -71,10 +71,30 @@
   margin-bottom: 32px;
   display: flex;
   justify-content: center;
+  align-items: center;
   background: white;
   border-radius: 16px;
   padding: 24px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+@media (min-width: 1024px) {
+  .search-section {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    gap: 16px;
+  }
+  .search-section input,
+  .search-section select {
+    margin-bottom: 0;
+  }
+  .search-section input[type="text"],
+  .search-section input[type="search"],
+  .search-section select,
+  .search-section button {
+    flex: 1;
+  }
 }
 
 .books-section,
@@ -109,7 +129,6 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  backdrop-filter: blur(4px);
 }
 
 .modal-content {
@@ -293,11 +312,11 @@
 }
 
 .dashboard-content > div:not(.active) {
-  opacity: 0;
-  transform: translateY(10px);
+  opacity: 1 !important;
+  transform: translateY(0) !important;
 }
 
 .dashboard-content > div.active {
-  opacity: 1;
-  transform: translateY(0);
+  opacity: 1 !important;
+  transform: translateY(0) !important;
 }
