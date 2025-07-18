@@ -1,3 +1,7 @@
+/* Add right padding to the first icon wrapper for alignment */
+.book-card-icons > div:first-child {
+  padding-right: 0;
+}
 .book-card {
   background: #fff;
   border-radius: 20px;
