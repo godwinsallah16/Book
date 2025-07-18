@@ -169,8 +169,8 @@ try
             policy => policy
                 .WithOrigins(
                     "https://bookstore-frontend-074u.onrender.com",
-                    "https://godwinsallah16.github.io",
-                    "https://godwinsallah16.github.io/Book"
+                    "https://godwinsallah16.github.io/Book",
+                    "https://bookstore-qopm.onrender.com"
                 )
                 .AllowAnyHeader()
                 .AllowAnyMethod());
