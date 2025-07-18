@@ -72,12 +72,15 @@
   flex: 0 0 auto;
   margin-top: 0;
 }
+
 .book-card-icons .cart-btn {
-  margin-right: auto;
+  margin-left: 8px;
 }
+
 .book-card-icons .favorite-btn {
-  margin-left: auto;
+  margin-right: 8px;
 }
+
 .book-card-icons > * {
   pointer-events: auto;
 }
@@ -101,10 +104,6 @@
   transition: all 0.2s ease;
   color: #6b7280;
 }
-
-
-
-
 
 .favorite-btn.active {
   /* No background by default, only color */
