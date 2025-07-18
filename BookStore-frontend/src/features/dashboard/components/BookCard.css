@@ -49,18 +49,19 @@
   transform: scale(1.05);
 }
 
+/* Stack icons vertically on the right, one at the top and one at the bottom of the image */
 .book-card-icons {
   position: absolute;
   top: 0;
-  left: 0;
   right: 0;
+  height: 100%;
+  width: 56px;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: space-between;
-  align-items: flex-start;
-  width: 100%;
-  padding: 16px;
-  gap: 8px;
+  align-items: flex-end;
+  padding: 16px 16px 16px 0;
+  gap: 0;
   z-index: 20;
   opacity: 0;
   transition: opacity 0.3s ease;
@@ -68,16 +69,14 @@
   background: transparent;
 }
 
-.book-card-icons .favorite-btn,
-.book-card-icons .cart-btn {
-  flex: 0 0 auto;
+/* Place favorite at the top, cart at the bottom */
+.book-card-icons .favorite-btn {
+  align-self: flex-end;
   margin-top: 0;
 }
-
 .book-card-icons .cart-btn {
-}
-
-.book-card-icons .favorite-btn {
+  align-self: flex-end;
+  margin-bottom: 0;
 }
 
 .book-card-icons > * {
