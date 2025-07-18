@@ -60,6 +60,7 @@
   align-items: flex-start;
   width: 100%;
   padding: 16px;
+  gap: 8px;
   z-index: 20;
   opacity: 0;
   transition: opacity 0.3s ease;
@@ -74,11 +75,9 @@
 }
 
 .book-card-icons .cart-btn {
-  margin-left: 8px;
 }
 
 .book-card-icons .favorite-btn {
-  margin-right: 8px;
 }
 
 .book-card-icons > * {
