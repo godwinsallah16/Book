@@ -60,6 +60,11 @@
   z-index: 10;
   opacity: 0;
   transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.book-card-icons > * {
+  pointer-events: auto;
 }
 
 .book-card:hover .book-card-icons {
@@ -68,7 +73,6 @@
 
 .favorite-btn, .cart-btn {
   background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
   border: none;
   border-radius: 12px;
   width: 44px;
@@ -83,8 +87,13 @@
   color: #6b7280;
 }
 
+
+.favorite-btn.active,
+.favorite-btn.active span {
+  color: #ef4444 !important;
+}
+
 .favorite-btn.active {
-  color: #ef4444;
   background: rgba(255, 255, 255, 0.98);
   transform: scale(1.1);
 }

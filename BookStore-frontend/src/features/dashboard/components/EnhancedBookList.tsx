@@ -66,19 +66,7 @@ const EnhancedBookList: React.FC<EnhancedBookListProps> = ({ filters, onBookEdit
   };
 
 
-  const [favorites, setFavorites] = useState<number[]>([]);
 
-  useEffect(() => {
-    const fetchFavorites = async () => {
-      try {
-        const favBooks = await bookService.getFavoriteBooks();
-        setFavorites(favBooks.map(b => b.id));
-      } catch {
-        setFavorites([]);
-      }
-    };
-    fetchFavorites();
-  }, []);
 
   const { addToCart } = useCart();
   const handleAddToCart = async (book: Book) => {
@@ -90,12 +78,13 @@ const EnhancedBookList: React.FC<EnhancedBookListProps> = ({ filters, onBookEdit
   };
 
   const handleToggleFavorite = async (book: Book) => {
-    if (favorites.includes(book.id)) {
+    if (book.isFavorite) {
       await bookService.removeFavorite(book.id);
-      setFavorites((prev) => prev.filter(id => id !== book.id));
+      // Optimistically update UI
+      setBooks(prev => prev.map(b => b.id === book.id ? { ...b, isFavorite: false } : b));
     } else {
       await bookService.addFavorite(book.id);
-      setFavorites((prev) => [...prev, book.id]);
+      setBooks(prev => prev.map(b => b.id === book.id ? { ...b, isFavorite: true } : b));
     }
   };
 
@@ -122,7 +111,7 @@ const EnhancedBookList: React.FC<EnhancedBookListProps> = ({ filters, onBookEdit
                     onDelete={handleDelete}
                     onAddToCart={handleAddToCart}
                     onToggleFavorite={handleToggleFavorite}
-                    isFavorite={favorites.includes(book.id)}
+                    isFavorite={book.isFavorite}
                     canEditOrDelete={canEditOrDelete}
                   />
                 );

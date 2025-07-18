@@ -14,6 +14,7 @@ export interface Book {
   updatedAt: string;
   userId?: string;
   uploaderName?: string;
+  isFavorite?: boolean;
 }
 
 export interface CreateBookRequest {

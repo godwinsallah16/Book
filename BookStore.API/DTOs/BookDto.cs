@@ -19,6 +19,7 @@ namespace BookStore.API.DTOs
         public DateTime? UpdatedAt { get; set; }
         public string? UserId { get; set; }
         public string? UploaderName { get; set; }
+        public bool IsFavorite { get; set; } = false;
     }
 
     public class CreateBookDto

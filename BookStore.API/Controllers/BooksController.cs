@@ -12,11 +12,13 @@ namespace BookStore.API.Controllers
     public class BooksController : ControllerBase
     {
         private readonly IBookService _bookService;
+        private readonly IFavoriteService _favoriteService;
         private readonly ILogger<BooksController> _logger;
 
-        public BooksController(IBookService bookService, ILogger<BooksController> logger)
+        public BooksController(IBookService bookService, IFavoriteService favoriteService, ILogger<BooksController> logger)
         {
             _bookService = bookService;
+            _favoriteService = favoriteService;
             _logger = logger;
         }
 
@@ -49,6 +51,19 @@ public async Task<ActionResult<object>> GetBooks(
         };
         var (books, totalCount) = await _bookService.GetBooksPaginatedWithCountAsync(page, pageSize, filters);
         var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+
+        // Set IsFavorite for each book if user is authenticated
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!string.IsNullOrEmpty(userId))
+        {
+            var favoriteBooks = await _favoriteService.GetUserFavoritesAsync(userId);
+            var favoriteBookIds = new HashSet<int>(favoriteBooks.Select(f => f.BookId));
+            foreach (var book in books)
+            {
+                book.IsFavorite = favoriteBookIds.Contains(book.Id);
+            }
+        }
+
         return Ok(new {
             data = books,
             totalCount,
